@@ -16,8 +16,8 @@ TagManager:
   - Player
   - Speedlines
   - ItemVisual
-  - 
-  - 
+  - ProjectileHitBox
+  - ProjectileCollisionBox
   - 
   - 
   - 

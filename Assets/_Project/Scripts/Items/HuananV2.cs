@@ -1,6 +1,5 @@
 using Game.Core.Items;
 using Game.Core.Maps;
-using Game.Core.Projectiles;
 using Game.Player;
 using Game.Projectiles;
 using Mirror;
@@ -20,7 +19,7 @@ namespace Game.Items
             {
                 scene = MapLoader.loadedMap.scene,
             });
-            projectile.GetComponent<DamageDealer>().owner = user;
+            projectile.GetComponent<HuananV2Projectile>().dealer.owner = user;
             NetworkServer.Spawn(projectile);
         }
     }

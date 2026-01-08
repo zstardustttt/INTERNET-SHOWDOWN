@@ -10,22 +10,30 @@ namespace Game.Projectiles
         public Rigidbody rb;
         public float speed;
         public float rotationSpeed;
+        public float redirectionTimeWindow;
         public LayerMask layerMask;
         public DamageDealer dealer;
 
-        public override void OnStartServer()
+        private Vector3 _direction;
+        private float _lifetime;
+
+        private void Awake()
         {
-            if (Physics.Raycast(dealer.owner.verticalOrientation.position, dealer.owner.verticalOrientation.forward, out var hitinfo, 1000f, layerMask, QueryTriggerInteraction.Ignore))
+            _direction = transform.forward;
+        }
+
+        private void Update()
+        {
+            if (!NetworkServer.active) return;
+            if (_lifetime <= redirectionTimeWindow && Physics.Raycast(dealer.owner.verticalOrientation.position, dealer.owner.verticalOrientation.forward, out var hitinfo, 1000f, layerMask, QueryTriggerInteraction.Ignore))
             {
-                var direction = (hitinfo.point - dealer.owner.itemHolder.position).normalized;
-                rb.linearVelocity = direction * speed;
-                rb.angularVelocity = direction * rotationSpeed;
+                _direction = (hitinfo.point - transform.position).normalized;
             }
-            else
-            {
-                rb.linearVelocity = transform.forward * speed;
-                rb.angularVelocity = transform.forward * rotationSpeed;
-            }
+
+            rb.linearVelocity = _direction * speed;
+            rb.angularVelocity = _direction * rotationSpeed;
+
+            _lifetime += Time.deltaTime;
         }
 
         // TODO: hit other projectiles
@@ -36,9 +44,12 @@ namespace Game.Projectiles
             {
                 if (hittedPlayer == dealer.owner) return;
                 hittedPlayer.health -= dealer.EvaluateDamage(hittedPlayer);
-                dealer.OnDamageDealt.Invoke(hittedPlayer);
             }
+        }
 
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (!NetworkServer.active) return;
             NetworkServer.Destroy(gameObject);
         }
     }
