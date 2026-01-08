@@ -20,19 +20,19 @@ namespace Game.Gameplay
     public struct GameState
     {
         public GamePhase phase;
-        public long timerBeginTicks;
+        public double timerBeginTime;
         public int mapIndex;
         public int soundtrackIndex;
 
         // why tf are getters can be made readonly
-        public readonly float SecondsSinceTimerStarted => (float)new TimeSpan(DateTime.Now.Ticks - timerBeginTicks).TotalSeconds;
+        public readonly float SecondsSinceTimerStarted => (float)(NetworkTime.time - timerBeginTime);
 
-        public GameState(GamePhase phase, int mapIndex, int soundtrackIndex, long timerBeginTicks)
+        public GameState(GamePhase phase, int mapIndex, int soundtrackIndex, double timerBeginTime)
         {
             this.phase = phase;
             this.mapIndex = mapIndex;
             this.soundtrackIndex = soundtrackIndex;
-            this.timerBeginTicks = timerBeginTicks;
+            this.timerBeginTime = timerBeginTime;
         }
 
         public readonly override string ToString()
@@ -57,7 +57,7 @@ namespace Game.Gameplay
         private void Start()
         {
             if (!isServer) return;
-            state = new(GamePhase.Break, -1, -1, DateTime.Now.Ticks);
+            state = new(GamePhase.Break, -1, -1, NetworkTime.time);
         }
 
         private void Update()
@@ -91,7 +91,7 @@ namespace Game.Gameplay
                 itemManager.itemIndex = -1;
             }
 
-            state = new(GamePhase.Break, -1, -1, DateTime.Now.Ticks);
+            state = new(GamePhase.Break, -1, -1, NetworkTime.time);
         }
 
         [Server]
@@ -101,13 +101,13 @@ namespace Game.Gameplay
             var conf = MapPool.maps[idx];
             MapLoader.Load(conf);
 
-            state = new(GamePhase.Preparation, idx, UnityEngine.Random.Range(0, conf.soundtracks.Length), DateTime.Now.Ticks);
+            state = new(GamePhase.Preparation, idx, UnityEngine.Random.Range(0, conf.soundtracks.Length), NetworkTime.time);
         }
 
         [Server]
         private void EnterMatch()
         {
-            state = new(GamePhase.Match, state.mapIndex, state.soundtrackIndex, state.timerBeginTicks);
+            state = new(GamePhase.Match, state.mapIndex, state.soundtrackIndex, state.timerBeginTime);
             EventBus<SetBoxSpawnerActive>.Invoke(new() { active = true });
         }
     }
