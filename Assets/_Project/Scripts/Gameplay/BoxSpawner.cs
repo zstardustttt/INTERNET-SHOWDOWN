@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Game.Core.Events;
-using Game.Core.Items;
 using Game.Core.Maps;
 using Game.Events.BoxSpawner;
 using KinematicCharacterController;
@@ -15,6 +14,7 @@ namespace Game.Gameplay
     {
         public GameObject boxPrefab;
         public float spawnRate;
+        public LayerMask layerMask;
 
         private bool _active;
         private float _timer;
@@ -54,7 +54,7 @@ namespace Game.Gameplay
 
             var origin = MapLoader.loadedMap.info.transform.position + new Vector3(x, maxBounds.y, z);
             var possibleSpawnPoints = new List<Vector3>();
-            while (Physics.Raycast(origin, Vector3.down, out var hit, 200f))
+            while (Physics.Raycast(origin, Vector3.down, out var hit, 200f, layerMask))
             {
                 possibleSpawnPoints.Add(hit.point);
                 origin = hit.point + Vector3.down * 0.1f;

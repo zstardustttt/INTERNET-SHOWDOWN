@@ -239,7 +239,7 @@ GameObject:
   - component: {fileID: 48328929}
   - component: {fileID: 48328928}
   m_Layer: 0
-  m_Name: ItemSpawner
+  m_Name: BoxSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -276,6 +276,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boxPrefab: {fileID: 4198238566599423486, guid: 2beec17498cc07a43b8285f504979ce2, type: 3}
   spawnRate: 0.4
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!4 &48328930
 Transform:
   m_ObjectHideFlags: 0
@@ -3833,7 +3836,7 @@ MonoBehaviour:
   matchDuration: 265
   state:
     phase: 0
-    timerBeginTicks: 0
+    timerBeginTime: 0
     mapIndex: 0
     soundtrackIndex: 0
 --- !u!43 &1389721050
@@ -5146,7 +5149,7 @@ MonoBehaviour:
   source: {fileID: 5051910199592579124}
   state:
     phase: 0
-    timerBeginTicks: 0
+    timerBeginTime: 0
     mapIndex: 0
     soundtrackIndex: 0
 --- !u!1 &1157550871621118100
