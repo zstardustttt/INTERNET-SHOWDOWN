@@ -1238,13 +1238,13 @@ MonoBehaviour:
   syncDirection: 1
   syncMode: 0
   syncInterval: 0
-  target: {fileID: 6124577175492389443}
+  target: {fileID: 9199459176827721078}
   updateMethod: 0
   syncPosition: 0
   syncRotation: 1
   syncScale: 0
   onlySyncOnChange: 1
-  compressRotation: 1
+  compressRotation: 0
   interpolatePosition: 1
   interpolateRotation: 1
   interpolateScale: 1
@@ -1313,7 +1313,7 @@ MonoBehaviour:
   syncRotation: 1
   syncScale: 0
   onlySyncOnChange: 1
-  compressRotation: 1
+  compressRotation: 0
   interpolatePosition: 1
   interpolateRotation: 1
   interpolateScale: 1

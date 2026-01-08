@@ -134,7 +134,7 @@ namespace Game.Player
 
         private void UseItem()
         {
-            if (_item) _item.Use(verticalOrientation);
+            if (_item) _item.Use(this);
             itemIndex = -1;
         }
 
@@ -514,12 +514,13 @@ namespace Game.Player
         {
             if (!NetworkServer.active) return;
 
-            if (other.TryGetComponent(out DamageDealer dealer))
+            /*if (other.TryGetComponent(out DamageDealer dealer))
             {
+                if (dealer.owner == this) return;
                 health -= dealer.EvaluateDamage(this);
                 dealer.OnDamageDealt.Invoke(this);
-            }
-            else if (other.CompareTag("Box"))
+            }*/
+            if (other.CompareTag("Box"))
             {
                 if (itemIndex != -1) return;
                 NetworkServer.Destroy(other.gameObject);

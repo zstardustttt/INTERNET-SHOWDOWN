@@ -107,7 +107,7 @@ namespace Game.Gameplay
         [Server]
         private void EnterMatch()
         {
-            state = new(GamePhase.Match, state.mapIndex, 1, state.timerBeginTicks);
+            state = new(GamePhase.Match, state.mapIndex, state.soundtrackIndex, state.timerBeginTicks);
             EventBus<SetBoxSpawnerActive>.Invoke(new() { active = true });
         }
     }
