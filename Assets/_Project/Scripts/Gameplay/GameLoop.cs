@@ -86,9 +86,11 @@ namespace Game.Gameplay
             EventBus<SetBoxSpawnerActive>.Invoke(new() { active = false });
             MapLoader.Unload();
 
-            foreach (var itemManager in FindObjectsByType<PlayerBase>(FindObjectsSortMode.None))
+            // Reset player stats
+            foreach (var player in FindObjectsByType<PlayerBase>(FindObjectsSortMode.None))
             {
-                itemManager.itemIndex = -1;
+                player.itemIndex = -1;
+                player.health = PlayerBase.MAX_HEALTH;
             }
 
             state = new(GamePhase.Break, -1, -1, NetworkTime.time);
