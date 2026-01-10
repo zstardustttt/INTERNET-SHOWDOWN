@@ -33,6 +33,11 @@ namespace Game.Network
             });
         }
 
+        public override void OnClientDisconnect()
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
+
         public override void OnStopServer()
         {
             MapLoader.Stop();
