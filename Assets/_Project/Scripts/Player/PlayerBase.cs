@@ -502,6 +502,12 @@ namespace Game.Player
             }
         }
 
+        [TargetRpc]
+        private void TargetOnHit(NetworkConnectionToClient target)
+        {
+            EventBus<HitIndicatorRequest>.Invoke(new());
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (!NetworkServer.active) return;
@@ -512,6 +518,7 @@ namespace Game.Player
                 var damage = dealer.EvaluateDamage(this);
                 health -= damage;
                 dealer.OnHit.Invoke(this, damage);
+                TargetOnHit(dealer.owner.netIdentity.connectionToClient);
             }
             else if (other.CompareTag("Box"))
             {

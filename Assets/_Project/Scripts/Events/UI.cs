@@ -8,4 +8,6 @@ namespace Game.Events.UI
         public float health;
         public float maxHealth;
     }
+
+    public struct HitIndicatorRequest : IEvent { }
 }

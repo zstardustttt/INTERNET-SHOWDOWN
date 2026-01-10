@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using Game.Core.Events;
 using Game.Events.GameLoop;
 using Game.Events.UI;
@@ -11,6 +13,7 @@ namespace Game.UI.Game
     {
         public CanvasGroup canvasGroup;
         public Slider health;
+        public CanvasGroup hitIndicator;
 
         private GameState _gameState;
         private bool _uiSwitchRequested;
@@ -34,6 +37,23 @@ namespace Game.UI.Game
             });
 
             EventBus<OnHealthUpdate>.Listen(OnHealthUpdate);
+            EventBus<HitIndicatorRequest>.Listen((_) => HitIndicatorAnimation());
+        }
+
+        private void HitIndicatorAnimation()
+        {
+            StopCoroutine(nameof(CO_HitIndicatorAnimation));
+            StartCoroutine(nameof(CO_HitIndicatorAnimation));
+        }
+
+        private IEnumerator CO_HitIndicatorAnimation()
+        {
+            hitIndicator.alpha = 1f;
+            while (hitIndicator.alpha > 0f)
+            {
+                hitIndicator.alpha -= Time.deltaTime;
+                yield return null;
+            }
         }
 
         private void SwitchUI(bool enable)
