@@ -1,26 +1,19 @@
 using Game.Core.Items;
 using Game.Core.Maps;
+using Game.Core.Projectiles;
 using Game.Player;
 using Game.Projectiles;
-using Mirror;
-using UnityEngine;
 
 namespace Game.Items
 {
     public class HuananV2 : Item
     {
-        public GameObject projectilePrefab;
+        public HuananV2Projectile projectile;
 
         public override void Use(PlayerBase user)
         {
             if (MapLoader.loadedMap == null || !MapLoader.loadedMap.scene.IsValid()) return;
-
-            var projectile = Instantiate(projectilePrefab, transform.position, transform.rotation, new InstantiateParameters()
-            {
-                scene = MapLoader.loadedMap.scene,
-            });
-            projectile.GetComponent<HuananV2Projectile>().dealer.owner = user;
-            NetworkServer.Spawn(projectile);
+            Projectile.Spawn(projectile, user, transform.position, transform.rotation);
         }
     }
 }

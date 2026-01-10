@@ -1,5 +1,6 @@
 using Game.Player;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Game.Core.Projectiles
 {
@@ -7,6 +8,7 @@ namespace Game.Core.Projectiles
     public abstract class DamageDealer : MonoBehaviour
     {
         public PlayerBase owner;
+        public UnityEvent<PlayerBase, float> OnHit = new();
         public abstract float EvaluateDamage(PlayerBase player);
     }
 }

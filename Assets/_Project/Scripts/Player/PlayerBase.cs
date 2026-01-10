@@ -103,7 +103,10 @@ namespace Game.Player
             if (_item) Destroy(_item.gameObject);
 
             if (_new != -1)
+            {
                 _item = Instantiate(ItemPool.items[itemIndex].prefab, itemHolder).GetComponent<Item>();
+                if (isLocalPlayer) _item.gameObject.layer = LayerMask.NameToLayer("ItemVisual");
+            }
         }
 
         private void OnHealthChange(float old, float _new)
@@ -515,13 +518,14 @@ namespace Game.Player
         {
             if (!NetworkServer.active) return;
 
-            /*if (other.TryGetComponent(out DamageDealer dealer))
+            if (other.TryGetComponent(out DamageDealer dealer))
             {
                 if (dealer.owner == this) return;
-                health -= dealer.EvaluateDamage(this);
-                dealer.OnDamageDealt.Invoke(this);
-            }*/
-            if (other.CompareTag("Box"))
+                var damage = dealer.EvaluateDamage(this);
+                health -= damage;
+                dealer.OnHit.Invoke(this, damage);
+            }
+            else if (other.CompareTag("Box"))
             {
                 if (itemIndex != -1) return;
                 NetworkServer.Destroy(other.gameObject);

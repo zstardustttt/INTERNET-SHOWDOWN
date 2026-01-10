@@ -5,14 +5,13 @@ using UnityEngine;
 
 namespace Game.Projectiles
 {
-    public class HuananV2Projectile : NetworkBehaviour
+    public class HuananV2Projectile : Projectile
     {
         public Rigidbody rb;
         public float speed;
         public float rotationSpeed;
         public float redirectionTimeWindow;
         public LayerMask layerMask;
-        public DamageDealer dealer;
 
         private Vector3 _direction;
         private float _lifetime;
@@ -25,7 +24,7 @@ namespace Game.Projectiles
         private void Update()
         {
             if (!NetworkServer.active) return;
-            if (_lifetime <= redirectionTimeWindow && Physics.Raycast(dealer.owner.verticalOrientation.position, dealer.owner.verticalOrientation.forward, out var hitinfo, 1000f, layerMask, QueryTriggerInteraction.Ignore))
+            if (_lifetime <= redirectionTimeWindow && Physics.Raycast(owner.verticalOrientation.position, owner.verticalOrientation.forward, out var hitinfo, 1000f, layerMask, QueryTriggerInteraction.Ignore))
             {
                 _direction = (hitinfo.point - transform.position).normalized;
             }
@@ -36,21 +35,12 @@ namespace Game.Projectiles
             _lifetime += Time.deltaTime;
         }
 
-        // TODO: hit other projectiles
-        private void OnTriggerEnter(Collider other)
-        {
-            if (!NetworkServer.active) return;
-            if (other.TryGetComponent(out PlayerBase hittedPlayer))
-            {
-                if (hittedPlayer == dealer.owner) return;
-                hittedPlayer.health -= dealer.EvaluateDamage(hittedPlayer);
-            }
-        }
-
         private void OnCollisionEnter(Collision collision)
         {
             if (!NetworkServer.active) return;
             NetworkServer.Destroy(gameObject);
         }
+
+        public override void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage) { }
     }
 }
