@@ -155,12 +155,6 @@ namespace Game.Player
             motor.enabled = false;
         }
 
-        private void Update()
-        {
-            if (!isLocalPlayer) return;
-            if (Input.GetKeyDown(KeyCode.F2)) CmdHealthDebug();
-        }
-
         public void EnableMotor()
         {
             motor.enabled = true;
@@ -412,12 +406,6 @@ namespace Game.Player
         public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
         {
 
-        }
-
-        [Command]
-        private void CmdHealthDebug()
-        {
-            health -= 10f;
         }
 
         public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
