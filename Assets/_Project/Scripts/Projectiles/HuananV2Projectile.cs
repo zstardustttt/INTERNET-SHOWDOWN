@@ -12,26 +12,28 @@ namespace Game.Projectiles
         public float rotationSpeed;
         public float redirectionTimeWindow;
         public LayerMask layerMask;
+        public Transform visual;
 
-        private Vector3 _direction;
+        [SyncVar] private Vector3 _direction;
         private float _lifetime;
 
-        private void Awake()
+        public override void OnStartServer()
         {
             _direction = transform.forward;
         }
 
         private void Update()
         {
+            visual.Rotate(_direction, rotationSpeed * Time.deltaTime, Space.World);
+
             if (!NetworkServer.active) return;
+
             if (_lifetime <= redirectionTimeWindow && Physics.Raycast(owner.verticalOrientation.position, owner.verticalOrientation.forward, out var hitinfo, 1000f, layerMask, QueryTriggerInteraction.Ignore))
             {
                 _direction = (hitinfo.point - transform.position).normalized;
             }
 
             rb.linearVelocity = _direction * speed;
-            rb.angularVelocity = _direction * rotationSpeed;
-
             _lifetime += Time.deltaTime;
         }
 
