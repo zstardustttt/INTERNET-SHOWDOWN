@@ -13,6 +13,7 @@ namespace Game.Gameplay
         [Range(0f, 1f)] public float volume;
 
         [HideInInspector] public GameState state;
+        private Soundtrack _soundtrack;
 
         private void OnValidate()
         {
@@ -26,6 +27,18 @@ namespace Game.Gameplay
             EventBus<StopMatchMusic>.Listen((_) => StopMatchMusic());
         }
 
+        private void Update()
+        {
+            if (!_soundtrack) return;
+            if (_soundtrack.clip.loadState != AudioDataLoadState.Loaded) return;
+            if (source.isPlaying) return;
+
+            source.clip = _soundtrack.clip;
+            source.volume = _soundtrack.volume * volume;
+            source.Play();
+            source.time = state.SecondsSinceTimerStarted;
+        }
+
         private void PlayMatchMusic()
         {
             if (state.mapIndex == -1 || state.soundtrackIndex == -1)
@@ -34,16 +47,14 @@ namespace Game.Gameplay
                 return;
             }
 
-            var soundtrack = MapPool.maps[state.mapIndex].soundtracks[state.soundtrackIndex];
-            source.clip = soundtrack.clip;
-            source.volume = soundtrack.volume * volume;
-            source.Play();
-            source.time = state.SecondsSinceTimerStarted;
+            _soundtrack = MapPool.maps[state.mapIndex].soundtracks[state.soundtrackIndex];
+            _soundtrack.clip.LoadAudioData();
         }
 
         private void StopMatchMusic()
         {
             source.Stop();
+            _soundtrack = null;
         }
     }
 }
