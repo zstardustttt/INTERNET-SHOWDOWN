@@ -12,8 +12,9 @@ namespace Game.Gameplay
         public AudioSource source;
         [Range(0f, 1f)] public float volume;
 
-        [HideInInspector] public GameState state;
         private Soundtrack _soundtrack;
+        private GameState _state;
+        private bool _musicRequested;
 
         private void OnValidate()
         {
@@ -22,39 +23,35 @@ namespace Game.Gameplay
 
         private void Awake()
         {
-            EventBus<OnGameStateChange>.Listen((data) => state = data.state);
-            EventBus<RequestMatchMusic>.Listen((_) => PlayMatchMusic());
+            EventBus<OnGameStateChange>.Listen((data) =>
+            {
+                _state = data.state;
+
+                if (_state.mapIndex == -1 || _state.soundtrackIndex == -1) return;
+                _soundtrack = MapPool.maps[_state.mapIndex].soundtracks[_state.soundtrackIndex];
+                _soundtrack.clip.LoadAudioData();
+            });
+            EventBus<RequestMatchMusic>.Listen((_) => { _musicRequested = true; });
             EventBus<StopMatchMusic>.Listen((_) => StopMatchMusic());
         }
 
         private void Update()
         {
-            if (!_soundtrack) return;
-            if (_soundtrack.clip.loadState != AudioDataLoadState.Loaded) return;
-            if (source.isPlaying) return;
+            if (!_musicRequested || !_soundtrack || _soundtrack.clip.loadState != AudioDataLoadState.Loaded) return;
 
             source.clip = _soundtrack.clip;
             source.volume = _soundtrack.volume * volume;
             source.Play();
-            source.time = state.SecondsSinceTimerStarted;
-        }
+            source.time = _state.SecondsSinceTimerStarted;
 
-        private void PlayMatchMusic()
-        {
-            if (state.mapIndex == -1 || state.soundtrackIndex == -1)
-            {
-                Debug.LogWarning("Cant play music right now");
-                return;
-            }
-
-            _soundtrack = MapPool.maps[state.mapIndex].soundtracks[state.soundtrackIndex];
-            _soundtrack.clip.LoadAudioData();
+            _musicRequested = false;
         }
 
         private void StopMatchMusic()
         {
             source.Stop();
             _soundtrack = null;
+            _musicRequested = false;
         }
     }
 }
