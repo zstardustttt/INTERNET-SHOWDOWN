@@ -10,12 +10,6 @@ namespace Game.Core.Events
     {
         private static readonly Dictionary<Guid, Action<T>> _listeners = new();
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Init()
-        {
-            _listeners.Clear();
-        }
-
         public static Guid Listen(Action<T> callback)
         {
             var guid = Guid.NewGuid();

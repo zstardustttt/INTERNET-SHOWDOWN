@@ -8,6 +8,6 @@ namespace Game.Core.Maps
     {
         [Scene] public string sceneName;
         public string displayName;
-        public AudioClip[] soundtracks;
+        public Soundtrack[] soundtracks;
     }
 }

@@ -10,6 +10,7 @@ namespace Game.Gameplay
     public class MusicPlayer : MonoBehaviour
     {
         public AudioSource source;
+        [Range(0f, 1f)] public float volume;
 
         [HideInInspector] public GameState state;
 
@@ -33,7 +34,9 @@ namespace Game.Gameplay
                 return;
             }
 
-            source.clip = MapPool.maps[state.mapIndex].soundtracks[state.soundtrackIndex];
+            var soundtrack = MapPool.maps[state.mapIndex].soundtracks[state.soundtrackIndex];
+            source.clip = soundtrack.clip;
+            source.volume = soundtrack.volume * volume;
             source.Play();
             source.time = state.SecondsSinceTimerStarted;
         }
