@@ -159,7 +159,7 @@ MonoBehaviour:
   damageDealers:
   - {fileID: 1638724938105410804}
   rb: {fileID: 2459362012733599560}
-  speed: 75
+  speed: 90
   rotationSpeed: 20
   redirectionTimeWindow: 0.05
   layerMask:
