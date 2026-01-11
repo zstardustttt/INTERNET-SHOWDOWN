@@ -11,18 +11,11 @@ namespace Game.Projectiles
         public BoxCollider bc;
         public float speed;
         public float rotationSpeed;
-        public LayerMask layerMask;
         public Transform visual;
-
-        [SyncVar] private Vector3 _direction;
 
         public override void OnStartServer()
         {
-            if (Physics.BoxCast(_owner.verticalOrientation.position, bc.size / 2f, _owner.verticalOrientation.forward, out var hitinfo, transform.rotation, 1000f, layerMask, QueryTriggerInteraction.Ignore))
-                _direction = (hitinfo.point - transform.position).normalized;
-            else _direction = transform.forward;
-
-            rb.linearVelocity = _direction * speed;
+            rb.linearVelocity = transform.forward * speed;
             foreach (var dealer in damageDealers)
             {
                 dealer.velocity = rb.linearVelocity;
@@ -39,7 +32,7 @@ namespace Game.Projectiles
 
         protected override void OnUpdate()
         {
-            visual.Rotate(_direction, rotationSpeed * Time.deltaTime, Space.World);
+            visual.Rotate(transform.forward, rotationSpeed * Time.deltaTime, Space.World);
         }
     }
 }

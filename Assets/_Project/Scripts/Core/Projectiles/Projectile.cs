@@ -15,6 +15,8 @@ namespace Game.Core.Projectiles
         [Server]
         public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation) where T : Projectile
         {
+            if (MapLoader.loadedMap == null || !MapLoader.loadedMap.scene.IsValid()) throw new("Map is not loaded");
+
             var projectileObject = Instantiate(prefab.gameObject, position, rotation, new InstantiateParameters()
             {
                 scene = MapLoader.loadedMap.scene,

@@ -274,6 +274,7 @@ GameObject:
   - component: {fileID: 3085756864833092725}
   - component: {fileID: 2462157491766292911}
   - component: {fileID: 4075737330760207556}
+  - component: {fileID: 3314708284041988598}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -619,6 +620,27 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &3314708284041988598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635209751978783220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a898831dd60c4cdfbfd9a6ea5702ed01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror.Components::Mirror.LagCompensator
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  trackedCollider: {fileID: 241399185085964307}
+  lagCompensationSettings:
+    historyLimit: 6
+    captureInterval: 0.1
+  historyColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &2443618441499736647
 GameObject:
   m_ObjectHideFlags: 0

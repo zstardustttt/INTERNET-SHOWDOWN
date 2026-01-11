@@ -6,6 +6,6 @@ namespace Game.Core.Items
     public abstract class Item : MonoBehaviour
     {
         // Called on the server
-        public abstract void Use(PlayerBase user);
+        public abstract void Use(PlayerBase user, ItemUseClientContext context);
     }
 }

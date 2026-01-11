@@ -138,8 +138,19 @@ namespace Game.Player
         {
             if (itemIndex == -1) return;
 
-            if (NetworkServer.active) UseItem();
-            else CmdUseItem();
+            var crosshairHit = Physics.Raycast(verticalOrientation.position, verticalOrientation.forward, out var hitInfo, 1000f, LayerMask.GetMask("Player", "Enviroment"));
+            var ctx = new ItemUseClientContext()
+            {
+                visualPosition = _item.transform.position,
+                visualRotation = _item.transform.rotation,
+                headPosition = verticalOrientation.position,
+                headRotation = verticalOrientation.rotation,
+                crosshairHitPoint = hitInfo.point,
+                crosshairHit = crosshairHit,
+            };
+
+            if (NetworkServer.active) UseItem(ctx);
+            else CmdUseItem(ctx);
         }
 
         private void Update()
@@ -167,14 +178,15 @@ namespace Game.Player
         }
 
         [Command]
-        private void CmdUseItem()
+        private void CmdUseItem(ItemUseClientContext context)
         {
-            UseItem();
+            // TODO: Validate context
+            UseItem(context);
         }
 
-        private void UseItem()
+        private void UseItem(ItemUseClientContext context)
         {
-            if (_item) _item.Use(this);
+            if (_item) _item.Use(this, context);
             itemIndex = -1;
         }
 
