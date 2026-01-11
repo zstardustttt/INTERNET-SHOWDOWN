@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 273174652535862283}
   - component: {fileID: 5489587520539320565}
   - component: {fileID: 1883514014839083879}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 622206802672343649}
   - component: {fileID: 5456165031500638461}
   - component: {fileID: 1653252554747909041}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HUANANV2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -301,7 +301,7 @@ GameObject:
   - component: {fileID: 2927502563903352106}
   - component: {fileID: 6480257299289842357}
   - component: {fileID: 1638724938105410804}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: HitBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
