@@ -69,5 +69,9 @@ namespace Game.Player
         [Header("Other")]
         public float groundAdditionalVelocityDrag;
         public float airAdditionalVelocityDrag;
+
+        [Header("Health")]
+        public float maxHealth;
+        public float invincibleDuration;
     }
 }

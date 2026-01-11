@@ -35,10 +35,8 @@ namespace Game.Gameplay
                 return;
             }
 
-            var players = GetAllMotorsOnScene(MapLoader.loadedMap.scene);
-
             _timer += Time.deltaTime;
-            if (_timer >= 1f / (spawnRate * players.Count))
+            if (_timer >= 1f / (spawnRate * MapLoader.loadedMap.players.Count))
             {
                 _timer = 0f;
                 SpawnBox();
@@ -66,6 +64,8 @@ namespace Game.Gameplay
             NetworkServer.Spawn(box);
         }
 
+        /*
+        Legacy solution
         private List<KinematicCharacterMotor> GetAllMotorsOnScene(Scene scene)
         {
             var output = new List<KinematicCharacterMotor>();
@@ -76,5 +76,6 @@ namespace Game.Gameplay
 
             return output;
         }
+        */
     }
 }

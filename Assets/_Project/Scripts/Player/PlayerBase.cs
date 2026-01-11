@@ -3,7 +3,9 @@ using Game.Core.Events;
 using Game.Core.Items;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
+using Game.Events.Player;
 using Game.Events.UI;
+using Game.Gameplay;
 using Game.Network.Messages;
 using KinematicCharacterController;
 using Mirror;
@@ -15,8 +17,6 @@ namespace Game.Player
     [RequireComponent(typeof(KinematicCharacterMotor))]
     public class PlayerBase : NetworkBehaviour, ICharacterController
     {
-        public const float MAX_HEALTH = 100f;
-
         public Bounds WorldHitbox => new(transform.position + config.hitbox.center, config.hitbox.size);
 
         public PlayerConfig config;
@@ -86,14 +86,24 @@ namespace Game.Player
         private Item _item;
 
         [SyncVar(hook = nameof(OnHealthChange))] public float health;
+        public Vector3 serverSyncedVelocity;
+
+        [SyncVar] public bool invincible;
+        private float _invincibleTimer; // server only
+
+        [Server]
+        public void ResetPlayer()
+        {
+            itemIndex = -1;
+            health = config.maxHealth;
+        }
 
         public override void OnStartServer()
         {
-            itemIndex = -1;
-            health = MAX_HEALTH;
+            ResetPlayer();
 
             var rb = gameObject.AddComponent<Rigidbody>();
-            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
             rb.useGravity = false;
             rb.constraints = RigidbodyConstraints.FreezeAll;
         }
@@ -116,10 +126,12 @@ namespace Game.Player
                 // Death logic
                 var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
                 netIdentity.connectionToClient.Send<ServerMovePlayer>(new() { position = position });
-                health = MAX_HEALTH;
+                ResetPlayer();
             }
 
-            if (netIdentity.isLocalPlayer) EventBus<OnHealthUpdate>.Invoke(new() { maxHealth = MAX_HEALTH, health = health });
+            if (netIdentity.isLocalPlayer) EventBus<OnHealthUpdate>.Invoke(new() { maxHealth = config.maxHealth, health = health });
+
+            _invincibleTimer = config.invincibleDuration;
         }
 
         public void TryUseItem()
@@ -128,6 +140,18 @@ namespace Game.Player
 
             if (NetworkServer.active) UseItem();
             else CmdUseItem();
+        }
+
+        private void Update()
+        {
+            if (!NetworkServer.active) return;
+
+            if (_invincibleTimer > 0f)
+            {
+                _invincibleTimer -= Time.deltaTime;
+                if (!invincible) invincible = true;
+            }
+            else if (invincible) invincible = false;
         }
 
         [Command]
@@ -155,6 +179,12 @@ namespace Game.Player
             motor.enabled = false;
         }
 
+        private void OnDestroy()
+        {
+            Debug.Log(this);
+            EventBus<OnDestroyPlayer>.Invoke(new());
+        }
+
         public void EnableMotor()
         {
             motor.enabled = true;
@@ -167,6 +197,12 @@ namespace Game.Player
             motor = GetComponent<KinematicCharacterMotor>();
         }
 
+        [Command]
+        private void CmdServerSyncedVelocity(Vector3 velocity)
+        {
+            serverSyncedVelocity = velocity;
+        }
+
         public void AfterCharacterUpdate(float deltaTime)
         {
             var drag = motor.GroundingStatus.IsStableOnGround ? config.groundAdditionalVelocityDrag : config.airAdditionalVelocityDrag;
@@ -174,6 +210,9 @@ namespace Game.Player
 
             if (new Vector2(_additionalVelocity.x, _additionalVelocity.z).magnitude <= 0.5f)
                 _additionalVelocity = Vector3.up * _additionalVelocity.y;
+
+            if (NetworkServer.active) serverSyncedVelocity = motor.Velocity;
+            else CmdServerSyncedVelocity(motor.Velocity);
         }
 
         private void CheckWalled()
@@ -503,7 +542,7 @@ namespace Game.Player
         }
 
         [TargetRpc]
-        private void TargetOnHit(NetworkConnectionToClient target)
+        public void TargetOnHit(NetworkConnectionToClient target)
         {
             EventBus<HitIndicatorRequest>.Invoke(new());
         }
@@ -512,15 +551,7 @@ namespace Game.Player
         {
             if (!NetworkServer.active) return;
 
-            if (other.TryGetComponent(out DamageDealer dealer))
-            {
-                if (dealer.owner == this) return;
-                var damage = dealer.EvaluateDamage(this);
-                health -= damage;
-                dealer.OnHit.Invoke(this, damage);
-                TargetOnHit(dealer.owner.netIdentity.connectionToClient);
-            }
-            else if (other.CompareTag("Box"))
+            if (other.CompareTag("Box"))
             {
                 if (itemIndex != -1) return;
                 NetworkServer.Destroy(other.gameObject);

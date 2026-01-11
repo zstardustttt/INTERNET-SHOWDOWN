@@ -8,33 +8,25 @@ namespace Game.Projectiles
     public class HuananV2Projectile : Projectile
     {
         public Rigidbody rb;
+        public BoxCollider bc;
         public float speed;
         public float rotationSpeed;
-        public float redirectionTimeWindow;
         public LayerMask layerMask;
         public Transform visual;
 
         [SyncVar] private Vector3 _direction;
-        private float _lifetime;
 
         public override void OnStartServer()
         {
-            _direction = transform.forward;
-        }
-
-        private void Update()
-        {
-            visual.Rotate(_direction, rotationSpeed * Time.deltaTime, Space.World);
-
-            if (!NetworkServer.active) return;
-
-            if (_lifetime <= redirectionTimeWindow && Physics.Raycast(owner.verticalOrientation.position, owner.verticalOrientation.forward, out var hitinfo, 1000f, layerMask, QueryTriggerInteraction.Ignore))
-            {
+            if (Physics.BoxCast(_owner.verticalOrientation.position, bc.size / 2f, _owner.verticalOrientation.forward, out var hitinfo, transform.rotation, 1000f, layerMask, QueryTriggerInteraction.Ignore))
                 _direction = (hitinfo.point - transform.position).normalized;
-            }
+            else _direction = transform.forward;
 
             rb.linearVelocity = _direction * speed;
-            _lifetime += Time.deltaTime;
+            foreach (var dealer in damageDealers)
+            {
+                dealer.velocity = rb.linearVelocity;
+            }
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -43,6 +35,11 @@ namespace Game.Projectiles
             NetworkServer.Destroy(gameObject);
         }
 
-        public override void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage) { }
+        protected override void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage) { }
+
+        protected override void OnUpdate()
+        {
+            visual.Rotate(_direction, rotationSpeed * Time.deltaTime, Space.World);
+        }
     }
 }

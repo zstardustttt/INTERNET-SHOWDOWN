@@ -171,7 +171,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 707b2e5609df8154280ceab2037660dd, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 707b2e5609df8154280ceab2037660dd, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.8
@@ -503,6 +503,7 @@ MonoBehaviour:
       m_Calls: []
   itemIndex: 0
   health: 0
+  serverSyncedVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &131148445153040676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -659,7 +660,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 385deff00993ff14ba4b19b1164988f2, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 385deff00993ff14ba4b19b1164988f2, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -1128,6 +1129,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1149,9 +1152,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &8118239298256943656
 GameObject:

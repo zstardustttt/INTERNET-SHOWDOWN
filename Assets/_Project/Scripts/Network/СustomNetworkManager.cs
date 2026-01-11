@@ -3,6 +3,7 @@ using Game.Core.Maps;
 using Game.Events.GameLoop;
 using Game.Events.MusicPlayer;
 using Game.Events.UI;
+using Game.Gameplay;
 using Game.Network.Messages;
 using Game.Player;
 using Mirror;
@@ -63,7 +64,7 @@ namespace Game.Network
                 if (!_portal) _portal = GameObject.FindGameObjectWithTag("Portal");
                 _portal.SetActive(data.state.phase != Gameplay.GamePhase.Break);
                 // mirror for some reason automaticly disables mesh renderer
-                _portal.GetComponent<MeshRenderer>().enabled = data.state.phase != Gameplay.GamePhase.Break;
+                _portal.GetComponent<MeshRenderer>().enabled = data.state.phase != GamePhase.Break;
             });
         }
     }

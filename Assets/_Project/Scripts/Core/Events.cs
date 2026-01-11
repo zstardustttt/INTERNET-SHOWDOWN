@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Game.Core.Events
 {
@@ -31,7 +30,7 @@ namespace Game.Core.Events
             var garbage = new Stack<Guid>();
             foreach (var listener in _listeners)
             {
-                if (listener.Value == null || listener.Value.Target.Equals(null))
+                if (listener.Value == null || listener.Value.Target == null || listener.Value.Target.Equals(null))
                 {
                     garbage.Push(listener.Key);
                     continue;

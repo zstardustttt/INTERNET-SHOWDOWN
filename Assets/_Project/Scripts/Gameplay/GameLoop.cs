@@ -89,8 +89,7 @@ namespace Game.Gameplay
             // Reset player stats
             foreach (var player in FindObjectsByType<PlayerBase>(FindObjectsSortMode.None))
             {
-                player.itemIndex = -1;
-                player.health = PlayerBase.MAX_HEALTH;
+                player.ResetPlayer();
             }
 
             state = new(GamePhase.Break, -1, -1, NetworkTime.time);

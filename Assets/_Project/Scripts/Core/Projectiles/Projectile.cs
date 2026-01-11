@@ -9,7 +9,8 @@ namespace Game.Core.Projectiles
     public abstract class Projectile : NetworkBehaviour
     {
         public List<DamageDealer> damageDealers = new();
-        protected PlayerBase owner;
+        protected PlayerBase _owner;
+        protected float _lifetime;
 
         [Server]
         public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation) where T : Projectile
@@ -19,7 +20,7 @@ namespace Game.Core.Projectiles
                 scene = MapLoader.loadedMap.scene,
             });
             var projectile = projectileObject.GetComponent<T>();
-            projectile.owner = owner;
+            projectile._owner = owner;
             foreach (var dealer in projectile.damageDealers)
             {
                 dealer.owner = owner;
@@ -30,6 +31,13 @@ namespace Game.Core.Projectiles
             return projectile;
         }
 
-        public abstract void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage);
+        protected abstract void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage);
+        protected abstract void OnUpdate();
+
+        private void Update()
+        {
+            OnUpdate();
+            _lifetime += Time.deltaTime;
+        }
     }
 }

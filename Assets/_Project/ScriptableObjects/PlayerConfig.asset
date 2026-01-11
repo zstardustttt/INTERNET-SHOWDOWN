@@ -209,3 +209,5 @@ MonoBehaviour:
   gravityClamp: -40
   groundAdditionalVelocityDrag: 7
   airAdditionalVelocityDrag: 1.8
+  maxHealth: 100
+  invincibleDuration: 0.25

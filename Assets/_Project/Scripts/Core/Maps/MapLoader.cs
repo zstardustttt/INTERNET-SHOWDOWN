@@ -1,8 +1,14 @@
+using System;
 using System.Collections.Generic;
+using Game.Core.Events;
+using Game.Events.Player;
 using Game.Network.Messages;
+using Game.Player;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+using Object = UnityEngine.Object;
 
 namespace Game.Core.Maps
 {
@@ -11,6 +17,7 @@ namespace Game.Core.Maps
         public Scene scene;
         public MapInfo info;
         public MapConfig config;
+        public List<PlayerBase> players;
     }
 
     // Only server should interact with this class
@@ -21,6 +28,7 @@ namespace Game.Core.Maps
     public static class MapLoader
     {
         public static Map loadedMap;
+        private static Guid _onDestroyPlayerListenerGuid;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Reset()
@@ -32,15 +40,33 @@ namespace Game.Core.Maps
         public static void Init()
         {
             SceneManager.sceneLoaded += SceneLoaded;
+            _onDestroyPlayerListenerGuid = EventBus<OnDestroyPlayer>.Listen((_) => CleanupDestroyedPlayer());
+        }
+
+        [Server]
+        private static void CleanupDestroyedPlayer()
+        {
+            if (loadedMap == null) return;
+
+            var index = 0;
+            for (int i = 0; i < loadedMap.players.Count; i++)
+            {
+                if (loadedMap.players[i]) continue;
+                index = i;
+                break;
+            }
+
+            loadedMap.players.RemoveAt(index);
         }
 
         [Server]
         public static bool TryMoveGameObjectToMap(GameObject go)
         {
-            if (loadedMap == null || !loadedMap.scene.IsValid())
+            if (loadedMap == null || !loadedMap.scene.IsValid() || go.scene == loadedMap.scene)
                 return false;
 
             SceneManager.MoveGameObjectToScene(go, loadedMap.scene);
+            if (go.TryGetComponent(out PlayerBase player)) loadedMap.players.Add(player);
             return true;
         }
 
@@ -48,6 +74,8 @@ namespace Game.Core.Maps
         public static void Stop()
         {
             SceneManager.sceneLoaded -= SceneLoaded;
+            EventBus<OnDestroyPlayer>.TryCancel(_onDestroyPlayerListenerGuid);
+            loadedMap = null;
         }
 
         private static void SceneLoaded(Scene scene, LoadSceneMode mode)
@@ -72,7 +100,7 @@ namespace Game.Core.Maps
                 return;
             }
 
-            loadedMap = new() { config = config };
+            loadedMap = new() { config = config, players = new() };
             SceneManager.LoadScene(config.name, LoadSceneMode.Additive);
         }
 
