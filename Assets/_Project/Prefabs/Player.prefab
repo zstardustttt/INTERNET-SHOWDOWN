@@ -504,6 +504,7 @@ MonoBehaviour:
   itemIndex: 0
   health: 0
   serverSyncedVelocity: {x: 0, y: 0, z: 0}
+  invincible: 0
 --- !u!114 &131148445153040676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -545,7 +546,7 @@ MonoBehaviour:
   MaxStableSlopeAngle: 60
   StableGroundLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2112
   DiscreteCollisionEvents: 1
   StepHandling: 1
   MaxStepHeight: 0.5

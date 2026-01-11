@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 273174652535862283}
   - component: {fileID: 5489587520539320565}
   - component: {fileID: 1883514014839083879}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -197,7 +197,7 @@ MonoBehaviour:
   rotationSpeed: 1000
   layerMask:
     serializedVersion: 2
-    m_Bits: 65
+    m_Bits: 2112
   visual: {fileID: 273174652535862283}
 --- !u!114 &622206802672343649
 MonoBehaviour:
@@ -301,7 +301,7 @@ GameObject:
   - component: {fileID: 2927502563903352106}
   - component: {fileID: 6480257299289842357}
   - component: {fileID: 1638724938105410804}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: HitBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
