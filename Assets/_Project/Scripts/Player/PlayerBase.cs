@@ -146,12 +146,24 @@ namespace Game.Player
         {
             if (!NetworkServer.active) return;
 
+            // Handle invincibility
             if (_invincibleTimer > 0f)
             {
                 _invincibleTimer -= Time.deltaTime;
                 if (!invincible) invincible = true;
             }
             else if (invincible) invincible = false;
+
+            // Teleport back if clipped out of bounds
+            if (transform.position.y < -100f)
+            {
+                if (MapLoader.loadedMap != null)
+                {
+                    var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
+                    netIdentity.connectionToClient.Send<ServerMovePlayer>(new() { position = position });
+                }
+                else netIdentity.connectionToClient.Send<ServerMovePlayer>(new() { position = Vector3.zero });
+            }
         }
 
         [Command]
