@@ -6,6 +6,9 @@ using Game.Events.BoxSpawner;
 using Mirror;
 using UnityEngine;
 using Game.Player;
+using System.Linq;
+
+using Random = UnityEngine.Random;
 
 namespace Game.Gameplay
 {
@@ -48,6 +51,8 @@ namespace Game.Gameplay
         public float matchDuration;
 
         [SyncVar(hook = nameof(OnStateChanged)), ReadOnly] public GameState state;
+
+        private GameState _lastMatchState;
 
         private void OnStateChanged(GameState old, GameState _new)
         {
@@ -98,17 +103,28 @@ namespace Game.Gameplay
         [Server]
         private void EnterPreparation()
         {
-            var idx = UnityEngine.Random.Range(0, MapPool.maps.Length);
-            var conf = MapPool.maps[idx];
+            var mapIdx = Random.Range(0, MapPool.maps.Length);
+            var conf = MapPool.maps[mapIdx];
             MapLoader.Load(conf);
 
-            state = new(GamePhase.Preparation, idx, UnityEngine.Random.Range(0, conf.soundtracks.Length), NetworkTime.time);
+            int soundtrackIdx;
+            if (mapIdx == _lastMatchState.mapIndex)
+            {
+                var newSoundtrackPool = conf.soundtracks.Where((_, idx) => idx != _lastMatchState.soundtrackIndex).ToArray();
+                soundtrackIdx = Array.IndexOf(conf.soundtracks, newSoundtrackPool[Random.Range(0, newSoundtrackPool.Length)]);
+            }
+            else soundtrackIdx = Random.Range(0, conf.soundtracks.Length);
+
+            state = new(GamePhase.Preparation, mapIdx, soundtrackIdx, NetworkTime.time);
+            _lastMatchState = state;
         }
 
         [Server]
         private void EnterMatch()
         {
             state = new(GamePhase.Match, state.mapIndex, state.soundtrackIndex, state.timerBeginTime);
+            _lastMatchState = state;
+
             EventBus<SetBoxSpawnerActive>.Invoke(new() { active = true });
         }
     }
