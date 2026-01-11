@@ -197,7 +197,7 @@ MonoBehaviour:
   groundSlamForceInterpolationDistance: 20
   wallLayers:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 2048
   wallDetectionDistance: 0.05
   wallCheckRayCount: 8
   slidingDownSpeed: 1
