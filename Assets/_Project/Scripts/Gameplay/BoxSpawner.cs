@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Events.BoxSpawner;
-using KinematicCharacterController;
 using Mirror;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Game.Gameplay
 {

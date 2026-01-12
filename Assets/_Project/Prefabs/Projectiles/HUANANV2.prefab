@@ -191,6 +191,7 @@ MonoBehaviour:
   syncInterval: 0
   damageDealers:
   - {fileID: 1638724938105410804}
+  spawnedLocally: 0
   rb: {fileID: 2459362012733599560}
   bc: {fileID: 1653252554747909041}
   speed: 90
@@ -353,6 +354,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b6ac8510fb386459347986532adcad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   owner: {fileID: 0}
   coll: {fileID: 6480257299289842357}
   velocity: {x: 0, y: 0, z: 0}

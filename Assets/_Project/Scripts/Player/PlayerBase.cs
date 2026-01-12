@@ -1,11 +1,8 @@
-using System.Collections.Generic;
 using Game.Core.Events;
 using Game.Core.Items;
 using Game.Core.Maps;
-using Game.Core.Projectiles;
 using Game.Events.Player;
 using Game.Events.UI;
-using Game.Gameplay;
 using Game.Network.Messages;
 using KinematicCharacterController;
 using Mirror;
@@ -14,6 +11,12 @@ using UnityEngine.Events;
 
 namespace Game.Player
 {
+    public struct ServerSyncedMotorData
+    {
+        public Vector3 goalPosition;
+        public float deltaTime;
+    }
+
     [RequireComponent(typeof(KinematicCharacterMotor))]
     public class PlayerBase : NetworkBehaviour, ICharacterController
     {
@@ -86,10 +89,19 @@ namespace Game.Player
         private Item _item;
 
         [SyncVar(hook = nameof(OnHealthChange))] public float health;
-        public Vector3 serverSyncedVelocity;
 
         [SyncVar] public bool invincible;
         private float _invincibleTimer; // server only
+
+        public ServerSyncedMotorData serverSyncedMotorData;
+        [Command]
+        private void CmdSendMotorData(ServerSyncedMotorData data)
+        {
+            serverSyncedMotorData = data;
+        }
+
+        public Vector3 serverObservedVelocity;
+        private Vector3 _previousGoalPosition;
 
         [Server]
         public void ResetPlayer()
@@ -101,11 +113,6 @@ namespace Game.Player
         public override void OnStartServer()
         {
             ResetPlayer();
-
-            var rb = gameObject.AddComponent<Rigidbody>();
-            rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-            rb.useGravity = false;
-            rb.constraints = RigidbodyConstraints.FreezeAll;
         }
 
         private void OnItemChange(int old, int _new)
@@ -151,6 +158,14 @@ namespace Game.Player
 
             if (NetworkServer.active) UseItem(ctx);
             else CmdUseItem(ctx);
+        }
+
+        private void FixedUpdate()
+        {
+            if (!NetworkServer.active) return;
+
+            serverObservedVelocity = (serverSyncedMotorData.goalPosition - _previousGoalPosition) / serverSyncedMotorData.deltaTime;
+            _previousGoalPosition = serverSyncedMotorData.goalPosition;
         }
 
         private void Update()
@@ -205,7 +220,6 @@ namespace Game.Player
 
         private void OnDestroy()
         {
-            Debug.Log(this);
             EventBus<OnDestroyPlayer>.Invoke(new());
         }
 
@@ -221,12 +235,6 @@ namespace Game.Player
             motor = GetComponent<KinematicCharacterMotor>();
         }
 
-        [Command]
-        private void CmdServerSyncedVelocity(Vector3 velocity)
-        {
-            serverSyncedVelocity = velocity;
-        }
-
         public void AfterCharacterUpdate(float deltaTime)
         {
             var drag = motor.GroundingStatus.IsStableOnGround ? config.groundAdditionalVelocityDrag : config.airAdditionalVelocityDrag;
@@ -235,8 +243,14 @@ namespace Game.Player
             if (new Vector2(_additionalVelocity.x, _additionalVelocity.z).magnitude <= 0.5f)
                 _additionalVelocity = Vector3.up * _additionalVelocity.y;
 
-            if (NetworkServer.active) serverSyncedVelocity = motor.Velocity;
-            else CmdServerSyncedVelocity(motor.Velocity);
+            var motorData = new ServerSyncedMotorData()
+            {
+                goalPosition = motor.TransientPosition,
+                deltaTime = deltaTime,
+            };
+
+            if (NetworkServer.active) serverSyncedMotorData = motorData;
+            else CmdSendMotorData(motorData);
         }
 
         private void CheckWalled()
@@ -569,18 +583,6 @@ namespace Game.Player
         public void TargetOnHit(NetworkConnectionToClient target)
         {
             EventBus<HitIndicatorRequest>.Invoke(new());
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            if (!NetworkServer.active) return;
-
-            if (other.CompareTag("Box"))
-            {
-                if (itemIndex != -1) return;
-                NetworkServer.Destroy(other.gameObject);
-                itemIndex = Random.Range(0, ItemPool.items.Length);
-            }
         }
 
         private void OnDrawGizmos()

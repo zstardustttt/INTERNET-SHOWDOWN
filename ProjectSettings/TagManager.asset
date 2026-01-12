@@ -5,7 +5,6 @@ TagManager:
   serializedVersion: 3
   tags:
   - Portal
-  - Box
   layers:
   - Default
   - TransparentFX
@@ -19,8 +18,8 @@ TagManager:
   - DamageDealer
   - Projectile
   - Enviroment
-  - 
-  - 
+  - PlayerCheckingForHit
+  - Box
   - 
   - 
   - 

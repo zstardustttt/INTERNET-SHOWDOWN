@@ -59,10 +59,10 @@ namespace Game.Network
 
             EventBus<OnGameStateChange>.Listen((data) =>
             {
-                if (data.state.phase == Gameplay.GamePhase.Break) EventBus<StopMatchMusic>.Invoke(new());
+                if (data.state.phase == GamePhase.Break) EventBus<StopMatchMusic>.Invoke(new());
 
                 if (!_portal) _portal = GameObject.FindGameObjectWithTag("Portal");
-                _portal.SetActive(data.state.phase != Gameplay.GamePhase.Break);
+                _portal.SetActive(data.state.phase != GamePhase.Break);
                 // mirror for some reason automaticly disables mesh renderer
                 _portal.GetComponent<MeshRenderer>().enabled = data.state.phase != GamePhase.Break;
             });

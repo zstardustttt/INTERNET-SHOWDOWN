@@ -2,7 +2,6 @@ using Game.Core.Items;
 using Game.Core.Projectiles;
 using Game.Player;
 using Game.Projectiles;
-using Mirror;
 using UnityEngine;
 
 namespace Game.Items
