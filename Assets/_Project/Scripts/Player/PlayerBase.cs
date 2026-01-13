@@ -164,8 +164,6 @@ namespace Game.Player
         {
             if (!NetworkServer.active) return;
 
-            if (MapLoader.loadedMap != null && MapLoader.loadedMap.players.Count > 0) motor.SetPosition(motor.TransientPosition + Vector3.right * Mathf.Sin(Time.time) * Time.deltaTime * 10f);
-
             // Handle invincibility
             if (_invincibleTimer > 0f)
             {
