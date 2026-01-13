@@ -9,9 +9,11 @@ namespace Game.Core.Projectiles
     [RequireComponent(typeof(Collider))]
     public abstract class DamageDealer : MonoBehaviour
     {
+        public Vector3 previousObservedPosition;
+        public Vector3 observedDelta;
+
         public PlayerBase owner;
         public Collider coll;
-        public Vector3 velocity;
 
         public UnityEvent<PlayerBase, float> OnHit = new();
         public abstract float EvaluateDamage(PlayerBase player);

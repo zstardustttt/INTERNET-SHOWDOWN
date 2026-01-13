@@ -1,7 +1,6 @@
 using UnityEngine;
 using Game.Core.Projectiles;
 using System.Collections.Generic;
-using System;
 using Game.Core.Events;
 using Game.Events.HitWatcher;
 using Game.Core.Maps;
@@ -16,79 +15,103 @@ namespace Game.Gameplay
     {
         public LayerMask playerDealerCheckLayerMask;
         public LayerMask playerBoxCheckLayerMask;
+        public float castMargin;
 
         private List<DamageDealer> _dealers;
-
-        private Guid _onDamageDealerCreateListenerGuid;
-        private Guid _onDamageDealerDestroyListenerGuid;
 
         public void Awake()
         {
             _dealers = new();
 
-            _onDamageDealerCreateListenerGuid = EventBus<OnDamageDealerCreate>.Listen((data) => _dealers.Add(data.dealer));
-            _onDamageDealerDestroyListenerGuid = EventBus<OnDamageDealerDestroy>.Listen((data) => _dealers.Remove(data.dealer));
+            EventBus<OnDamageDealerCreate>.Listen((data) => _dealers.Add(data.dealer));
+            EventBus<OnDamageDealerDestroy>.Listen((data) => _dealers.Remove(data.dealer));
+            EventBus<RequestTwoPointsDealerCheck>.Listen((data) => TwoPointsDealerCheck(data.dealer, data.point1, data.point2));
         }
 
-        public void OnDestroy()
-        {
-            EventBus<OnDamageDealerCreate>.TryCancel(_onDamageDealerCreateListenerGuid);
-            EventBus<OnDamageDealerDestroy>.TryCancel(_onDamageDealerDestroyListenerGuid);
-        }
-
-        private void FixedUpdate()
+        private void Update()
         {
             if (MapLoader.loadedMap == null) return;
             var players = MapLoader.loadedMap.players;
 
             foreach (var player in players)
             {
+                player.observedDelta = player.transform.position - player.previousObservedPosition;
+
                 foreach (var dealer in _dealers)
                 {
+                    dealer.observedDelta = dealer.transform.position - dealer.previousObservedPosition;
                     if (player.invincible) break;
                     if (dealer.owner == player) continue;
-                    PlayerDealerCheck(player, dealer);
+
+                    PlayerDealerCheck(player, dealer, dealer.previousObservedPosition, dealer.observedDelta);
                 }
 
-                if (player.itemIndex != -1) continue;
-                var box = PlayerBoxCheck(player);
-                if (box)
+                if (player.itemIndex == -1 && PlayerBoxCheck(player, out var box))
                 {
                     player.itemIndex = Random.Range(0, ItemPool.items.Length);
                     NetworkServer.Destroy(box);
                 }
+
+                player.previousObservedPosition = player.transform.position;
+            }
+
+            foreach (var dealer in _dealers)
+            {
+                dealer.previousObservedPosition = dealer.transform.position;
             }
         }
 
-        private GameObject PlayerBoxCheck(PlayerBase player)
+        private bool PlayerBoxCheck(PlayerBase player, out GameObject box)
         {
             var radius = player.motor.Capsule.radius;
-            var p1 = player.transform.position + Vector3.up * radius;
-            var p2 = player.transform.position + Vector3.up * (player.motor.Capsule.height - radius);
-            var velDir = player.serverObservedVelocity.normalized;
-            var delta = player.serverObservedVelocity.magnitude * Time.fixedDeltaTime;
+
+            var pos = player.previousObservedPosition;
+            var p1 = pos + Vector3.up * radius;
+            var p2 = pos + Vector3.up * (player.motor.Capsule.height - radius);
+
+            var velDir = player.observedDelta.normalized;
+            var delta = player.observedDelta.magnitude + castMargin;
 
             if (!Physics.CapsuleCast(p1, p2, radius, velDir, out var hit, delta, playerBoxCheckLayerMask, QueryTriggerInteraction.Collide))
-                return null;
+            {
+                box = null;
+                return false;
+            }
 
-            return hit.collider.gameObject;
+            box = hit.collider.gameObject;
+            return true;
         }
 
-        private void PlayerDealerCheck(PlayerBase player, DamageDealer dealer)
+        public void TwoPointsDealerCheck(DamageDealer dealer, Vector3 point1, Vector3 point2)
+        {
+            if (MapLoader.loadedMap == null) return;
+            var players = MapLoader.loadedMap.players;
+
+            foreach (var player in players)
+            {
+                if (player.invincible || dealer.owner == player) continue;
+                PlayerDealerCheck(player, dealer, point1, point2 - point1);
+            }
+        }
+
+        public void PlayerDealerCheck(PlayerBase player, DamageDealer dealer, Vector3 dealerPosition, Vector3 dealerDelta)
         {
             player.gameObject.layer = LayerMask.NameToLayer("PlayerCheckingForHit");
+            InsidePlayerDealerCheck(player, dealer, dealerPosition, dealerDelta);
+            player.gameObject.layer = LayerMask.NameToLayer("Player");
+        }
 
-            var relativeVel = dealer.velocity - player.serverObservedVelocity;
-            var delta = relativeVel * Time.fixedDeltaTime;
-
-            var deltaLength = delta.magnitude;
+        private void InsidePlayerDealerCheck(PlayerBase player, DamageDealer dealer, Vector3 dealerPosition, Vector3 dealerDelta)
+        {
+            var delta = dealerDelta - player.observedDelta;
+            var deltaLength = delta.magnitude + castMargin;
 
             bool didHit;
             RaycastHit hit;
             if (dealer.coll is BoxCollider bc)
-                didHit = Physics.BoxCast(dealer.transform.position, bc.size / 2f, delta.normalized, out hit, bc.transform.rotation, deltaLength, playerDealerCheckLayerMask);
+                didHit = Physics.BoxCast(dealerPosition, bc.size / 2f, delta.normalized, out hit, bc.transform.rotation, deltaLength, playerDealerCheckLayerMask);
             else if (dealer.coll is SphereCollider sc)
-                didHit = Physics.SphereCast(dealer.transform.position, sc.radius, delta.normalized, out hit, deltaLength, playerDealerCheckLayerMask);
+                didHit = Physics.SphereCast(dealerPosition, sc.radius, delta.normalized, out hit, deltaLength, playerDealerCheckLayerMask);
             else
             {
                 Debug.LogError("Collider not supported");
@@ -96,15 +119,18 @@ namespace Game.Gameplay
             }
 
             if (!didHit) return;
-            var hitPoint = Vector3.Lerp(dealer.transform.position, dealer.transform.position + dealer.velocity * Time.fixedDeltaTime, hit.distance / deltaLength);
+            var hitPoint = Vector3.Lerp(dealerPosition, dealerPosition + dealerDelta, hit.distance / deltaLength);
+            RegisterHit(player, dealer, hitPoint);
+        }
+
+        private void RegisterHit(PlayerBase player, DamageDealer dealer, Vector3 point)
+        {
             var damage = dealer.EvaluateDamage(player);
             player.health -= damage;
             dealer.OnHit.Invoke(player, damage);
             player.TargetOnHit(dealer.owner.netIdentity.connectionToClient);
 
-            Debug.Log($"Hit! {hit.collider.gameObject.name} {hitPoint}");
-
-            player.gameObject.layer = LayerMask.NameToLayer("Player");
+            Debug.Log($"Hit! on: {player.gameObject.name} by: {dealer.owner.gameObject.name} at: {point}");
         }
     }
 }

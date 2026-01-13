@@ -45,10 +45,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMethod: 0
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
   target: {fileID: 3680185766853478931}
+  updateMethod: 0
   syncPosition: 0
   syncRotation: 1
   syncScale: 0
@@ -63,7 +65,6 @@ MonoBehaviour:
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
   onlySyncOnChangeCorrectionMultiplier: 2
-  useFixedUpdate: 0
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
@@ -114,7 +115,6 @@ GameObject:
   - component: {fileID: 7577474330787343693}
   - component: {fileID: 1865474024570232992}
   - component: {fileID: 8212671770874678273}
-  - component: {fileID: 1766194154013426237}
   m_Layer: 6
   m_Name: AI Player
   m_TagString: Untagged
@@ -174,12 +174,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 324c322c0c6e2d343b479dd82503b568, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMethod: 0
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
   config: {fileID: 11400000, guid: 6557f4f69351e73429465a2a5dfea442, type: 2}
   motor: {fileID: 3950817668011449501}
-  orientation: {fileID: 3680185766853478931}
+  horizontalOrientation: {fileID: 0}
+  verticalOrientation: {fileID: 0}
+  itemHolder: {fileID: 0}
   onGroundSlamLanded:
     m_PersistentCalls:
       m_Calls: []
@@ -198,6 +201,10 @@ MonoBehaviour:
   onCollide:
     m_PersistentCalls:
       m_Calls: []
+  itemIndex: 0
+  health: 0
+  invincible: 0
+  serverObservedVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &3950817668011449501
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,6 +259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21b6d19da8d659e40b40d47765ff4fc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMethod: 0
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
@@ -285,10 +293,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMethod: 0
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
   target: {fileID: 1071334881700469857}
+  updateMethod: 0
   syncPosition: 1
   syncRotation: 0
   syncScale: 0
@@ -303,7 +313,6 @@ MonoBehaviour:
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
   onlySyncOnChangeCorrectionMultiplier: 2
-  useFixedUpdate: 0
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
@@ -319,6 +328,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e6c71d72c2e1d44cbf753423f77bc0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMethod: 0
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
@@ -326,22 +336,6 @@ MonoBehaviour:
   config: {fileID: 11400000, guid: 78903821474925b4bb25818b3f68d3a8, type: 2}
   audioSourcesContainer: {fileID: 1667727072404578730}
   movement: {fileID: 3239512971672948937}
---- !u!114 &1766194154013426237
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6716480039818249771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c00d19c9abf83b4d8e24edfe6caaebe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  hasItem: 0
 --- !u!1 &7424654038672975330
 GameObject:
   m_ObjectHideFlags: 0
@@ -403,6 +397,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -424,7 +420,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}

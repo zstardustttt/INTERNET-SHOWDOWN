@@ -101,6 +101,9 @@ MonoBehaviour:
   syncInterval: 0
   damageDealers:
   - {fileID: 1638724938105410804}
+  spawnPosition: {x: 0, y: 0, z: 0}
+  spawnRotation: {x: 0, y: 0, z: 0, w: 0}
+  spawnTime: 0
   rb: {fileID: 2459362012733599560}
   bc: {fileID: 1653252554747909041}
   speed: 100
@@ -249,7 +252,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 0.5}
+  m_Size: {x: 1.1, y: 1.1, z: 0.6}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1638724938105410804
 MonoBehaviour:
@@ -263,9 +266,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b6ac8510fb386459347986532adcad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  previousObservedPosition: {x: 0, y: 0, z: 0}
+  observedDelta: {x: 0, y: 0, z: 0}
   owner: {fileID: 0}
   coll: {fileID: 6480257299289842357}
-  velocity: {x: 0, y: 0, z: 0}
   OnHit:
     m_PersistentCalls:
       m_Calls: []

@@ -1017,6 +1017,7 @@ MonoBehaviour:
   playerBoxCheckLayerMask:
     serializedVersion: 2
     m_Bits: 8192
+  castMargin: 0.1
 --- !u!4 &2014211290
 Transform:
   m_ObjectHideFlags: 0

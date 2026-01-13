@@ -1,11 +1,13 @@
+using Game.Core.Events;
 using Game.Core.Projectiles;
+using Game.Events.HitWatcher;
 using Game.Player;
 using Mirror;
 using UnityEngine;
 
 namespace Game.Projectiles
 {
-    public class HuananV2Projectile : Projectile
+    public class HuananV2Projectile : PredictableProjectile
     {
         public Rigidbody rb;
         public BoxCollider bc;
@@ -13,13 +15,21 @@ namespace Game.Projectiles
         public float rotationSpeed;
         public Transform visual;
 
-        public override void OnStartServer()
+        public override void Init()
         {
             rb.linearVelocity = transform.forward * speed;
+            var prediction = Predict((float)(NetworkTime.time - spawnTime));
+
             foreach (var dealer in damageDealers)
             {
-                dealer.velocity = rb.linearVelocity;
+                EventBus<RequestTwoPointsDealerCheck>.Invoke(new()
+                {
+                    dealer = dealer,
+                    point1 = spawnPosition,
+                    point2 = prediction.position,
+                });
             }
+            transform.position = prediction.position;
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -33,6 +43,19 @@ namespace Game.Projectiles
         protected override void OnUpdate()
         {
             visual.Rotate(transform.forward, rotationSpeed * Time.deltaTime, Space.World);
+        }
+
+        public override ProjectilePredictionData Predict(float timePassed)
+        {
+            var velocity = speed * transform.forward;
+            var predictedPos = spawnPosition + velocity * timePassed;
+
+            return new()
+            {
+                position = predictedPos,
+                rotation = spawnRotation,
+                velocity = velocity,
+            };
         }
     }
 }

@@ -11,12 +11,6 @@ using UnityEngine.Events;
 
 namespace Game.Player
 {
-    public struct ServerSyncedMotorData
-    {
-        public Vector3 goalPosition;
-        public float deltaTime;
-    }
-
     [RequireComponent(typeof(KinematicCharacterMotor))]
     public class PlayerBase : NetworkBehaviour, ICharacterController
     {
@@ -93,15 +87,8 @@ namespace Game.Player
         [SyncVar] public bool invincible;
         private float _invincibleTimer; // server only
 
-        public ServerSyncedMotorData serverSyncedMotorData;
-        [Command]
-        private void CmdSendMotorData(ServerSyncedMotorData data)
-        {
-            serverSyncedMotorData = data;
-        }
-
-        public Vector3 serverObservedVelocity;
-        private Vector3 _previousGoalPosition;
+        public Vector3 previousObservedPosition;
+        public Vector3 observedDelta;
 
         [Server]
         public void ResetPlayer()
@@ -144,7 +131,11 @@ namespace Game.Player
                 ResetPlayer();
             }
 
-            if (netIdentity.isLocalPlayer) EventBus<OnHealthUpdate>.Invoke(new() { maxHealth = config.maxHealth, health = health });
+            if (netIdentity.isLocalPlayer)
+            {
+                EventBus<OnHealthUpdate>.Invoke(new() { maxHealth = config.maxHealth, health = health });
+                if (_new < old) EventBus<DamageIndicatorRequest>.Invoke(new());
+            }
 
             _invincibleTimer = config.invincibleDuration;
         }
@@ -162,23 +153,18 @@ namespace Game.Player
                 headRotation = verticalOrientation.rotation,
                 crosshairHitPoint = hitInfo.point,
                 crosshairHit = crosshairHit,
+                useTime = NetworkTime.time,
             };
 
             if (NetworkServer.active) UseItem(ctx);
             else CmdUseItem(ctx);
         }
 
-        private void FixedUpdate()
-        {
-            if (!NetworkServer.active) return;
-
-            serverObservedVelocity = (serverSyncedMotorData.goalPosition - _previousGoalPosition) / serverSyncedMotorData.deltaTime;
-            _previousGoalPosition = serverSyncedMotorData.goalPosition;
-        }
-
         private void Update()
         {
             if (!NetworkServer.active) return;
+
+            if (MapLoader.loadedMap != null && MapLoader.loadedMap.players.Count > 0) motor.SetPosition(motor.TransientPosition + Vector3.right * Mathf.Sin(Time.time) * Time.deltaTime * 10f);
 
             // Handle invincibility
             if (_invincibleTimer > 0f)
@@ -250,15 +236,6 @@ namespace Game.Player
 
             if (new Vector2(_additionalVelocity.x, _additionalVelocity.z).magnitude <= 0.5f)
                 _additionalVelocity = Vector3.up * _additionalVelocity.y;
-
-            var motorData = new ServerSyncedMotorData()
-            {
-                goalPosition = motor.TransientPosition,
-                deltaTime = deltaTime,
-            };
-
-            if (NetworkServer.active) serverSyncedMotorData = motorData;
-            else CmdSendMotorData(motorData);
         }
 
         private void CheckWalled()

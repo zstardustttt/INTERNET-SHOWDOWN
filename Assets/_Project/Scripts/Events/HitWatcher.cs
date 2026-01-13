@@ -1,5 +1,6 @@
 using Game.Core.Events;
 using Game.Core.Projectiles;
+using UnityEngine;
 
 namespace Game.Events.HitWatcher
 {
@@ -11,5 +12,12 @@ namespace Game.Events.HitWatcher
     public struct OnDamageDealerDestroy : IEvent
     {
         public DamageDealer dealer;
+    }
+
+    public struct RequestTwoPointsDealerCheck : IEvent
+    {
+        public DamageDealer dealer;
+        public Vector3 point1;
+        public Vector3 point2;
     }
 }

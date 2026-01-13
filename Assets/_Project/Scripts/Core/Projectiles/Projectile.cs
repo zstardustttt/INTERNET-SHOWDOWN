@@ -11,6 +11,8 @@ namespace Game.Core.Projectiles
         public List<DamageDealer> damageDealers = new();
         protected PlayerBase _owner;
         protected float _lifetime;
+        public Vector3 spawnPosition;
+        public Quaternion spawnRotation;
 
         [Server]
         public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation) where T : Projectile
@@ -23,6 +25,9 @@ namespace Game.Core.Projectiles
             });
             var projectile = projectileObject.GetComponent<T>();
             projectile._owner = owner;
+            projectile.spawnPosition = position;
+            projectile.spawnRotation = rotation;
+
             foreach (var dealer in projectile.damageDealers)
             {
                 dealer.owner = owner;
@@ -35,6 +40,8 @@ namespace Game.Core.Projectiles
 
         protected abstract void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage);
         protected abstract void OnUpdate();
+
+        public abstract void Init();
 
         private void Update()
         {

@@ -10,4 +10,5 @@ namespace Game.Events.UI
     }
 
     public struct HitIndicatorRequest : IEvent { }
+    public struct DamageIndicatorRequest : IEvent { }
 }

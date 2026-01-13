@@ -14,6 +14,7 @@ namespace Game.UI.Game
         public CanvasGroup canvasGroup;
         public Slider health;
         public CanvasGroup hitIndicator;
+        public CanvasGroup damageIndicator;
 
         private GameState _gameState;
         private bool _uiSwitchRequested;
@@ -38,6 +39,7 @@ namespace Game.UI.Game
 
             EventBus<OnHealthUpdate>.Listen(OnHealthUpdate);
             EventBus<HitIndicatorRequest>.Listen((_) => HitIndicatorAnimation());
+            EventBus<DamageIndicatorRequest>.Listen((_) => DamageIndicatorAnimation());
         }
 
         private void HitIndicatorAnimation()
@@ -46,12 +48,28 @@ namespace Game.UI.Game
             StartCoroutine(nameof(CO_HitIndicatorAnimation));
         }
 
+        private void DamageIndicatorAnimation()
+        {
+            StopCoroutine(nameof(CO_DamageIndicatorAnimation));
+            StartCoroutine(nameof(CO_DamageIndicatorAnimation));
+        }
+
         private IEnumerator CO_HitIndicatorAnimation()
         {
             hitIndicator.alpha = 1f;
             while (hitIndicator.alpha > 0f)
             {
                 hitIndicator.alpha -= Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        private IEnumerator CO_DamageIndicatorAnimation()
+        {
+            damageIndicator.alpha = 1f;
+            while (damageIndicator.alpha > 0f)
+            {
+                damageIndicator.alpha -= Time.deltaTime;
                 yield return null;
             }
         }

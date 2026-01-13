@@ -10,5 +10,6 @@ namespace Game.Core.Items
         public Quaternion headRotation;
         public Vector3 crosshairHitPoint;
         public bool crosshairHit;
+        public double useTime;
     }
 }
