@@ -122,7 +122,15 @@ namespace Game.Player
             if (_new != -1)
             {
                 _item = Instantiate(ItemPool.items[itemIndex].prefab, itemHolder).GetComponent<Item>();
-                if (isLocalPlayer) _item.gameObject.layer = LayerMask.NameToLayer("ItemVisual");
+                if (isLocalPlayer)
+                {
+                    var layer = LayerMask.NameToLayer("ItemVisual");
+                    var children = _item.GetComponentsInChildren<Transform>(includeInactive: true);
+                    foreach (var child in children)
+                    {
+                        child.gameObject.layer = layer;
+                    }
+                }
             }
         }
 

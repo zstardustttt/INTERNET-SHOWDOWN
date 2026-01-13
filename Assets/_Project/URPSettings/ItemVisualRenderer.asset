@@ -18,7 +18,7 @@ MonoBehaviour:
     thickness: 0.3
     depthStrength: 1
     depthThickness: 50
-    depthThreshold: 1
+    depthThreshold: 50
     colorStrength: 0
     colorThickness: 50
     colorThreshold: 0.5

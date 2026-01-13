@@ -504,8 +504,8 @@ MonoBehaviour:
       m_Calls: []
   itemIndex: 0
   health: 0
-  serverSyncedVelocity: {x: 0, y: 0, z: 0}
   invincible: 0
+  serverObservedVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &131148445153040676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1085,7 +1085,7 @@ Transform:
   m_GameObject: {fileID: 6974872815570407202}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.52, y: -0.17, z: 0.81}
+  m_LocalPosition: {x: 0.66, y: -0.2, z: 1.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
