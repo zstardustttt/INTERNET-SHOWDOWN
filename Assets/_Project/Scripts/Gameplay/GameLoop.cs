@@ -91,10 +91,11 @@ namespace Game.Gameplay
             EventBus<SetBoxSpawnerActive>.Invoke(new() { active = false });
             MapLoader.Unload();
 
-            // Reset player stats
+            // Reset player & player stats
             foreach (var player in FindObjectsByType<PlayerBase>(FindObjectsSortMode.None))
             {
                 player.ResetPlayer();
+                player.ResetStats();
             }
 
             state = new(GamePhase.Break, -1, -1, NetworkTime.time);

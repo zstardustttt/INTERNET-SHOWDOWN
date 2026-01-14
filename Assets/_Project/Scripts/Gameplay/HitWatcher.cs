@@ -20,6 +20,7 @@ namespace Game.Gameplay
 
         private List<DamageDealer> _dealers;
         private CapsuleCollider _playerColliderForChecking;
+        private bool _registeredHitsThisUpdate;
 
         public void Awake()
         {
@@ -51,6 +52,7 @@ namespace Game.Gameplay
 
             foreach (var player in players)
             {
+                if (!player) continue;
                 player.observedDelta = player.transform.position - player.previousObservedPosition;
 
                 foreach (var dealer in _dealers)
@@ -77,6 +79,12 @@ namespace Game.Gameplay
                 if (dealer.singleHitScan && dealer.hitScanCount > 0) continue;
                 dealer.hitScanCount++;
             }
+
+            if (_registeredHitsThisUpdate)
+            {
+                EventBus<OnHitsRegisteredThisFrame>.Invoke(new());
+            }
+            _registeredHitsThisUpdate = false;
         }
 
         private bool PlayerBoxCheck(PlayerBase player, out GameObject box)
@@ -107,7 +115,7 @@ namespace Game.Gameplay
 
             foreach (var player in players)
             {
-                if (player.invincible || dealer.owner == player) continue;
+                if (!player || player.invincible || dealer.owner == player) continue;
                 PlayerDealerCheck(player, dealer, player.previousObservedPosition, player.observedDelta, point1, point2 - point1);
             }
         }
@@ -147,9 +155,17 @@ namespace Game.Gameplay
             var damage = dealer.EvaluateDamage(player);
             player.health -= damage;
             dealer.OnHit.Invoke(player, damage);
-            player.TargetOnHit(dealer.owner.netIdentity.connectionToClient);
 
-            Debug.Log($"Hit! on: {player.gameObject.name} by: {dealer.owner.gameObject.name} at: {point}");
+            var direct = dealer.Direct;
+            if (dealer.owner)
+            {
+                player.TargetOnHit(dealer.owner.netIdentity.connectionToClient);
+                if (direct) dealer.owner.directHits++;
+                else dealer.owner.indirectHits++;
+            }
+
+            _registeredHitsThisUpdate = true;
+            Debug.Log($"{(direct ? "Direct" : "Indirect")} hit! on: {player.gameObject.name} by: {dealer.owner.gameObject.name} at: {point}");
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Inputs;
@@ -140,6 +141,8 @@ namespace Game.Player
             _actions.Enable();
 
             player.EnableMotor();
+
+            player.SetPlayerName(Environment.UserName);
         }
 
         public void ShakeCamera(float amplitude)

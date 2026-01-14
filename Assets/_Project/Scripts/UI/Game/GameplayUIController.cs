@@ -1,9 +1,9 @@
-using System;
 using System.Collections;
 using Game.Core.Events;
 using Game.Events.GameLoop;
 using Game.Events.UI;
 using Game.Gameplay;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +15,8 @@ namespace Game.UI.Game
         public Slider health;
         public CanvasGroup hitIndicator;
         public CanvasGroup damageIndicator;
+        public RectTransform leaderboard;
+        public TMP_Text leaderboardItemPrefab;
 
         private GameState _gameState;
         private bool _uiSwitchRequested;
@@ -40,6 +42,20 @@ namespace Game.UI.Game
             EventBus<OnHealthUpdate>.Listen(OnHealthUpdate);
             EventBus<HitIndicatorRequest>.Listen((_) => HitIndicatorAnimation());
             EventBus<DamageIndicatorRequest>.Listen((_) => DamageIndicatorAnimation());
+
+            EventBus<ClearLeaderboard>.Listen((_) =>
+            {
+                foreach (RectTransform item in leaderboard)
+                {
+                    Destroy(item.gameObject);
+                }
+            });
+
+            EventBus<AddToLeaderboard>.Listen((data) =>
+            {
+                var item = Instantiate(leaderboardItemPrefab.gameObject, leaderboard);
+                item.GetComponent<TMP_Text>().text = $"{data.name} direct: {data.directHits} indirect: {data.indirectHits}";
+            });
         }
 
         private void HitIndicatorAnimation()

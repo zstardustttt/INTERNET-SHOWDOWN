@@ -1,6 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Events.GameLoop;
+using Game.Events.HitWatcher;
+using Game.Events.MapLoader;
 using Game.Events.MusicPlayer;
 using Game.Events.UI;
 using Game.Gameplay;
@@ -32,6 +36,30 @@ namespace Game.Network
                 conn.Send<ServerMovePlayer>(new() { position = position });
                 conn.Send<ServerConfirmPlayerEnteredMatch>(new());
             });
+
+            EventBus<OnPlayersOnMapUpdated>.Listen((_) =>
+            {
+                SendUpdateLeaderboard(MapLoader.loadedMap.players);
+            });
+
+            EventBus<OnHitsRegisteredThisFrame>.Listen((_) =>
+            {
+                SendUpdateLeaderboard(MapLoader.loadedMap.players);
+            });
+        }
+
+        [Server]
+        private void SendUpdateLeaderboard(List<PlayerBase> players)
+        {
+            NetworkServer.SendToAll(new ServerUpdateLeaderboard()
+            {
+                leaderboardItems = players.Select(x => new AddToLeaderboard()
+                {
+                    name = x.playerName,
+                    directHits = x.directHits,
+                    indirectHits = x.indirectHits
+                }).ToArray()
+            });
         }
 
         public override void OnClientDisconnect()
@@ -55,6 +83,15 @@ namespace Game.Network
             {
                 EventBus<RequestMatchMusic>.Invoke(new());
                 EventBus<RequestGameplayUI>.Invoke(new());
+            });
+
+            NetworkClient.RegisterHandler<ServerUpdateLeaderboard>((data) =>
+            {
+                EventBus<ClearLeaderboard>.Invoke(new());
+                foreach (var item in data.leaderboardItems)
+                {
+                    EventBus<AddToLeaderboard>.Invoke(item);
+                }
             });
 
             EventBus<OnGameStateChange>.Listen((data) =>

@@ -13,6 +13,7 @@ namespace Game.Core.Projectiles
         public Vector3 velocity;
     }
 
+    // TODO: прожектайло вплотную к стене если кинуть не детектит стену
     public abstract class PredictableProjectile : Projectile
     {
         public double spawnTime;

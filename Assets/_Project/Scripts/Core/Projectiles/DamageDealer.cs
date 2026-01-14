@@ -10,6 +10,8 @@ namespace Game.Core.Projectiles
     [RequireComponent(typeof(Collider))]
     public abstract class DamageDealer : NetworkBehaviour
     {
+        public abstract bool Direct { get; }
+
         [HideInInspector] public Vector3 previousObservedPosition;
         [HideInInspector] public Vector3 observedDelta;
         [HideInInspector] public int hitScanCount;

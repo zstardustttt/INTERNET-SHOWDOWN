@@ -90,6 +90,22 @@ namespace Game.Player
         [HideInInspector] public Vector3 previousObservedPosition;
         [HideInInspector] public Vector3 observedDelta;
 
+        [SyncVar] public string playerName;
+        [SyncVar] public int directHits;
+        [SyncVar] public int indirectHits;
+
+        [Command]
+        private void CmdSetPlayerName(string name)
+        {
+            playerName = name;
+        }
+
+        public void SetPlayerName(string name)
+        {
+            if (NetworkServer.active) playerName = name;
+            else CmdSetPlayerName(name);
+        }
+
         [Server]
         public void ResetPlayer()
         {
@@ -97,9 +113,17 @@ namespace Game.Player
             health = config.maxHealth;
         }
 
+        [Server]
+        public void ResetStats()
+        {
+            directHits = 0;
+            indirectHits = 0;
+        }
+
         public override void OnStartServer()
         {
             ResetPlayer();
+            ResetStats();
         }
 
         private void OnItemChange(int old, int _new)

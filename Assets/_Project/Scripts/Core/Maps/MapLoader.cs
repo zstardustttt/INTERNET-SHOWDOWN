@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Core.Events;
+using Game.Events.MapLoader;
 using Game.Events.Player;
 using Game.Network.Messages;
 using Game.Player;
@@ -57,6 +58,8 @@ namespace Game.Core.Maps
             }
 
             loadedMap.players.RemoveAt(index);
+
+            EventBus<OnPlayersOnMapUpdated>.Invoke(new());
         }
 
         [Server]
@@ -66,7 +69,11 @@ namespace Game.Core.Maps
                 return false;
 
             SceneManager.MoveGameObjectToScene(go, loadedMap.scene);
-            if (go.TryGetComponent(out PlayerBase player)) loadedMap.players.Add(player);
+            if (go.TryGetComponent(out PlayerBase player))
+            {
+                loadedMap.players.Add(player);
+                EventBus<OnPlayersOnMapUpdated>.Invoke(new());
+            }
             return true;
         }
 
@@ -83,6 +90,7 @@ namespace Game.Core.Maps
             if (scene.path != loadedMap.config.sceneName) return;
             loadedMap.scene = scene;
             loadedMap.info = Object.FindFirstObjectByType<MapInfo>();
+            EventBus<OnPlayersOnMapUpdated>.Invoke(new());
         }
 
         [Server]

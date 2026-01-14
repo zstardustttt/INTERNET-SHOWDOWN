@@ -11,4 +11,12 @@ namespace Game.Events.UI
 
     public struct HitIndicatorRequest : IEvent { }
     public struct DamageIndicatorRequest : IEvent { }
+
+    public struct ClearLeaderboard : IEvent { }
+    public struct AddToLeaderboard : IEvent
+    {
+        public string name;
+        public int directHits;
+        public int indirectHits;
+    }
 }

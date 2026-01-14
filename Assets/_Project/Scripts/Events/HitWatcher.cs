@@ -20,4 +20,6 @@ namespace Game.Events.HitWatcher
         public Vector3 point1;
         public Vector3 point2;
     }
+
+    public struct OnHitsRegisteredThisFrame : IEvent { }
 }
