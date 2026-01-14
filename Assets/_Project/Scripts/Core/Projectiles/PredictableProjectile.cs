@@ -1,3 +1,7 @@
+using Game.Core.Events;
+using Game.Events.HitWatcher;
+using Game.Player;
+using Mirror;
 using UnityEngine;
 
 namespace Game.Core.Projectiles
@@ -14,5 +18,25 @@ namespace Game.Core.Projectiles
         public double spawnTime;
 
         public abstract ProjectilePredictionData Predict(float timePassed);
+
+        public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation, double spawnTime) where T : PredictableProjectile
+        {
+            var projectile = Spawn(prefab, owner, position, rotation);
+            projectile.spawnTime = spawnTime;
+            var prediction = projectile.Predict((float)(NetworkTime.time - spawnTime));
+
+            foreach (var dealer in projectile.damageDealers)
+            {
+                EventBus<RequestTwoPointsDealerCheck>.Invoke(new()
+                {
+                    dealer = dealer,
+                    point1 = position,
+                    point2 = prediction.position,
+                });
+            }
+            projectile.transform.position = prediction.position;
+
+            return projectile;
+        }
     }
 }

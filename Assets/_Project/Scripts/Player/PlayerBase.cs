@@ -174,7 +174,7 @@ namespace Game.Player
             else if (invincible) invincible = false;
 
             // Teleport back if clipped out of bounds
-            if (transform.position.y < -100f)
+            if (transform.position.y < -50f)
             {
                 if (MapLoader.loadedMap != null)
                 {
