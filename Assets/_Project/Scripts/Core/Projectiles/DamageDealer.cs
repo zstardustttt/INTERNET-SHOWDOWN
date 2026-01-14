@@ -1,25 +1,29 @@
 using Game.Core.Events;
 using Game.Events.HitWatcher;
 using Game.Player;
+using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Game.Core.Projectiles
 {
     [RequireComponent(typeof(Collider))]
-    public abstract class DamageDealer : MonoBehaviour
+    public abstract class DamageDealer : NetworkBehaviour
     {
-        public Vector3 previousObservedPosition;
-        public Vector3 observedDelta;
+        [HideInInspector] public Vector3 previousObservedPosition;
+        [HideInInspector] public Vector3 observedDelta;
+        [HideInInspector] public int hitScanCount;
 
-        public PlayerBase owner;
-        public Collider coll;
+        [HideInInspector] public PlayerBase owner;
+        [HideInInspector] public Collider coll;
 
+        [Tooltip("Allows only one hit scan per dealer's lifetime")] public bool singleHitScan;
         public UnityEvent<PlayerBase, float> OnHit = new();
         public abstract float EvaluateDamage(PlayerBase player);
 
-        private void OnValidate()
+        protected override void OnValidate()
         {
+            base.OnValidate();
             coll = GetComponent<Collider>();
         }
 

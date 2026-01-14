@@ -1,3 +1,4 @@
+using Game.Core.Maps;
 using Game.Core.Projectiles;
 using Game.Player;
 using Mirror;
@@ -7,6 +8,7 @@ namespace Game.Projectiles
 {
     public class HuananV2Projectile : PredictableProjectile
     {
+        public DamageDealer explosionPrefab;
         public Rigidbody rb;
         public BoxCollider bc;
         public float speed;
@@ -21,6 +23,12 @@ namespace Game.Projectiles
         private void OnCollisionEnter(Collision collision)
         {
             if (!NetworkServer.active) return;
+            var explosion = Instantiate(explosionPrefab.gameObject, collision.contacts[0].point, Quaternion.identity, new InstantiateParameters()
+            {
+                scene = MapLoader.loadedMap.scene
+            });
+            explosion.GetComponent<DamageDealer>().owner = _owner;
+            NetworkServer.Spawn(explosion);
             NetworkServer.Destroy(gameObject);
         }
 

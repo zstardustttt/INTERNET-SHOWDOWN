@@ -57,7 +57,7 @@ namespace Game.Gameplay
                 {
                     dealer.observedDelta = dealer.transform.position - dealer.previousObservedPosition;
                     if (player.invincible) break;
-                    if (dealer.owner == player) continue;
+                    if (dealer.owner == player || (dealer.singleHitScan && dealer.hitScanCount > 0)) continue;
 
                     PlayerDealerCheck(player, dealer, player.previousObservedPosition, player.observedDelta, dealer.previousObservedPosition, dealer.observedDelta);
                 }
@@ -74,6 +74,8 @@ namespace Game.Gameplay
             foreach (var dealer in _dealers)
             {
                 dealer.previousObservedPosition = dealer.transform.position;
+                if (dealer.singleHitScan && dealer.hitScanCount > 0) continue;
+                dealer.hitScanCount++;
             }
         }
 
@@ -120,9 +122,15 @@ namespace Game.Gameplay
             bool didHit;
             RaycastHit hit;
             if (dealer.coll is BoxCollider bc)
-                didHit = Physics.BoxCast(relativePosition, bc.size / 2f, relativeDelta.normalized, out hit, bc.transform.rotation, deltaLength, playerDealerCheckLayerMask);
+            {
+                var halfExtents = bc.size / 2f;
+                var rotation = bc.transform.rotation;
+                didHit = Physics.BoxCast(relativePosition, halfExtents, relativeDelta.normalized, out hit, rotation, deltaLength, playerDealerCheckLayerMask)
+                || Physics.CheckBox(relativePosition, halfExtents, rotation, playerDealerCheckLayerMask);
+            }
             else if (dealer.coll is SphereCollider sc)
-                didHit = Physics.SphereCast(relativePosition, sc.radius, relativeDelta.normalized, out hit, deltaLength, playerDealerCheckLayerMask);
+                didHit = Physics.SphereCast(relativePosition, sc.radius, relativeDelta.normalized, out hit, deltaLength, playerDealerCheckLayerMask)
+                || Physics.CheckSphere(relativePosition, sc.radius, playerDealerCheckLayerMask);
             else
             {
                 Debug.LogError("Collider not supported");

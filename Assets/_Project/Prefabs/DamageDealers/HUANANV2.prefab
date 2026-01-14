@@ -104,6 +104,7 @@ MonoBehaviour:
   spawnPosition: {x: 0, y: 0, z: 0}
   spawnRotation: {x: 0, y: 0, z: 0, w: 0}
   spawnTime: 0
+  explosionPrefab: {fileID: 697191921998550392, guid: d18396bccccba4c4abcc7971c45bb3ba, type: 3}
   rb: {fileID: 2459362012733599560}
   bc: {fileID: 1653252554747909041}
   speed: 100

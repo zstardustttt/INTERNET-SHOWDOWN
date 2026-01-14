@@ -279,7 +279,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boxPrefab: {fileID: 4198238566599423486, guid: 2beec17498cc07a43b8285f504979ce2, type: 3}
-  spawnRate: 0.4
+  spawnRate: 0.35
   layerMask:
     serializedVersion: 2
     m_Bits: 2048

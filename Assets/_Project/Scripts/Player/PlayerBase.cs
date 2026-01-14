@@ -87,8 +87,8 @@ namespace Game.Player
         [SyncVar] public bool invincible;
         private float _invincibleTimer; // server only
 
-        public Vector3 previousObservedPosition;
-        public Vector3 observedDelta;
+        [HideInInspector] public Vector3 previousObservedPosition;
+        [HideInInspector] public Vector3 observedDelta;
 
         [Server]
         public void ResetPlayer()
