@@ -121,11 +121,11 @@ namespace Game.Core.Maps
                 return;
             }
 
-            // Move every client back to lobby
-            foreach (var (_, conn) in NetworkServer.connections)
+            // Move every player back to lobby
+            foreach (var player in loadedMap.players)
             {
-                SceneManager.MoveGameObjectToScene(conn.identity.gameObject, SceneManager.GetSceneByName("Lobby"));
-                conn.Send<ServerMovePlayer>(new() { position = Vector3.zero });
+                SceneManager.MoveGameObjectToScene(player.gameObject, SceneManager.GetSceneByName("Lobby"));
+                player.ServerMovePlayer(Vector3.zero);
             }
 
             SceneManager.UnloadSceneAsync(loadedMap.scene);

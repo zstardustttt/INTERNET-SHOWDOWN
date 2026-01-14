@@ -33,7 +33,7 @@ namespace Game.Network
 
                 conn.Send(new SceneMessage() { sceneName = MapLoader.loadedMap.config.sceneName, sceneOperation = SceneOperation.LoadAdditive });
                 var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
-                conn.Send<ServerMovePlayer>(new() { position = position });
+                conn.identity.GetComponent<PlayerBase>().ServerMovePlayer(position);
                 conn.Send<ServerConfirmPlayerEnteredMatch>(new());
             });
 
@@ -74,11 +74,6 @@ namespace Game.Network
 
         public override void OnStartClient()
         {
-            NetworkClient.RegisterHandler<ServerMovePlayer>((data) =>
-            {
-                NetworkClient.localPlayer.GetComponent<PlayerBase>().SetPosition(data.position);
-            });
-
             NetworkClient.RegisterHandler<ServerConfirmPlayerEnteredMatch>((data) =>
             {
                 EventBus<RequestMatchMusic>.Invoke(new());

@@ -31,6 +31,7 @@ namespace Game.Core.Projectiles
 
         private void Awake()
         {
+            previousObservedPosition = transform.position;
             EventBus<OnDamageDealerCreate>.Invoke(new() { dealer = this });
         }
 

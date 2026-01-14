@@ -107,6 +107,18 @@ namespace Game.Player
         }
 
         [Server]
+        public void ServerMovePlayer(Vector3 position)
+        {
+            TargetMovePlayer(position);
+        }
+
+        [TargetRpc]
+        private void TargetMovePlayer(Vector3 position)
+        {
+            SetPosition(position);
+        }
+
+        [Server]
         public void ResetPlayer()
         {
             itemIndex = -1;
@@ -151,7 +163,7 @@ namespace Game.Player
             {
                 // Death logic
                 var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
-                netIdentity.connectionToClient.Send<ServerMovePlayer>(new() { position = position });
+                ServerMovePlayer(position);
                 ResetPlayer();
             }
 
@@ -203,9 +215,9 @@ namespace Game.Player
                 if (MapLoader.loadedMap != null)
                 {
                     var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
-                    netIdentity.connectionToClient.Send<ServerMovePlayer>(new() { position = position });
+                    ServerMovePlayer(position);
                 }
-                else netIdentity.connectionToClient.Send<ServerMovePlayer>(new() { position = Vector3.zero });
+                else ServerMovePlayer(Vector3.zero);
             }
         }
 
