@@ -93,8 +93,8 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 20201, guid: 0000000000000000f000000000000000, type: 0}
-  m_LightingSettings: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: c8593e9081294734c801cd0dbd7c18e2, type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 022227d701b43aa4daab88106a7927b0, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -283,6 +283,7 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 2048
+  maxSpawnFails: 64
 --- !u!4 &48328930
 Transform:
   m_ObjectHideFlags: 0
@@ -4224,6 +4225,63 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!1 &1439111315
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1439111317}
+  - component: {fileID: 1439111316}
+  m_Layer: 0
+  m_Name: EnviromentData
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1439111316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1439111315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85e57d224c370a64abc67484195d988c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Maps.SceneEnviromentData
+  skybox: {fileID: 2100000, guid: 9e75c59dd23b8d04daa109e4a8495b09, type: 2}
+  sun: {fileID: 840231072}
+  subtractiveShadowColor: {r: 0, g: 0, b: 0, a: 1}
+  ambientMode: 3
+  ambientLight: {r: 0.54428464, g: 0.54428464, b: 0.54428464, a: 1}
+  ambientSkyColor: {r: 0.54428464, g: 0.54428464, b: 0.54428464, a: 1}
+  ambientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
+  ambientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+  ambientIntensity: 1.25
+  defaultReflectionMode: 0
+  defaultReflectionResolution: 128
+  reflectionIntensity: 0
+  reflectionBounces: 1
+--- !u!4 &1439111317
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1439111315}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1442427871
 GameObject:
   m_ObjectHideFlags: 0
@@ -5720,3 +5778,4 @@ SceneRoots:
   - {fileID: 1314353084}
   - {fileID: 8078063641087463243}
   - {fileID: 48328930}
+  - {fileID: 1439111317}

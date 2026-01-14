@@ -21,14 +21,10 @@ namespace Game.Core.Maps
         public List<PlayerBase> players;
     }
 
-    // Only server should interact with this class
-    // I assume that if the client attempts to interact with this class
-    // an exception will be triggered and Mirror will straight up blast his ass off the server
-    // UPDATE: even if the client gets around server attributes and interacts with this class
-    // client isn't getting disconnected, but absolutely nothing happens to the server and other clients so thats fine
     public static class MapLoader
     {
         public static Map loadedMap;
+        public static MapConfig loadingMapConfig;
         private static Guid _onDestroyPlayerListenerGuid;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -42,6 +38,29 @@ namespace Game.Core.Maps
         {
             SceneManager.sceneLoaded += SceneLoaded;
             _onDestroyPlayerListenerGuid = EventBus<OnDestroyPlayer>.Listen((_) => CleanupDestroyedPlayer());
+        }
+
+        [Server]
+        public static void Stop()
+        {
+            SceneManager.sceneLoaded -= SceneLoaded;
+            EventBus<OnDestroyPlayer>.TryCancel(_onDestroyPlayerListenerGuid);
+            loadedMap = null;
+        }
+
+        private static void SceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (!loadingMapConfig || scene.path != loadingMapConfig.sceneName) return;
+            loadedMap = new()
+            {
+                scene = scene,
+                info = Object.FindFirstObjectByType<MapInfo>(),
+                config = loadingMapConfig,
+                players = new(),
+            };
+
+            loadingMapConfig = null;
+            EventBus<OnPlayersOnMapUpdated>.Invoke(new());
         }
 
         [Server]
@@ -78,27 +97,11 @@ namespace Game.Core.Maps
         }
 
         [Server]
-        public static void Stop()
-        {
-            SceneManager.sceneLoaded -= SceneLoaded;
-            EventBus<OnDestroyPlayer>.TryCancel(_onDestroyPlayerListenerGuid);
-            loadedMap = null;
-        }
-
-        private static void SceneLoaded(Scene scene, LoadSceneMode mode)
-        {
-            if (scene.path != loadedMap.config.sceneName) return;
-            loadedMap.scene = scene;
-            loadedMap.info = Object.FindFirstObjectByType<MapInfo>();
-            EventBus<OnPlayersOnMapUpdated>.Invoke(new());
-        }
-
-        [Server]
         public static void Load(MapConfig config)
         {
             if (!config)
             {
-                Debug.LogError("Specified MapInfo is null");
+                Debug.LogError("Specified MapConfig is null");
                 return;
             }
 
@@ -108,7 +111,13 @@ namespace Game.Core.Maps
                 return;
             }
 
-            loadedMap = new() { config = config, players = new() };
+            if (loadingMapConfig)
+            {
+                Debug.LogError("Map is already loading");
+                return;
+            }
+
+            loadingMapConfig = config;
             SceneManager.LoadScene(config.name, LoadSceneMode.Additive);
         }
 
@@ -125,6 +134,12 @@ namespace Game.Core.Maps
             foreach (var player in loadedMap.players)
             {
                 SceneManager.MoveGameObjectToScene(player.gameObject, SceneManager.GetSceneByName("Lobby"));
+                player.connectionToClient?.Send(new SceneMessage()
+                {
+                    sceneName = loadedMap.config.sceneName,
+                    sceneOperation = SceneOperation.UnloadAdditive
+                });
+
                 player.ServerMovePlayer(Vector3.zero);
             }
 

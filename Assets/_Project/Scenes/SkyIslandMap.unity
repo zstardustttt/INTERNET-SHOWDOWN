@@ -93,7 +93,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 20201, guid: 0000000000000000f000000000000000, type: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 376668a066b0a9649a9c8da21bea0a5b, type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 7b3f60331c5d8b64e830cabdc885deff, type: 2}
 --- !u!196 &4
 NavMeshSettings:
@@ -279,7 +279,7 @@ Transform:
   m_GameObject: {fileID: 182976768}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 500, y: -0, z: 0}
+  m_LocalPosition: {x: 1000, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -399,8 +399,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Maps.MapInfo
   spawnPoints:
   - {fileID: 1602767915}
-  boundsMin: {x: -51.83, y: -0.1, z: 43.6}
-  boundsMax: {x: 65.6, y: 32.87, z: -41.59}
+  boundsMin: {x: -152.9, y: -15, z: -133}
+  boundsMax: {x: 170.9, y: 80, z: 133}
+  boxSpawnPlane: {x: -51.18, y: -40.93, z: 65.33, w: 42.19}
 --- !u!4 &264328607
 Transform:
   m_ObjectHideFlags: 0
@@ -410,7 +411,7 @@ Transform:
   m_GameObject: {fileID: 264328605}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 500, y: 0, z: 0}
+  m_LocalPosition: {x: 1000, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1738,6 +1739,63 @@ MonoBehaviour:
   m_SelectedFaces: 
   m_SelectedEdges: []
   m_SelectedVertices: 
+--- !u!1 &1283845901
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1283845902}
+  - component: {fileID: 1283845903}
+  m_Layer: 0
+  m_Name: EnviromentData
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1283845902
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1283845901}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1283845903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1283845901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85e57d224c370a64abc67484195d988c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Maps.SceneEnviromentData
+  skybox: {fileID: 2100000, guid: ee90a7e793de3c54b9444b91b400ee57, type: 2}
+  sun: {fileID: 610682495}
+  subtractiveShadowColor: {r: 0.40156642, g: 0.4587948, b: 0.6037736, a: 1}
+  ambientMode: 0
+  ambientLight: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  ambientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  ambientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
+  ambientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+  ambientIntensity: 0.43
+  defaultReflectionMode: 0
+  defaultReflectionResolution: 128
+  reflectionIntensity: 1
+  reflectionBounces: 1
 --- !u!43 &1372865743
 Mesh:
   m_ObjectHideFlags: 0
@@ -1953,5 +2011,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 43409694}
   - {fileID: 182976769}
-  - {fileID: 194710616}
   - {fileID: 264328607}
+  - {fileID: 194710616}
+  - {fileID: 1283845902}

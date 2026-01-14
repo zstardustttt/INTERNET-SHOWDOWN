@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game.Core.Maps;
 using Game.Inputs;
 using Game.Network.Messages;
 using Mirror;
@@ -150,9 +151,21 @@ namespace Game.Player
             _cameraShakeMult = amplitude;
         }
 
+        private int _hostPreviousSceneBuildIdx;
+
         private void Update()
         {
             if (!isLocalPlayer) return;
+
+            // enviroment apply fot host player
+            if (NetworkServer.active && gameObject.scene.isLoaded)
+            {
+                if (gameObject.scene.buildIndex != _hostPreviousSceneBuildIdx)
+                {
+                    SceneEnviromentData.TryApplyOnScene(gameObject.scene);
+                }
+                _hostPreviousSceneBuildIdx = gameObject.scene.buildIndex;
+            }
 
             if (Input.GetKeyDown(KeyCode.F1))
             {

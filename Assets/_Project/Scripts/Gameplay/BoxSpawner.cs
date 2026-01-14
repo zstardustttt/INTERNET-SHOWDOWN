@@ -13,6 +13,7 @@ namespace Game.Gameplay
         public GameObject boxPrefab;
         public float spawnRate;
         public LayerMask layerMask;
+        public int maxSpawnFails;
 
         private bool _active;
         private float _timer;
@@ -37,18 +38,20 @@ namespace Game.Gameplay
             if (_timer >= 1f / (spawnRate * MapLoader.loadedMap.players.Count))
             {
                 _timer = 0f;
-                SpawnBox();
+                for (int i = 0; i < maxSpawnFails; i++)
+                {
+                    if (TrySpawnBox()) break;
+                }
             }
         }
 
-        private void SpawnBox()
+        private bool TrySpawnBox()
         {
-            var minBounds = MapLoader.loadedMap.info.boundsMin;
-            var maxBounds = MapLoader.loadedMap.info.boundsMax;
-            var x = Random.Range(minBounds.x, maxBounds.x);
-            var z = Random.Range(minBounds.z, maxBounds.z);
+            var info = MapLoader.loadedMap.info;
+            var x = Random.Range(info.boxSpawnPlane.x, info.boxSpawnPlane.z);
+            var z = Random.Range(info.boxSpawnPlane.y, info.boxSpawnPlane.w);
 
-            var origin = MapLoader.loadedMap.info.transform.position + new Vector3(x, maxBounds.y, z);
+            var origin = info.transform.position + new Vector3(x, info.boundsMax.y, z);
             var possibleSpawnPoints = new List<Vector3>();
             while (Physics.Raycast(origin, Vector3.down, out var hit, 200f, layerMask))
             {
@@ -56,10 +59,12 @@ namespace Game.Gameplay
                 origin = hit.point + Vector3.down * 0.1f;
             }
 
-            if (possibleSpawnPoints.Count == 0) return;
+            if (possibleSpawnPoints.Count == 0) return false;
             var point = possibleSpawnPoints[Random.Range(0, possibleSpawnPoints.Count)];
             var box = Instantiate(boxPrefab, point, Quaternion.identity, new InstantiateParameters() { scene = MapLoader.loadedMap.scene });
             NetworkServer.Spawn(box);
+
+            return true;
         }
 
         /*

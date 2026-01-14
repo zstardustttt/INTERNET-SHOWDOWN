@@ -3,7 +3,6 @@ using Game.Core.Items;
 using Game.Core.Maps;
 using Game.Events.Player;
 using Game.Events.UI;
-using Game.Network.Messages;
 using KinematicCharacterController;
 using Mirror;
 using UnityEngine;
@@ -210,14 +209,14 @@ namespace Game.Player
             else if (invincible) invincible = false;
 
             // Teleport back if clipped out of bounds
-            if (transform.position.y < -50f)
+            if (MapLoader.loadedMap != null && transform.position.y < MapLoader.loadedMap.info.boundsMin.y)
             {
-                if (MapLoader.loadedMap != null)
-                {
-                    var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
-                    ServerMovePlayer(position);
-                }
-                else ServerMovePlayer(Vector3.zero);
+                var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
+                ServerMovePlayer(position);
+            }
+            else if (transform.position.y < -50f)
+            {
+                ServerMovePlayer(Vector3.zero);
             }
         }
 

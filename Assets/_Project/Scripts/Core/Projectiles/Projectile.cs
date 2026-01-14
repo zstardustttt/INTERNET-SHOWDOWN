@@ -47,6 +47,14 @@ namespace Game.Core.Projectiles
         {
             OnUpdate();
             _lifetime += Time.deltaTime;
+
+            if (!NetworkServer.active) return;
+
+            if (MapLoader.loadedMap == null || !MapLoader.loadedMap.info.Bounds.Contains(transform.position))
+            {
+                NetworkServer.Destroy(gameObject);
+                return;
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ using Game.Network.Messages;
 using Game.Player;
 using Mirror;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Game.Network
 {
@@ -31,7 +32,8 @@ namespace Game.Network
                     return;
                 }
 
-                conn.Send(new SceneMessage() { sceneName = MapLoader.loadedMap.config.sceneName, sceneOperation = SceneOperation.LoadAdditive });
+                var sceneName = MapLoader.loadedMap.config.sceneName;
+                conn.Send(new SceneMessage() { sceneName = sceneName, sceneOperation = SceneOperation.LoadAdditive });
                 var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
                 conn.identity.GetComponent<PlayerBase>().ServerMovePlayer(position);
                 conn.Send<ServerConfirmPlayerEnteredMatch>(new());
@@ -46,6 +48,11 @@ namespace Game.Network
             {
                 SendUpdateLeaderboard(MapLoader.loadedMap.players);
             });
+        }
+
+        public override void OnStopServer()
+        {
+            MapLoader.Stop();
         }
 
         [Server]
@@ -65,11 +72,6 @@ namespace Game.Network
         public override void OnClientDisconnect()
         {
             Cursor.lockState = CursorLockMode.None;
-        }
-
-        public override void OnStopServer()
-        {
-            MapLoader.Stop();
         }
 
         public override void OnStartClient()
@@ -98,6 +100,35 @@ namespace Game.Network
                 // mirror for some reason automaticly disables mesh renderer
                 _portal.GetComponent<MeshRenderer>().enabled = data.state.phase != GamePhase.Break;
             });
+
+            // only for pure clients
+            if (!NetworkServer.active)
+            {
+                SceneManager.sceneLoaded += ClientSceneEnviromentApply;
+                SceneManager.sceneUnloaded += ClientLobbyEnviromentApply;
+            }
+        }
+
+        public override void OnStopClient()
+        {
+            // only for pure clients
+            if (!NetworkServer.active)
+            {
+                SceneManager.sceneLoaded -= ClientSceneEnviromentApply;
+                SceneManager.sceneUnloaded -= ClientLobbyEnviromentApply;
+            }
+        }
+
+        [Client]
+        private void ClientSceneEnviromentApply(Scene scene, LoadSceneMode mode)
+        {
+            SceneEnviromentData.TryApplyOnScene(scene);
+        }
+
+        [Client]
+        private void ClientLobbyEnviromentApply(Scene scene)
+        {
+            SceneEnviromentData.TryApplyOnScene(SceneManager.GetActiveScene());
         }
     }
 }
