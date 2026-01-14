@@ -17,6 +17,7 @@ namespace Game.Projectiles
 
         public override void Init()
         {
+            // TODO: generalize
             rb.linearVelocity = transform.forward * speed;
             var prediction = Predict((float)(NetworkTime.time - spawnTime));
 

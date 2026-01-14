@@ -16,16 +16,32 @@ namespace Game.Gameplay
         public LayerMask playerDealerCheckLayerMask;
         public LayerMask playerBoxCheckLayerMask;
         public float castMargin;
+        public CapsuleCollider playerPrefabCollider;
 
         private List<DamageDealer> _dealers;
+        private CapsuleCollider _playerColliderForChecking;
 
         public void Awake()
         {
             _dealers = new();
+            InitPlayerColliderForChecking();
 
             EventBus<OnDamageDealerCreate>.Listen((data) => _dealers.Add(data.dealer));
             EventBus<OnDamageDealerDestroy>.Listen((data) => _dealers.Remove(data.dealer));
             EventBus<RequestTwoPointsDealerCheck>.Listen((data) => TwoPointsDealerCheck(data.dealer, data.point1, data.point2));
+        }
+
+        private void InitPlayerColliderForChecking()
+        {
+            var playerColliderForChecking = new GameObject("Player Collider For Checking")
+            {
+                layer = LayerMask.NameToLayer("PlayerCheckingForHit")
+            };
+            _playerColliderForChecking = playerColliderForChecking.AddComponent<CapsuleCollider>();
+
+            _playerColliderForChecking.height = playerPrefabCollider.height;
+            _playerColliderForChecking.radius = playerPrefabCollider.radius;
+            _playerColliderForChecking.center = playerPrefabCollider.center;
         }
 
         private void Update()
@@ -43,7 +59,7 @@ namespace Game.Gameplay
                     if (player.invincible) break;
                     if (dealer.owner == player) continue;
 
-                    PlayerDealerCheck(player, dealer, dealer.previousObservedPosition, dealer.observedDelta);
+                    PlayerDealerCheck(player, dealer, player.previousObservedPosition, player.observedDelta, dealer.previousObservedPosition, dealer.observedDelta);
                 }
 
                 if (player.itemIndex == -1 && PlayerBoxCheck(player, out var box))
@@ -90,28 +106,23 @@ namespace Game.Gameplay
             foreach (var player in players)
             {
                 if (player.invincible || dealer.owner == player) continue;
-                PlayerDealerCheck(player, dealer, point1, point2 - point1);
+                PlayerDealerCheck(player, dealer, player.previousObservedPosition, player.observedDelta, point1, point2 - point1);
             }
         }
 
-        public void PlayerDealerCheck(PlayerBase player, DamageDealer dealer, Vector3 dealerPosition, Vector3 dealerDelta)
+        public void PlayerDealerCheck(PlayerBase player, DamageDealer dealer, Vector3 playerPosition, Vector3 playerDelta, Vector3 dealerPosition, Vector3 dealerDelta)
         {
-            player.gameObject.layer = LayerMask.NameToLayer("PlayerCheckingForHit");
-            InsidePlayerDealerCheck(player, dealer, dealerPosition, dealerDelta);
-            player.gameObject.layer = LayerMask.NameToLayer("Player");
-        }
+            var relativePosition = dealerPosition - playerPosition;
+            var relativeDelta = dealerDelta - playerDelta;
 
-        private void InsidePlayerDealerCheck(PlayerBase player, DamageDealer dealer, Vector3 dealerPosition, Vector3 dealerDelta)
-        {
-            var delta = dealerDelta - player.observedDelta;
-            var deltaLength = delta.magnitude + castMargin;
+            var deltaLength = relativeDelta.magnitude + castMargin;
 
             bool didHit;
             RaycastHit hit;
             if (dealer.coll is BoxCollider bc)
-                didHit = Physics.BoxCast(dealerPosition, bc.size / 2f, delta.normalized, out hit, bc.transform.rotation, deltaLength, playerDealerCheckLayerMask);
+                didHit = Physics.BoxCast(relativePosition, bc.size / 2f, relativeDelta.normalized, out hit, bc.transform.rotation, deltaLength, playerDealerCheckLayerMask);
             else if (dealer.coll is SphereCollider sc)
-                didHit = Physics.SphereCast(dealerPosition, sc.radius, delta.normalized, out hit, deltaLength, playerDealerCheckLayerMask);
+                didHit = Physics.SphereCast(relativePosition, sc.radius, relativeDelta.normalized, out hit, deltaLength, playerDealerCheckLayerMask);
             else
             {
                 Debug.LogError("Collider not supported");

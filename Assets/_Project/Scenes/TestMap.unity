@@ -1018,6 +1018,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8192
   castMargin: 0.1
+  playerPrefabCollider: {fileID: 241399185085964307, guid: 77b182f4f069182488aeedcf1e314e52, type: 3}
 --- !u!4 &2014211290
 Transform:
   m_ObjectHideFlags: 0
