@@ -162,6 +162,7 @@ namespace Game.Player
         {
             if (!isLocalPlayer) return;
             _actions.Disable();
+            speedlinesFullscreenMaterial.SetFloat("_alpha", 0f);
         }
 
         public void ShakeCamera(float amplitude)
