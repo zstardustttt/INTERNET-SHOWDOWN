@@ -35,6 +35,7 @@ namespace Game.UI.Game
 
         private GameState _gameState;
         private bool _uiSwitchRequested;
+        // TODO: save disconnected player stats for current match
         private Dictionary<string, LeaderboardItem> _unsortedLeaderboard;
         private List<LeaderboardItem> _leaderboardToDisplay;
 

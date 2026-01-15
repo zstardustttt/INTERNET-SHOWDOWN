@@ -143,6 +143,7 @@ namespace Game.Player
 
             player.EnableMotor();
 
+            // TODO: generate guid when application launched
             player.SetPlayerName(Environment.UserName);
             player.SetGUID(Guid.NewGuid().ToString());
         }
