@@ -221,8 +221,8 @@ namespace Game.Player
         [Server]
         public void Damage(float damage, PlayerBase author)
         {
-            health -= damage;
             _damageHistory.Push(new() { damage = damage, author = author });
+            health -= damage;
         }
 
         private void OnHealthChange(float old, float _new)
@@ -240,6 +240,7 @@ namespace Game.Player
                 var sortedDamages = damages.OrderByDescending(x => x.Value).ToArray();
                 var supporter = sortedDamages[0].Key;
 
+                // TODO: refactor ts
                 if (killer == supporter)
                 {
                     if (killer)
