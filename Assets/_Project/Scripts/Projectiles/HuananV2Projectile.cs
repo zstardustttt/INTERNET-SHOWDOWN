@@ -17,13 +17,26 @@ namespace Game.Projectiles
 
         public override void Init()
         {
+            var prediction = Predict((float)(NetworkTime.time - spawnTime));
+            var distance = (prediction.position - spawnPosition).magnitude;
+            if (Physics.BoxCast(spawnPosition, bc.size / 2f, transform.forward, out var hit, transform.rotation, distance, LayerMask.GetMask("Enviroment")))
+            {
+                ProjectileCollision(hit.point);
+                return;
+            }
+
             rb.linearVelocity = transform.forward * speed;
         }
 
         private void OnCollisionEnter(Collision collision)
         {
             if (!NetworkServer.active) return;
-            var explosion = Instantiate(explosionPrefab.gameObject, collision.contacts[0].point, Quaternion.identity, new InstantiateParameters()
+            ProjectileCollision(collision.contacts[0].point);
+        }
+
+        private void ProjectileCollision(Vector3 point)
+        {
+            var explosion = Instantiate(explosionPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
             {
                 scene = MapLoader.loadedMap.scene
             });
