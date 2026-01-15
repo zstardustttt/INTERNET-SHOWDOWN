@@ -144,6 +144,7 @@ namespace Game.Player
             player.EnableMotor();
 
             player.SetPlayerName(Environment.UserName);
+            player.SetGUID(Guid.NewGuid().ToString());
         }
 
         public void ShakeCamera(float amplitude)

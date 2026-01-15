@@ -20,7 +20,6 @@ namespace Game.Gameplay
 
         private List<DamageDealer> _dealers;
         private CapsuleCollider _playerColliderForChecking;
-        private bool _registeredHitsThisUpdate;
 
         public void Awake()
         {
@@ -79,12 +78,6 @@ namespace Game.Gameplay
                 if (dealer.singleHitScan && dealer.hitScanCount > 0) continue;
                 dealer.hitScanCount++;
             }
-
-            if (_registeredHitsThisUpdate)
-            {
-                EventBus<OnHitsRegisteredThisFrame>.Invoke(new());
-            }
-            _registeredHitsThisUpdate = false;
         }
 
         private bool PlayerBoxCheck(PlayerBase player, out GameObject box)
@@ -153,18 +146,17 @@ namespace Game.Gameplay
         private void RegisterHit(PlayerBase player, DamageDealer dealer, Vector3 point)
         {
             var damage = dealer.EvaluateDamage(player);
-            player.health -= damage;
+            player.Damage(damage, dealer.owner);
             dealer.OnHit.Invoke(player, damage);
 
             var direct = dealer.Direct;
             if (dealer.owner)
             {
                 player.TargetOnHit(dealer.owner.netIdentity.connectionToClient);
-                if (direct) dealer.owner.directHits++;
-                else dealer.owner.indirectHits++;
+                if (direct) dealer.owner.stats.directHits++;
+                else dealer.owner.stats.indirectHits++;
             }
 
-            _registeredHitsThisUpdate = true;
             Debug.Log($"{(direct ? "Direct" : "Indirect")} hit! on: {player.gameObject.name} by: {dealer.owner.gameObject.name} at: {point}");
         }
     }

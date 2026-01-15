@@ -1,18 +1,22 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Events.GameLoop;
-using Game.Events.HitWatcher;
 using Game.Events.MapLoader;
 using Game.Events.MusicPlayer;
+using Game.Events.Player;
 using Game.Events.UI;
 using Game.Gameplay;
 using Game.Network.Messages;
 using Game.Player;
+using Game.UI.Game;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+using Random = UnityEngine.Random;
 
 namespace Game.Network
 {
@@ -41,12 +45,12 @@ namespace Game.Network
 
             EventBus<OnPlayersOnMapUpdated>.Listen((_) =>
             {
-                SendUpdateLeaderboard(MapLoader.loadedMap.players);
+                SendRefreshLeaderboard(MapLoader.loadedMap.players);
             });
 
-            EventBus<OnHitsRegisteredThisFrame>.Listen((_) =>
+            EventBus<OnStatsChanged>.Listen((data) =>
             {
-                SendUpdateLeaderboard(MapLoader.loadedMap.players);
+                SendUpdateLeaderboardItem(data.player);
             });
         }
 
@@ -56,16 +60,38 @@ namespace Game.Network
         }
 
         [Server]
-        private void SendUpdateLeaderboard(List<PlayerBase> players)
+        private void SendRefreshLeaderboard(List<PlayerBase> players)
         {
-            NetworkServer.SendToAll(new ServerUpdateLeaderboard()
+            NetworkServer.SendToAll(new ServerRefreshLeaderboard()
             {
-                leaderboardItems = players.Select(x => new AddToLeaderboard()
+                items = players.Select(player => new GuidItemPair()
                 {
-                    name = x.playerName,
-                    directHits = x.directHits,
-                    indirectHits = x.indirectHits
+                    guid = player.playerGuid,
+                    item = new()
+                    {
+                        playerName = player.playerName,
+                        activity = player.stats.activity,
+                        score = player.stats.GetScore()
+                    }
                 }).ToArray()
+            });
+        }
+
+        [Server]
+        private void SendUpdateLeaderboardItem(PlayerBase player)
+        {
+            NetworkServer.SendToAll<ServerUpdatePlayerOnLeaderboard>(new()
+            {
+                item = new()
+                {
+                    guid = player.playerGuid,
+                    item = new()
+                    {
+                        playerName = player.playerName,
+                        activity = player.stats.activity,
+                        score = player.stats.GetScore(),
+                    }
+                }
             });
         }
 
@@ -82,13 +108,15 @@ namespace Game.Network
                 EventBus<RequestGameplayUI>.Invoke(new());
             });
 
-            NetworkClient.RegisterHandler<ServerUpdateLeaderboard>((data) =>
+            NetworkClient.RegisterHandler<ServerRefreshLeaderboard>((data) =>
             {
                 EventBus<ClearLeaderboard>.Invoke(new());
-                foreach (var item in data.leaderboardItems)
-                {
-                    EventBus<AddToLeaderboard>.Invoke(item);
-                }
+                EventBus<PopulateLeaderboard>.Invoke(new() { items = data.items });
+            });
+
+            NetworkClient.RegisterHandler<ServerUpdatePlayerOnLeaderboard>((data) =>
+            {
+                EventBus<ChangeLeaderboardItem>.Invoke(data.item);
             });
 
             EventBus<OnGameStateChange>.Listen((data) =>

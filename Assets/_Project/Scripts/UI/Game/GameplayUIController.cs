@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Game.Core.Events;
 using Game.Events.GameLoop;
 using Game.Events.UI;
@@ -9,6 +11,19 @@ using UnityEngine.UI;
 
 namespace Game.UI.Game
 {
+    public struct GuidItemPair
+    {
+        public string guid;
+        public LeaderboardItem item;
+    }
+
+    public struct LeaderboardItem
+    {
+        public string playerName;
+        public int activity;
+        public int score;
+    }
+
     public class GameplayUIController : MonoBehaviour
     {
         public CanvasGroup canvasGroup;
@@ -20,9 +35,14 @@ namespace Game.UI.Game
 
         private GameState _gameState;
         private bool _uiSwitchRequested;
+        private Dictionary<string, LeaderboardItem> _unsortedLeaderboard;
+        private List<LeaderboardItem> _leaderboardToDisplay;
 
         private void Awake()
         {
+            _unsortedLeaderboard = new();
+            _leaderboardToDisplay = new();
+
             EventBus<OnGameStateChange>.Listen((data) =>
             {
                 _gameState = data.state;
@@ -45,17 +65,65 @@ namespace Game.UI.Game
 
             EventBus<ClearLeaderboard>.Listen((_) =>
             {
-                foreach (RectTransform item in leaderboard)
-                {
-                    Destroy(item.gameObject);
-                }
+                _unsortedLeaderboard.Clear();
+                _leaderboardToDisplay.Clear();
+                ClearLeaderboardUI();
             });
 
-            EventBus<AddToLeaderboard>.Listen((data) =>
+            EventBus<PopulateLeaderboard>.Listen((data) =>
             {
-                var item = Instantiate(leaderboardItemPrefab.gameObject, leaderboard);
-                item.GetComponent<TMP_Text>().text = $"{data.name} direct: {data.directHits} indirect: {data.indirectHits}";
+                foreach (var pair in data.items)
+                {
+                    if (string.IsNullOrEmpty(pair.guid)) return;
+                    if (_unsortedLeaderboard.TryAdd(pair.guid, pair.item))
+                    {
+                        _leaderboardToDisplay.Add(pair.item);
+                    }
+                }
+
+                RefreshLeaderboardUI();
             });
+
+            EventBus<ChangeLeaderboardItem>.Listen((data) =>
+            {
+                if (string.IsNullOrEmpty(data.guid)) return;
+                _unsortedLeaderboard[data.guid] = data.item;
+                _leaderboardToDisplay = _unsortedLeaderboard.Values.ToList();
+
+                RefreshLeaderboardUI();
+            });
+        }
+
+        private void ClearLeaderboardUI()
+        {
+            foreach (RectTransform item in leaderboard)
+            {
+                Destroy(item.gameObject);
+            }
+        }
+
+        private void RefreshLeaderboardUI()
+        {
+            ClearLeaderboardUI();
+
+            _leaderboardToDisplay.Sort((first, second) =>
+            {
+                if (first.score == second.score)
+                {
+                    if (first.activity < second.activity) return 1;
+                    else return -1;
+                }
+                else if (first.score < second.score) return 1;
+                else return -1;
+            });
+
+            for (int i = 0; i < _leaderboardToDisplay.Count; i++)
+            {
+                var item = _leaderboardToDisplay[i];
+                var place = i + 1;
+                var tmpText = Instantiate(leaderboardItemPrefab.gameObject, leaderboard).GetComponent<TMP_Text>();
+                tmpText.text = $"{place}. {item.playerName}: {item.score}";
+            }
         }
 
         private void HitIndicatorAnimation()

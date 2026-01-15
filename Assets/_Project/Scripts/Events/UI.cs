@@ -1,4 +1,5 @@
 using Game.Core.Events;
+using Game.UI.Game;
 
 namespace Game.Events.UI
 {
@@ -13,10 +14,14 @@ namespace Game.Events.UI
     public struct DamageIndicatorRequest : IEvent { }
 
     public struct ClearLeaderboard : IEvent { }
-    public struct AddToLeaderboard : IEvent
+    public struct PopulateLeaderboard : IEvent
     {
-        public string name;
-        public int directHits;
-        public int indirectHits;
+        public GuidItemPair[] items;
+    }
+
+    public struct ChangeLeaderboardItem : IEvent
+    {
+        public string guid;
+        public LeaderboardItem item;
     }
 }

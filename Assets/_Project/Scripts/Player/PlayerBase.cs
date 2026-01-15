@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Game.Core.Events;
 using Game.Core.Items;
 using Game.Core.Maps;
@@ -7,6 +10,8 @@ using KinematicCharacterController;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
+
+using Random = UnityEngine.Random;
 
 namespace Game.Player
 {
@@ -81,7 +86,13 @@ namespace Game.Player
         [SyncVar(hook = nameof(OnItemChange))] public int itemIndex;
         private Item _item;
 
+        public struct DamageCapture
+        {
+            public PlayerBase author;
+            public float damage;
+        }
         [SyncVar(hook = nameof(OnHealthChange))] public float health;
+        private Stack<DamageCapture> _damageHistory;
 
         [SyncVar] public bool invincible;
         private float _invincibleTimer; // server only
@@ -89,9 +100,58 @@ namespace Game.Player
         [HideInInspector] public Vector3 previousObservedPosition;
         [HideInInspector] public Vector3 observedDelta;
 
+        public struct Stats : IEquatable<Stats>
+        {
+            public int activity;
+            public int indirectHits;
+            public int directHits;
+            public int supportingKills;
+            public int finishingKills;
+            public int pureKills;
+
+            public readonly bool Equals(Stats other)
+            {
+                return activity.Equals(other.activity)
+                    && indirectHits.Equals(other.indirectHits)
+                    && directHits.Equals(other.directHits)
+                    && supportingKills.Equals(other.supportingKills)
+                    && finishingKills.Equals(other.finishingKills)
+                    && pureKills.Equals(other.pureKills);
+            }
+
+            public readonly int GetScore()
+            {
+                return indirectHits
+                    + directHits * 2
+                    + supportingKills * 2
+                    + finishingKills * 2
+                    + pureKills * 4;
+            }
+        }
+
+        public string playerGuid;
         [SyncVar] public string playerName;
-        [SyncVar] public int directHits;
-        [SyncVar] public int indirectHits;
+
+        private Stats _prevStats;
+        [SyncVar] public Stats stats;
+
+        private void InnerSetGuid(string guid)
+        {
+            if (string.IsNullOrEmpty(guid) || !string.IsNullOrEmpty(playerGuid)) return;
+            playerGuid = guid;
+        }
+
+        [Command]
+        private void CmdSetGUID(string guid)
+        {
+            InnerSetGuid(guid);
+        }
+
+        public void SetGUID(string guid)
+        {
+            if (NetworkServer.active) InnerSetGuid(guid);
+            else CmdSetGUID(guid);
+        }
 
         [Command]
         private void CmdSetPlayerName(string name)
@@ -120,6 +180,7 @@ namespace Game.Player
         [Server]
         public void ResetPlayer()
         {
+            _damageHistory.Clear();
             itemIndex = -1;
             health = config.maxHealth;
         }
@@ -127,12 +188,12 @@ namespace Game.Player
         [Server]
         public void ResetStats()
         {
-            directHits = 0;
-            indirectHits = 0;
+            stats = default;
         }
 
         public override void OnStartServer()
         {
+            _damageHistory = new();
             ResetPlayer();
             ResetStats();
         }
@@ -156,11 +217,38 @@ namespace Game.Player
             }
         }
 
+        [Server]
+        public void Damage(float damage, PlayerBase author)
+        {
+            health -= damage;
+            _damageHistory.Push(new() { damage = damage, author = author });
+        }
+
         private void OnHealthChange(float old, float _new)
         {
             if (NetworkServer.active && _new <= 0f)
             {
                 // Death logic
+                var killer = _damageHistory.Peek().author;
+                var damages = new Dictionary<PlayerBase, float>();
+                foreach (var capture in _damageHistory)
+                {
+                    if (damages.TryAdd(capture.author, capture.damage)) continue;
+                    damages[capture.author] += capture.damage;
+                }
+                var sortedDamages = damages.OrderByDescending(x => x.Value).ToArray();
+                var supporter = sortedDamages[0].Key;
+
+                if (killer == supporter)
+                {
+                    if (killer) killer.stats.pureKills++;
+                }
+                else
+                {
+                    if (killer) killer.stats.finishingKills++;
+                    if (supporter) supporter.stats.supportingKills++;
+                }
+
                 var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
                 ServerMovePlayer(position);
                 ResetPlayer();
@@ -198,7 +286,6 @@ namespace Game.Player
         private void Update()
         {
             if (!NetworkServer.active) return;
-            //if (MapLoader.loadedMap != null && MapLoader.loadedMap.players.Count > 0) motor.SetPosition(motor.TransientPosition + Vector3.right * Mathf.Sin(Time.time) * Time.deltaTime * 10f);
 
             // Handle invincibility
             if (_invincibleTimer > 0f)
@@ -218,11 +305,18 @@ namespace Game.Player
             {
                 ServerMovePlayer(Vector3.zero);
             }
+
+            if (!stats.Equals(_prevStats))
+            {
+                EventBus<OnStatsChanged>.Invoke(new() { player = this });
+            }
+            _prevStats = stats;
         }
 
         [Command]
         private void CmdUseItem(ItemUseClientContext context)
         {
+            stats.activity++;
             // TODO: Validate context
             UseItem(context);
         }
