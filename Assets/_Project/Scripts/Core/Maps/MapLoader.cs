@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Game.Core.Events;
 using Game.Events.MapLoader;
 using Game.Events.Player;
-using Game.Network.Messages;
 using Game.Player;
 using Mirror;
 using UnityEngine;
@@ -18,7 +17,7 @@ namespace Game.Core.Maps
         public Scene scene;
         public MapInfo info;
         public MapConfig config;
-        public List<PlayerBase> players;
+        public Dictionary<string, PlayerBase> players;
     }
 
     public static class MapLoader
@@ -37,7 +36,11 @@ namespace Game.Core.Maps
         public static void Init()
         {
             SceneManager.sceneLoaded += SceneLoaded;
-            _onDestroyPlayerListenerGuid = EventBus<OnDestroyPlayer>.Listen((_) => CleanupDestroyedPlayer());
+            _onDestroyPlayerListenerGuid = EventBus<OnDestroyPlayer>.Listen((data) =>
+            {
+                if (loadedMap == null) return;
+                loadedMap.players.Remove(data.guid);
+            });
         }
 
         [Server]
@@ -60,25 +63,6 @@ namespace Game.Core.Maps
             };
 
             loadingMapConfig = null;
-            EventBus<OnPlayersOnMapUpdated>.Invoke(new());
-        }
-
-        [Server]
-        private static void CleanupDestroyedPlayer()
-        {
-            if (loadedMap == null) return;
-
-            var index = 0;
-            for (int i = 0; i < loadedMap.players.Count; i++)
-            {
-                if (loadedMap.players[i]) continue;
-                index = i;
-                break;
-            }
-
-            loadedMap.players.RemoveAt(index);
-
-            EventBus<OnPlayersOnMapUpdated>.Invoke(new());
         }
 
         [Server]
@@ -90,8 +74,8 @@ namespace Game.Core.Maps
             SceneManager.MoveGameObjectToScene(go, loadedMap.scene);
             if (go.TryGetComponent(out PlayerBase player))
             {
-                loadedMap.players.Add(player);
-                EventBus<OnPlayersOnMapUpdated>.Invoke(new());
+                loadedMap.players.Add(player.playerGuid, player);
+                EventBus<OnAddPlayerOnMap>.Invoke(new() { player = player });
             }
             return true;
         }
@@ -131,7 +115,7 @@ namespace Game.Core.Maps
             }
 
             // Move every player back to lobby
-            foreach (var player in loadedMap.players)
+            foreach (var (_, player) in loadedMap.players)
             {
                 SceneManager.MoveGameObjectToScene(player.gameObject, SceneManager.GetSceneByName("Lobby"));
                 player.connectionToClient?.Send(new SceneMessage()
@@ -142,6 +126,8 @@ namespace Game.Core.Maps
 
                 player.ServerMovePlayer(Vector3.zero);
             }
+
+            EventBus<OnUnloadMap>.Invoke(new());
 
             SceneManager.UnloadSceneAsync(loadedMap.scene);
             loadedMap = null;

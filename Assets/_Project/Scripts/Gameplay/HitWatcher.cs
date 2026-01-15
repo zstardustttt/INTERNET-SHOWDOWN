@@ -49,7 +49,7 @@ namespace Game.Gameplay
             if (MapLoader.loadedMap == null) return;
             var players = MapLoader.loadedMap.players;
 
-            foreach (var player in players)
+            foreach (var (_, player) in players)
             {
                 if (!player) continue;
                 player.observedDelta = player.transform.position - player.previousObservedPosition;
@@ -106,7 +106,7 @@ namespace Game.Gameplay
             if (MapLoader.loadedMap == null) return;
             var players = MapLoader.loadedMap.players;
 
-            foreach (var player in players)
+            foreach (var (_, player) in players)
             {
                 if (!player || player.invincible || dealer.owner == player) continue;
                 PlayerDealerCheck(player, dealer, player.previousObservedPosition, player.observedDelta, point1, point2 - point1);

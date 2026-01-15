@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using Game.Events.UI;
-using Game.UI.Game;
 using Mirror;
 
 namespace Game.Network.Messages
@@ -8,13 +6,25 @@ namespace Game.Network.Messages
     public struct ClientRequestMapLoad : NetworkMessage { }
     public struct ServerConfirmPlayerEnteredMatch : NetworkMessage { }
 
-    public struct ServerRefreshLeaderboard : NetworkMessage
+    public struct ServerClearLeaderboard : NetworkMessage { }
+
+    public struct ServerPopulateLeaderboard : NetworkMessage
     {
-        public GuidItemPair[] items;
+        public LeaderboardEventData[] itemDatas;
     }
 
-    public struct ServerUpdatePlayerOnLeaderboard : NetworkMessage
+    public struct ServerAddLeaderboardItem : NetworkMessage
     {
-        public ChangeLeaderboardItem item;
+        public LeaderboardEventData itemData;
+    }
+
+    public struct ServerRemoveLeaderboardItem : NetworkMessage
+    {
+        public string guid;
+    }
+
+    public struct ServerChangeLeaderboardItem : NetworkMessage
+    {
+        public LeaderboardEventData itemData;
     }
 }

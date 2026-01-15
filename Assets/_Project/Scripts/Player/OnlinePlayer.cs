@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game.Core.Events;
 using Game.Core.Maps;
+using Game.Events.Player;
 using Game.Inputs;
 using Game.Network.Messages;
 using Mirror;
@@ -115,6 +117,8 @@ namespace Game.Player
             Cursor.lockState = CursorLockMode.Locked;
             _camera = Instantiate(cameraPrefab, cameraOrientation).GetComponent<PlayerCamera>();
             model.SetActive(false);
+
+            // TODO: ts
             _mouseSens = PlayerPrefs.GetFloat("sens");
 
             _actions = new();
@@ -143,9 +147,21 @@ namespace Game.Player
 
             player.EnableMotor();
 
-            // TODO: generate guid when application launched
             player.SetPlayerName(Environment.UserName);
-            player.SetGUID(Guid.NewGuid().ToString());
+            player.SetGUID(OnlinePlayerGuid.Guid);
+            CmdPlayerInitialized();
+        }
+
+        [Command]
+        public void CmdPlayerInitialized()
+        {
+            EventBus<OnServerOnlinePlayerInitialized>.Invoke(new() { player = player });
+        }
+
+        private void OnDestroy()
+        {
+            if (!isLocalPlayer) return;
+            _actions.Disable();
         }
 
         public void ShakeCamera(float amplitude)

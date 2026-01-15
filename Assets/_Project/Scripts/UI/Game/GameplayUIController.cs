@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Game.Core.Events;
 using Game.Events.GameLoop;
 using Game.Events.UI;
@@ -11,17 +12,25 @@ using UnityEngine.UI;
 
 namespace Game.UI.Game
 {
-    public struct GuidItemPair
-    {
-        public string guid;
-        public LeaderboardItem item;
-    }
-
     public struct LeaderboardItem
     {
-        public string playerName;
+        public string name;
         public int activity;
         public int score;
+    }
+
+    public struct LeaderboardComparer : IComparer<LeaderboardItem>
+    {
+        public readonly int Compare(LeaderboardItem x, LeaderboardItem y)
+        {
+            if (x.score == y.score)
+            {
+                if (x.activity < y.activity) return 1;
+                else return -1;
+            }
+            else if (x.score < y.score) return 1;
+            else return -1;
+        }
     }
 
     public class GameplayUIController : MonoBehaviour
@@ -35,14 +44,13 @@ namespace Game.UI.Game
 
         private GameState _gameState;
         private bool _uiSwitchRequested;
-        // TODO: save disconnected player stats for current match
-        private Dictionary<string, LeaderboardItem> _unsortedLeaderboard;
-        private List<LeaderboardItem> _leaderboardToDisplay;
+        private Dictionary<string, LeaderboardItem> _virtualLeaderboard;
+        private Dictionary<string, TMP_Text> _displayedLeaderboard;
 
         private void Awake()
         {
-            _unsortedLeaderboard = new();
-            _leaderboardToDisplay = new();
+            _virtualLeaderboard = new();
+            _displayedLeaderboard = new();
 
             EventBus<OnGameStateChange>.Listen((data) =>
             {
@@ -64,67 +72,111 @@ namespace Game.UI.Game
             EventBus<HitIndicatorRequest>.Listen((_) => HitIndicatorAnimation());
             EventBus<DamageIndicatorRequest>.Listen((_) => DamageIndicatorAnimation());
 
-            EventBus<ClearLeaderboard>.Listen((_) =>
-            {
-                _unsortedLeaderboard.Clear();
-                _leaderboardToDisplay.Clear();
-                ClearLeaderboardUI();
-            });
-
-            EventBus<PopulateLeaderboard>.Listen((data) =>
-            {
-                foreach (var pair in data.items)
-                {
-                    if (string.IsNullOrEmpty(pair.guid)) return;
-                    if (_unsortedLeaderboard.TryAdd(pair.guid, pair.item))
-                    {
-                        _leaderboardToDisplay.Add(pair.item);
-                    }
-                }
-
-                RefreshLeaderboardUI();
-            });
-
-            EventBus<ChangeLeaderboardItem>.Listen((data) =>
-            {
-                if (string.IsNullOrEmpty(data.guid)) return;
-                _unsortedLeaderboard[data.guid] = data.item;
-                _leaderboardToDisplay = _unsortedLeaderboard.Values.ToList();
-
-                RefreshLeaderboardUI();
-            });
+            RegisterLeaderboardListeners();
         }
 
-        private void ClearLeaderboardUI()
+        private void RegisterLeaderboardListeners()
         {
-            foreach (RectTransform item in leaderboard)
+            EventBus<ClearLeaderboard>.Listen(ClearLeaderboard);
+            EventBus<PopulateLeaderboard>.Listen(PopulateLeaderboard);
+            EventBus<AddLeaderboardItem>.Listen(AddLeaderboardItem);
+            EventBus<RemoveLeaderboardItem>.Listen(RemoveLeaderboardItem);
+            EventBus<ChangeLeaderboardItem>.Listen(ChangeLeaderboardItem);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private string GetLeaderboardItemUIText(LeaderboardItem item, int place) => $"{place}. {item.name}: {item.score}";
+
+        private void ClearDisplayedLeaderboard()
+        {
+            foreach (var (_, tmpText) in _displayedLeaderboard)
             {
-                Destroy(item.gameObject);
+                Destroy(tmpText.gameObject);
             }
+            _displayedLeaderboard.Clear();
         }
 
-        private void RefreshLeaderboardUI()
+        private void RecreateDisplayedLeaderboard()
         {
-            ClearLeaderboardUI();
+            ClearDisplayedLeaderboard();
 
-            _leaderboardToDisplay.Sort((first, second) =>
+            var place = 1;
+            foreach (var (guid, item) in _virtualLeaderboard)
             {
-                if (first.score == second.score)
-                {
-                    if (first.activity < second.activity) return 1;
-                    else return -1;
-                }
-                else if (first.score < second.score) return 1;
-                else return -1;
-            });
-
-            for (int i = 0; i < _leaderboardToDisplay.Count; i++)
-            {
-                var item = _leaderboardToDisplay[i];
-                var place = i + 1;
                 var tmpText = Instantiate(leaderboardItemPrefab.gameObject, leaderboard).GetComponent<TMP_Text>();
-                tmpText.text = $"{place}. {item.playerName}: {item.score}";
+                _displayedLeaderboard.Add(guid, tmpText);
+                tmpText.text = GetLeaderboardItemUIText(item, place);
+                place++;
             }
+        }
+
+        private void RefreshDisplayedLeaderboard()
+        {
+            var place = 1;
+            foreach (var (guid, item) in _virtualLeaderboard)
+            {
+                _displayedLeaderboard[guid].text = GetLeaderboardItemUIText(item, place);
+                place++;
+            }
+        }
+
+        private void ClearLeaderboard(ClearLeaderboard data)
+        {
+            _virtualLeaderboard.Clear();
+            ClearDisplayedLeaderboard();
+        }
+
+        private void PopulateLeaderboard(PopulateLeaderboard data)
+        {
+            foreach (var itemData in data.itemDatas)
+            {
+                if (!_virtualLeaderboard.TryAdd(itemData.guid, itemData.item))
+                {
+                    Debug.LogWarning($"Failed to add leaderboard item of guid: {itemData.guid} player name: {itemData.item.name}");
+                    continue;
+                }
+            }
+
+            _virtualLeaderboard = _virtualLeaderboard.OrderBy(x => x.Value, new LeaderboardComparer()).ToDictionary(k => k.Key, v => v.Value);
+            RecreateDisplayedLeaderboard();
+        }
+
+        private void AddLeaderboardItem(AddLeaderboardItem data)
+        {
+            if (!_virtualLeaderboard.TryAdd(data.itemData.guid, data.itemData.item))
+            {
+                Debug.LogWarning($"Failed to add leaderboard item of guid: {data.itemData.guid} player name: {data.itemData.item.name}");
+                return;
+            }
+
+            _virtualLeaderboard = _virtualLeaderboard.OrderBy(x => x.Value, new LeaderboardComparer()).ToDictionary(k => k.Key, v => v.Value);
+            RecreateDisplayedLeaderboard();
+        }
+
+        private void RemoveLeaderboardItem(RemoveLeaderboardItem data)
+        {
+            if (!_virtualLeaderboard.Remove(data.guid))
+            {
+                Debug.LogWarning($"Failed to remove leaderboard item of guid: {data.guid}");
+                return;
+            }
+
+            Destroy(_displayedLeaderboard[data.guid].gameObject);
+            _displayedLeaderboard.Remove(data.guid);
+            RefreshDisplayedLeaderboard();
+        }
+
+        private void ChangeLeaderboardItem(ChangeLeaderboardItem data)
+        {
+            if (!_virtualLeaderboard.ContainsKey(data.itemData.guid))
+            {
+                Debug.LogWarning($"Failed to change leaderboard item of guid: {data.itemData.guid}");
+                return;
+            }
+
+            _virtualLeaderboard[data.itemData.guid] = data.itemData.item;
+            _virtualLeaderboard = _virtualLeaderboard.OrderBy(x => x.Value, new LeaderboardComparer()).ToDictionary(k => k.Key, v => v.Value);
+            RecreateDisplayedLeaderboard();
         }
 
         private void HitIndicatorAnimation()

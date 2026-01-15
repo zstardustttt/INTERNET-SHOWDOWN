@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Core.Events;
@@ -11,7 +10,6 @@ using Game.Events.UI;
 using Game.Gameplay;
 using Game.Network.Messages;
 using Game.Player;
-using Game.UI.Game;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -25,8 +23,13 @@ namespace Game.Network
         public static CustomNetworkManager CustomSingleton => (CustomNetworkManager)singleton;
         private GameObject _portal;
 
+        private Dictionary<string, PlayerBase.Stats> _disconnectedPlayersStats;
+        private GameState _gameState;
+
         public override void OnStartServer()
         {
+            _disconnectedPlayersStats = new();
+
             MapLoader.Init();
             NetworkServer.RegisterHandler<ClientRequestMapLoad>((conn, _) =>
             {
@@ -43,14 +46,72 @@ namespace Game.Network
                 conn.Send<ServerConfirmPlayerEnteredMatch>(new());
             });
 
-            EventBus<OnPlayersOnMapUpdated>.Listen((_) =>
+            EventBus<OnGameStateChange>.Listen((data) =>
             {
-                SendRefreshLeaderboard(MapLoader.loadedMap.players);
+                if (data.state.phase == GamePhase.Break)
+                    _disconnectedPlayersStats.Clear();
+
+                _gameState = data.state;
+            });
+
+            EventBus<OnAddPlayerOnMap>.Listen((data) =>
+            {
+                NetworkServer.SendToAll(new ServerAddLeaderboardItem()
+                {
+                    itemData = new()
+                    {
+                        guid = data.player.playerGuid,
+                        item = new()
+                        {
+                            name = data.player.playerName,
+                            activity = data.player.stats.activity,
+                            score = data.player.stats.GetScore()
+                        }
+                    }
+                });
+            });
+
+            EventBus<OnDestroyPlayer>.Listen((data) =>
+            {
+                if (!NetworkServer.active) return;
+
+                NetworkServer.SendToAll(new ServerRemoveLeaderboardItem()
+                {
+                    guid = data.guid
+                });
             });
 
             EventBus<OnStatsChanged>.Listen((data) =>
             {
-                SendUpdateLeaderboardItem(data.player);
+                NetworkServer.SendToAll(new ServerChangeLeaderboardItem()
+                {
+                    itemData = new()
+                    {
+                        guid = data.player.playerGuid,
+                        item = new()
+                        {
+                            name = data.player.playerName,
+                            activity = data.player.stats.activity,
+                            score = data.player.stats.GetScore()
+                        }
+                    }
+                });
+            });
+
+            EventBus<OnUnloadMap>.Listen((_) =>
+            {
+                NetworkServer.SendToAll(new ServerClearLeaderboard());
+            });
+
+            EventBus<OnServerOnlinePlayerInitialized>.Listen((data) =>
+            {
+                if (_gameState.phase != GamePhase.Match) return;
+
+                if (_disconnectedPlayersStats.TryGetValue(data.player.playerGuid, out var stats))
+                {
+                    data.player.stats = stats;
+                    _disconnectedPlayersStats.Remove(data.player.playerGuid);
+                }
             });
         }
 
@@ -59,39 +120,38 @@ namespace Game.Network
             MapLoader.Stop();
         }
 
-        [Server]
-        private void SendRefreshLeaderboard(List<PlayerBase> players)
+        public override void OnServerDisconnect(NetworkConnectionToClient conn)
         {
-            NetworkServer.SendToAll(new ServerRefreshLeaderboard()
+            var player = conn.identity.GetComponent<PlayerBase>();
+            if (_gameState.phase == GamePhase.Match)
             {
-                items = players.Select(player => new GuidItemPair()
-                {
-                    guid = player.playerGuid,
-                    item = new()
-                    {
-                        playerName = player.playerName,
-                        activity = player.stats.activity,
-                        score = player.stats.GetScore()
-                    }
-                }).ToArray()
-            });
+                _disconnectedPlayersStats.Add(player.playerGuid, player.stats);
+            }
+
+            // base destroys connection's player
+            base.OnServerDisconnect(conn);
         }
 
-        [Server]
-        private void SendUpdateLeaderboardItem(PlayerBase player)
+        public override void OnServerReady(NetworkConnectionToClient conn)
         {
-            NetworkServer.SendToAll<ServerUpdatePlayerOnLeaderboard>(new()
+            base.OnServerReady(conn);
+
+            if (MapLoader.loadedMap == null) return;
+            conn.Send(new ServerPopulateLeaderboard()
             {
-                item = new()
+                itemDatas = MapLoader.loadedMap.players.Select(x =>
                 {
-                    guid = player.playerGuid,
-                    item = new()
+                    return new LeaderboardEventData()
                     {
-                        playerName = player.playerName,
-                        activity = player.stats.activity,
-                        score = player.stats.GetScore(),
-                    }
-                }
+                        guid = x.Key,
+                        item = new()
+                        {
+                            name = x.Value.playerName,
+                            activity = x.Value.stats.activity,
+                            score = x.Value.stats.GetScore()
+                        }
+                    };
+                }).ToArray()
             });
         }
 
@@ -102,21 +162,35 @@ namespace Game.Network
 
         public override void OnStartClient()
         {
+            NetworkClient.RegisterHandler<ServerClearLeaderboard>((data) =>
+            {
+                EventBus<ClearLeaderboard>.Invoke(new());
+            });
+
+            NetworkClient.RegisterHandler<ServerPopulateLeaderboard>((data) =>
+            {
+                EventBus<PopulateLeaderboard>.Invoke(new() { itemDatas = data.itemDatas });
+            });
+
+            NetworkClient.RegisterHandler<ServerAddLeaderboardItem>((data) =>
+            {
+                EventBus<AddLeaderboardItem>.Invoke(new() { itemData = data.itemData });
+            });
+
+            NetworkClient.RegisterHandler<ServerRemoveLeaderboardItem>((data) =>
+            {
+                EventBus<RemoveLeaderboardItem>.Invoke(new() { guid = data.guid });
+            });
+
+            NetworkClient.RegisterHandler<ServerChangeLeaderboardItem>((data) =>
+            {
+                EventBus<ChangeLeaderboardItem>.Invoke(new() { itemData = data.itemData });
+            });
+
             NetworkClient.RegisterHandler<ServerConfirmPlayerEnteredMatch>((data) =>
             {
                 EventBus<RequestMatchMusic>.Invoke(new());
                 EventBus<RequestGameplayUI>.Invoke(new());
-            });
-
-            NetworkClient.RegisterHandler<ServerRefreshLeaderboard>((data) =>
-            {
-                EventBus<ClearLeaderboard>.Invoke(new());
-                EventBus<PopulateLeaderboard>.Invoke(new() { items = data.items });
-            });
-
-            NetworkClient.RegisterHandler<ServerUpdatePlayerOnLeaderboard>((data) =>
-            {
-                EventBus<ChangeLeaderboardItem>.Invoke(data.item);
             });
 
             EventBus<OnGameStateChange>.Listen((data) =>

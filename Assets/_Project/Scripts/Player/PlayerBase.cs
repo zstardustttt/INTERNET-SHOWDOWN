@@ -129,7 +129,8 @@ namespace Game.Player
             }
         }
 
-        public string playerGuid;
+        private bool _guidReceived;
+        [SyncVar] public string playerGuid;
         [SyncVar] public string playerName;
 
         private Stats _prevStats;
@@ -137,8 +138,9 @@ namespace Game.Player
 
         private void InnerSetGuid(string guid)
         {
-            if (string.IsNullOrEmpty(guid) || !string.IsNullOrEmpty(playerGuid)) return;
+            if (string.IsNullOrEmpty(guid) || _guidReceived) return;
             playerGuid = guid;
+            _guidReceived = true;
         }
 
         [Command]
@@ -195,7 +197,6 @@ namespace Game.Player
         {
             _damageHistory = new();
             ResetPlayer();
-            ResetStats();
         }
 
         private void OnItemChange(int old, int _new)
@@ -342,7 +343,7 @@ namespace Game.Player
 
         private void OnDestroy()
         {
-            EventBus<OnDestroyPlayer>.Invoke(new());
+            EventBus<OnDestroyPlayer>.Invoke(new() { guid = playerGuid });
         }
 
         public void EnableMotor()
