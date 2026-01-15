@@ -242,12 +242,25 @@ namespace Game.Player
 
                 if (killer == supporter)
                 {
-                    if (killer) killer.stats.pureKills++;
+                    if (killer)
+                    {
+                        killer.stats.pureKills++;
+                        killer.TargetOnKill(true);
+                    }
                 }
                 else
                 {
-                    if (killer) killer.stats.finishingKills++;
-                    if (supporter) supporter.stats.supportingKills++;
+                    if (killer)
+                    {
+                        killer.stats.finishingKills++;
+                        killer.TargetOnKill(false);
+                    }
+
+                    if (supporter)
+                    {
+                        supporter.stats.supportingKills++;
+                        supporter.TargetOnKill(false);
+                    }
                 }
 
                 var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
@@ -694,9 +707,18 @@ namespace Game.Player
         }
 
         [TargetRpc]
-        public void TargetOnHit(NetworkConnectionToClient target)
+        public void TargetOnHit()
         {
             EventBus<HitIndicatorRequest>.Invoke(new());
+        }
+
+        [TargetRpc]
+        public void TargetOnKill(bool pure)
+        {
+            if (pure)
+                EventBus<PureKillIndicatorRequest>.Invoke(new());
+            else
+                EventBus<UnpureKillIndicatorRequest>.Invoke(new());
         }
 
         private void OnDrawGizmos()

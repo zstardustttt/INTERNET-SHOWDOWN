@@ -152,7 +152,7 @@ namespace Game.Gameplay
             var direct = dealer.Direct;
             if (dealer.owner)
             {
-                player.TargetOnHit(dealer.owner.netIdentity.connectionToClient);
+                dealer.owner.TargetOnHit();
                 if (direct) dealer.owner.stats.directHits++;
                 else dealer.owner.stats.indirectHits++;
             }

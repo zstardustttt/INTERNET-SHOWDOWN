@@ -39,6 +39,8 @@ namespace Game.UI.Game
         public Slider health;
         public CanvasGroup hitIndicator;
         public CanvasGroup damageIndicator;
+        public CanvasGroup pureKillIndicator;
+        public CanvasGroup unpureKillIndicator;
         public RectTransform leaderboard;
         public TMP_Text leaderboardItemPrefab;
 
@@ -71,6 +73,8 @@ namespace Game.UI.Game
             EventBus<OnHealthUpdate>.Listen(OnHealthUpdate);
             EventBus<HitIndicatorRequest>.Listen((_) => HitIndicatorAnimation());
             EventBus<DamageIndicatorRequest>.Listen((_) => DamageIndicatorAnimation());
+            EventBus<PureKillIndicatorRequest>.Listen((_) => PureKillIndicatorAnimation());
+            EventBus<UnpureKillIndicatorRequest>.Listen((_) => UnpureKillIndicatorAnimation());
 
             RegisterLeaderboardListeners();
         }
@@ -110,6 +114,7 @@ namespace Game.UI.Game
             }
         }
 
+        // TODO: seperate leaderboard
         private void RefreshDisplayedLeaderboard()
         {
             var place = 1;
@@ -179,34 +184,41 @@ namespace Game.UI.Game
             RecreateDisplayedLeaderboard();
         }
 
+        private Coroutine _hitIndicatorCoroutine;
+        private Coroutine _damageIndicatorCoroutine;
+        private Coroutine _pureKillIndicatorCoroutine;
+        private Coroutine _unpureKillIndicatorCoroutine;
+
         private void HitIndicatorAnimation()
         {
-            StopCoroutine(nameof(CO_HitIndicatorAnimation));
-            StartCoroutine(nameof(CO_HitIndicatorAnimation));
+            if (_hitIndicatorCoroutine != null) StopCoroutine(_hitIndicatorCoroutine);
+            _hitIndicatorCoroutine = StartCoroutine(CO_IndicatorAnimation(hitIndicator, 0.5f));
         }
 
         private void DamageIndicatorAnimation()
         {
-            StopCoroutine(nameof(CO_DamageIndicatorAnimation));
-            StartCoroutine(nameof(CO_DamageIndicatorAnimation));
+            if (_damageIndicatorCoroutine != null) StopCoroutine(_damageIndicatorCoroutine);
+            _damageIndicatorCoroutine = StartCoroutine(CO_IndicatorAnimation(damageIndicator, 0.5f));
         }
 
-        private IEnumerator CO_HitIndicatorAnimation()
+        private void PureKillIndicatorAnimation()
         {
-            hitIndicator.alpha = 1f;
-            while (hitIndicator.alpha > 0f)
-            {
-                hitIndicator.alpha -= Time.deltaTime;
-                yield return null;
-            }
+            if (_pureKillIndicatorCoroutine != null) StopCoroutine(_pureKillIndicatorCoroutine);
+            _pureKillIndicatorCoroutine = StartCoroutine(CO_IndicatorAnimation(pureKillIndicator, 1f));
         }
 
-        private IEnumerator CO_DamageIndicatorAnimation()
+        private void UnpureKillIndicatorAnimation()
         {
-            damageIndicator.alpha = 1f;
-            while (damageIndicator.alpha > 0f)
+            if (_unpureKillIndicatorCoroutine != null) StopCoroutine(_unpureKillIndicatorCoroutine);
+            _unpureKillIndicatorCoroutine = StartCoroutine(CO_IndicatorAnimation(unpureKillIndicator, 1f));
+        }
+
+        private IEnumerator CO_IndicatorAnimation(CanvasGroup group, float duration)
+        {
+            group.alpha = 1f;
+            while (group.alpha > 0f)
             {
-                damageIndicator.alpha -= Time.deltaTime;
+                group.alpha -= Time.deltaTime / duration;
                 yield return null;
             }
         }

@@ -12,6 +12,8 @@ namespace Game.Events.UI
 
     public struct HitIndicatorRequest : IEvent { }
     public struct DamageIndicatorRequest : IEvent { }
+    public struct PureKillIndicatorRequest : IEvent { }
+    public struct UnpureKillIndicatorRequest : IEvent { }
 
     public struct LeaderboardEventData
     {
