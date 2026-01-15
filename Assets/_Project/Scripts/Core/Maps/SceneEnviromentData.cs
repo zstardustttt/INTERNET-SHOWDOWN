@@ -27,6 +27,15 @@ namespace Game.Core.Maps
         public float reflectionIntensity;
         public int reflectionBounces;
 
+        [Space(9)]
+        public bool fog;
+        public Color fogColor;
+        public FogMode fogMode;
+        public float fogStartDistance;
+        public float fogEndDistance;
+        public float fogDensity;
+
+
         private void Update()
         {
             if (Application.isPlaying) return;
@@ -47,6 +56,13 @@ namespace Game.Core.Maps
             defaultReflectionResolution = RenderSettings.defaultReflectionResolution;
             reflectionIntensity = RenderSettings.reflectionIntensity;
             reflectionBounces = RenderSettings.reflectionBounces;
+
+            fog = RenderSettings.fog;
+            fogColor = RenderSettings.fogColor;
+            fogMode = RenderSettings.fogMode;
+            fogStartDistance = RenderSettings.fogStartDistance;
+            fogEndDistance = RenderSettings.fogEndDistance;
+            fogDensity = RenderSettings.fogDensity;
         }
 
         public void Apply()
@@ -67,6 +83,13 @@ namespace Game.Core.Maps
             RenderSettings.defaultReflectionResolution = defaultReflectionResolution;
             RenderSettings.reflectionIntensity = reflectionIntensity;
             RenderSettings.reflectionBounces = reflectionBounces;
+
+            RenderSettings.fog = fog;
+            RenderSettings.fogColor = fogColor;
+            RenderSettings.fogMode = fogMode;
+            RenderSettings.fogStartDistance = fogStartDistance;
+            RenderSettings.fogEndDistance = fogEndDistance;
+            RenderSettings.fogDensity = fogDensity;
         }
 
         public static bool TryApplyOnScene(Scene scene)
