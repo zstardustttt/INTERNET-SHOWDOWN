@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.54428464, g: 0.54428464, b: 0.54428464, a: 1}
+  m_AmbientSkyColor: {r: 0.6513626, g: 0.6513626, b: 0.6513626, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1.25
@@ -35,7 +35,7 @@ RenderSettings:
   m_DefaultReflectionMode: 0
   m_DefaultReflectionResolution: 128
   m_ReflectionBounces: 1
-  m_ReflectionIntensity: 0
+  m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
   m_UseRadianceAmbientProbe: 0
@@ -4258,14 +4258,14 @@ MonoBehaviour:
   sun: {fileID: 840231072}
   subtractiveShadowColor: {r: 0, g: 0, b: 0, a: 1}
   ambientMode: 3
-  ambientLight: {r: 0.54428464, g: 0.54428464, b: 0.54428464, a: 1}
-  ambientSkyColor: {r: 0.54428464, g: 0.54428464, b: 0.54428464, a: 1}
+  ambientLight: {r: 0.6513626, g: 0.6513626, b: 0.6513626, a: 1}
+  ambientSkyColor: {r: 0.6513626, g: 0.6513626, b: 0.6513626, a: 1}
   ambientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   ambientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   ambientIntensity: 1.25
   defaultReflectionMode: 0
   defaultReflectionResolution: 128
-  reflectionIntensity: 0
+  reflectionIntensity: 1
   reflectionBounces: 1
 --- !u!4 &1439111317
 Transform:
@@ -5007,7 +5007,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d5200e688945dc244b625215ce466728, type: 2}
+  - {fileID: 2100000, guid: 05d3654d59f96174480706aef382628d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
