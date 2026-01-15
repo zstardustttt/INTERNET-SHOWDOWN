@@ -17,6 +17,7 @@ namespace Game.Projectiles
 
         public override void Init()
         {
+            // TODO: generalize
             var prediction = Predict((float)(NetworkTime.time - spawnTime));
             var distance = (prediction.position - spawnPosition).magnitude;
             if (Physics.BoxCast(spawnPosition, bc.size / 2f, transform.forward, out var hit, transform.rotation, distance, LayerMask.GetMask("Enviroment")))

@@ -14,6 +14,7 @@ namespace Game.Items
 
         public override void Use(PlayerBase user, ItemUseClientContext context)
         {
+            // TODO: generalize
             if (Physics.Linecast(context.headPosition, context.visualPosition, out var hit, LayerMask.GetMask("Enviroment")))
             {
                 var explosion = Instantiate(projectile.explosionPrefab.gameObject, hit.point, Quaternion.identity, new InstantiateParameters()
