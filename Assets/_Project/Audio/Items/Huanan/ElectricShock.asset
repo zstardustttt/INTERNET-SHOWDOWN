@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1233149941 &-6812723600211647127
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ElectricShock1_{-6812723600211647127}
+  m_AudioClip: {fileID: 8300000, guid: b6d1576569841f042ab06ad9935b7aab, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &-269763935535800854
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ElectricShock5_{-269763935535800854}
+  m_AudioClip: {fileID: 8300000, guid: a6f489b6411840b40863ffaacbd99df5, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &5020153941328855534
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ElectricShock3_{5020153941328855534}
+  m_AudioClip: {fileID: 8300000, guid: 2ac9275c666dfd5418da1515d63c179e, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &5856835702940097792
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ElectricShock2_{5856835702940097792}
+  m_AudioClip: {fileID: 8300000, guid: 251b1b45557727745a72b52706e2d61c, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &6333031973059170328
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ElectricShock4_{6333031973059170328}
+  m_AudioClip: {fileID: 8300000, guid: 6a287752fc6dc964193f0cdb5b16d410, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1307931743 &6418180475301049370
+AudioRandomContainer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ElectricShock
+  m_Volume: 0
+  m_Pitch: 0
+  m_AutomaticTriggerTime: 0
+  m_LoopCount: 1
+  m_VolumeRandomizationRange: {x: 0, y: 0}
+  m_PitchRandomizationRange: {x: 0, y: 0}
+  m_AutomaticTriggerTimeRandomizationRange: {x: 0, y: 0}
+  m_LoopCountRandomizationRange: {x: 0, y: 0}
+  m_Elements:
+  - {fileID: -6812723600211647127}
+  - {fileID: 5856835702940097792}
+  - {fileID: 5020153941328855534}
+  - {fileID: 6333031973059170328}
+  - {fileID: -269763935535800854}
+  - {fileID: 6801201666525633439}
+  m_AvoidRepeatingLast: 1
+  m_PlaybackMode: 2
+  m_TriggerMode: 0
+  m_AutomaticTriggerMode: 1
+  m_LoopMode: 2
+  m_VolumeRandomizationEnabled: 0
+  m_PitchRandomizationEnabled: 0
+  m_AutomaticTriggerTimeRandomizationEnabled: 0
+  m_LoopCountRandomizationEnabled: 0
+--- !u!1233149941 &6801201666525633439
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ElectricShock6_{6801201666525633439}
+  m_AudioClip: {fileID: 8300000, guid: 854341e7f8080c54b8c3fa2d5e5f5ed0, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
