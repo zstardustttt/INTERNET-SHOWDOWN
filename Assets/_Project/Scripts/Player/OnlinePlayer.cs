@@ -157,9 +157,7 @@ namespace Game.Player
                 var distance = Vector3.Distance(_camera.transform.position, shaker.transform.position);
                 var amplitude = shaker.amplitude;
                 if (distance > shaker.minDistance)
-                {
                     amplitude *= 1f - Mathf.InverseLerp(shaker.minDistance, shaker.maxDistance, distance);
-                }
 
                 ShakeCamera(amplitude);
             });
