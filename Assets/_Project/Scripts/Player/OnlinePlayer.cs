@@ -203,10 +203,12 @@ namespace Game.Player
                 else Cursor.lockState = CursorLockMode.Locked;
             }
 
+#if DEBUG
             if (NetworkServer.active && Input.GetKeyDown(KeyCode.F2))
             {
                 player.Damage(10f, null);
             }
+#endif
 
             // TODO: new input system
             if (Input.GetMouseButtonDown(0)) player.TryUseItem();
