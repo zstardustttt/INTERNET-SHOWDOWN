@@ -150,6 +150,19 @@ namespace Game.Player
             player.SetPlayerName(Environment.UserName);
             player.SetGUID(OnlinePlayerGuid.Guid);
             CmdPlayerInitialized();
+
+            EventBus<OnCameraShakerSpawn>.Listen((data) =>
+            {
+                var shaker = data.shaker;
+                var distance = Vector3.Distance(_camera.transform.position, shaker.transform.position);
+                var amplitude = shaker.amplitude;
+                if (distance > shaker.minDistance)
+                {
+                    amplitude *= 1f - Mathf.InverseLerp(shaker.minDistance, shaker.maxDistance, distance);
+                }
+
+                ShakeCamera(amplitude);
+            });
         }
 
         [Command]

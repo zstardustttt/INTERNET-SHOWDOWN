@@ -17,4 +17,9 @@ namespace Game.Events.Player
     {
         public PlayerBase player;
     }
+
+    public struct OnCameraShakerSpawn : IEvent
+    {
+        public CameraShaker shaker;
+    }
 }

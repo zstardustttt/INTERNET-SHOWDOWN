@@ -4921,7 +4921,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 6418180475301049370, guid: 701283749366bba47b2ec0489233c357, type: 2}
   m_PlayOnAwake: 1
-  m_Volume: 0.65
+  m_Volume: 0.6
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -24575,7 +24575,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 6418180475301049370, guid: 079ba13993c0f8147ad89261a63524e6, type: 2}
   m_PlayOnAwake: 1
-  m_Volume: 0.85
+  m_Volume: 0.8
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -24672,6 +24672,7 @@ GameObject:
   - component: {fileID: 697191921998550392}
   - component: {fileID: 5262067622161689008}
   - component: {fileID: 3063369220174135175}
+  - component: {fileID: 7809162878553861463}
   m_Layer: 9
   m_Name: HuananV2Explosion
   m_TagString: Untagged
@@ -24780,3 +24781,18 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   time: 4
+--- !u!114 &7809162878553861463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8596668877135600386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc606dc11acb7694ca9c69c3f9d9bcd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Player.CameraShaker
+  amplitude: 3
+  minDistance: 5
+  maxDistance: 100
