@@ -1030,6 +1030,7 @@ GameObject:
   - component: {fileID: 339535569}
   - component: {fileID: 339535568}
   - component: {fileID: 339535571}
+  - component: {fileID: 339535572}
   m_Layer: 5
   m_Name: Leaderboard
   m_TagString: Untagged
@@ -1134,6 +1135,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 0
   m_VerticalFit: 1
+--- !u!114 &339535572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 339535566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 542ec945cd0ca38409936bb887e639d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.UI.Game.Leaderboard
+  leaderboardContainer: {fileID: 339535567}
+  leaderboardItemPrefab: {fileID: 5967973986741230887, guid: 19306aae13d6e574f86b0f6165d30fee, type: 3}
 --- !u!1 &523972101
 GameObject:
   m_ObjectHideFlags: 0
@@ -4746,8 +4761,6 @@ MonoBehaviour:
   damageIndicator: {fileID: 1554560713}
   pureKillIndicator: {fileID: 984093369}
   unpureKillIndicator: {fileID: 1118666880}
-  leaderboard: {fileID: 339535567}
-  leaderboardItemPrefab: {fileID: 5967973986741230887, guid: 19306aae13d6e574f86b0f6165d30fee, type: 3}
 --- !u!1 &1475965635
 GameObject:
   m_ObjectHideFlags: 0
