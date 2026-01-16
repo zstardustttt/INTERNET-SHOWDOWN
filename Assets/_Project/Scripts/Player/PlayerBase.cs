@@ -234,20 +234,23 @@ namespace Game.Player
                 var damages = new Dictionary<PlayerBase, float>();
                 foreach (var capture in _damageHistory)
                 {
+                    if (!capture.author) continue;
+
                     if (damages.TryAdd(capture.author, capture.damage)) continue;
                     damages[capture.author] += capture.damage;
                 }
-                var sortedDamages = damages.OrderByDescending(x => x.Value).ToArray();
-                var supporter = sortedDamages[0].Key;
 
-                // TODO: refactor ts
-                if (killer == supporter)
+                PlayerBase supporter = null;
+                if (damages.Count != 0)
                 {
-                    if (killer)
-                    {
-                        killer.stats.pureKills++;
-                        killer.TargetOnKill(true);
-                    }
+                    var sortedDamages = damages.OrderByDescending(x => x.Value).ToArray();
+                    supporter = sortedDamages[0].Key;
+                }
+
+                if (killer && killer == supporter)
+                {
+                    killer.stats.pureKills++;
+                    killer.TargetOnKill(true);
                 }
                 else
                 {

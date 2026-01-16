@@ -203,6 +203,12 @@ namespace Game.Player
                 else Cursor.lockState = CursorLockMode.Locked;
             }
 
+            if (NetworkServer.active && Input.GetKeyDown(KeyCode.F2))
+            {
+                player.Damage(10f, null);
+            }
+
+            // TODO: new input system
             if (Input.GetMouseButtonDown(0)) player.TryUseItem();
 
             // CAMERA SHAKE

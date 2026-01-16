@@ -11,7 +11,16 @@ namespace Game.UI.Game
     public class GameplayUIController : MonoBehaviour
     {
         public CanvasGroup canvasGroup;
+
+        [Header("Health")]
         public Slider health;
+        public Graphic healthFillGraphic;
+        public Color minHealthColor;
+        public float healthChangeSpeed = 5f;
+
+        private float _targetHealth;
+
+        [Header("Indicators")]
         public CanvasGroup hitIndicator;
         public CanvasGroup damageIndicator;
         public CanvasGroup pureKillIndicator;
@@ -94,7 +103,13 @@ namespace Game.UI.Game
         private void OnHealthUpdate(OnHealthUpdate data)
         {
             health.maxValue = data.maxHealth;
-            health.value = data.health;
+            _targetHealth = data.health;
+        }
+
+        private void Update()
+        {
+            health.value = Mathf.Lerp(health.value, _targetHealth, Time.deltaTime * healthChangeSpeed);
+            healthFillGraphic.color = Color.Lerp(minHealthColor, Color.white, health.value / health.maxValue);
         }
     }
 }
