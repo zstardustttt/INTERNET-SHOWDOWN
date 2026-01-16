@@ -15,14 +15,14 @@ namespace Game.Core.Projectiles
 
     public abstract class PredictableProjectile : Projectile
     {
-        public double spawnTime;
+        public double SpawnTime { get; private set; }
 
         public abstract ProjectilePredictionData Predict(float timePassed);
 
         public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation, double spawnTime) where T : PredictableProjectile
         {
             var projectile = Spawn(prefab, owner, position, rotation);
-            projectile.spawnTime = spawnTime;
+            projectile.SpawnTime = spawnTime;
             var prediction = projectile.Predict((float)(NetworkTime.time - spawnTime));
 
             foreach (var dealer in projectile.damageDealers)

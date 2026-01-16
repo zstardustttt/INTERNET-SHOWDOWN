@@ -6,17 +6,39 @@ using UnityEngine;
 
 namespace Game.Core.Projectiles
 {
+    [RequireComponent(typeof(Rigidbody), typeof(NetworkTransformReliable), typeof(NetworkRigidbodyReliable))]
     public abstract class Projectile : NetworkBehaviour
     {
+        [Header("Base Objects")]
+        public Rigidbody rb;
+        public NetworkTransformReliable netTransform;
+        public NetworkRigidbodyReliable netRb;
+
+        [Header("Base Settings")]
         public List<DamageDealer> damageDealers = new();
+
         protected PlayerBase _owner;
         protected float _lifetime;
-        public Vector3 spawnPosition;
-        public Quaternion spawnRotation;
+        protected Vector3 _spawnPosition;
+        protected Quaternion _spawnRotation;
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            rb = GetComponent<Rigidbody>();
+            netTransform = GetComponent<NetworkTransformReliable>();
+            netRb = GetComponent<NetworkRigidbodyReliable>();
+
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+            netTransform.syncDirection = SyncDirection.ServerToClient;
+            netRb.syncDirection = SyncDirection.ServerToClient;
+        }
 
         [Server]
         public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation) where T : Projectile
         {
+
             if (MapLoader.loadedMap == null || !MapLoader.loadedMap.scene.IsValid()) throw new("Map is not loaded");
 
             var projectileObject = Instantiate(prefab.gameObject, position, rotation, new InstantiateParameters()
@@ -25,8 +47,8 @@ namespace Game.Core.Projectiles
             });
             var projectile = projectileObject.GetComponent<T>();
             projectile._owner = owner;
-            projectile.spawnPosition = position;
-            projectile.spawnRotation = rotation;
+            projectile._spawnPosition = position;
+            projectile._spawnRotation = rotation;
 
             foreach (var dealer in projectile.damageDealers)
             {

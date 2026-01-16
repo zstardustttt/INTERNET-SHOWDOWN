@@ -9,9 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3182726484793940100}
+  - component: {fileID: 4302098679855809131}
+  - component: {fileID: 3044793796010491125}
   - component: {fileID: 205869084957417476}
   - component: {fileID: 2459362012733599560}
-  - component: {fileID: 4302098679855809131}
   - component: {fileID: 1653252554747909041}
   - component: {fileID: 7706021185470277638}
   - component: {fileID: 4718101284072743577}
@@ -39,6 +40,52 @@ Transform:
   - {fileID: 8790266594367465333}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4302098679855809131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4171245465208120515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65d86891524966b4db1222ff8519b8ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  rb: {fileID: 2459362012733599560}
+  netTransform: {fileID: 7706021185470277638}
+  netRb: {fileID: 7706021185470277638}
+  damageDealers:
+  - {fileID: 1638724938105410804}
+  collision: {fileID: 3044793796010491125}
+  explosionPrefab: {fileID: 697191921998550392, guid: d18396bccccba4c4abcc7971c45bb3ba, type: 3}
+  speed: 100
+  rotationSpeed: 500
+  visual: {fileID: 8790266594367465333}
+--- !u!114 &3044793796010491125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4171245465208120515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebdbb4139d77123448e44a01cf860329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Projectiles.BoxProjectileCollision
+  projectile: {fileID: 4302098679855809131}
+  collisionLayerMask:
+    serializedVersion: 2
+    m_Bits: 3072
+  onCollision:
+    m_PersistentCalls:
+      m_Calls: []
+  coll: {fileID: 1653252554747909041}
 --- !u!114 &205869084957417476
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,7 +119,7 @@ Rigidbody:
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 3072
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -82,34 +129,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
---- !u!114 &4302098679855809131
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4171245465208120515}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65d86891524966b4db1222ff8519b8ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMethod: 0
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  damageDealers:
-  - {fileID: 1638724938105410804}
-  spawnPosition: {x: 0, y: 0, z: 0}
-  spawnRotation: {x: 0, y: 0, z: 0, w: 0}
-  spawnTime: 0
-  explosionPrefab: {fileID: 697191921998550392, guid: d18396bccccba4c4abcc7971c45bb3ba, type: 3}
-  rb: {fileID: 2459362012733599560}
-  bc: {fileID: 1653252554747909041}
-  speed: 100
-  rotationSpeed: 500
-  visual: {fileID: 8790266594367465333}
+  m_CollisionDetection: 2
 --- !u!65 &1653252554747909041
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -120,7 +140,7 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 3072
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -267,10 +287,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b6ac8510fb386459347986532adcad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
+  hitScanCount: 0
   owner: {fileID: 0}
   coll: {fileID: 6480257299289842357}
+  singleHitScan: 0
   OnHit:
     m_PersistentCalls:
       m_Calls: []

@@ -8,34 +8,22 @@ namespace Game.Projectiles
 {
     public class HuananV2Projectile : PredictableProjectile
     {
+        public ProjectileCollision collision;
         public DamageDealer explosionPrefab;
-        public Rigidbody rb;
-        public BoxCollider bc;
         public float speed;
         public float rotationSpeed;
         public Transform visual;
 
         public override void Init()
         {
-            // TODO: generalize
-            var prediction = Predict((float)(NetworkTime.time - spawnTime));
-            var distance = (prediction.position - spawnPosition).magnitude;
-            if (Physics.BoxCast(spawnPosition, bc.size / 2f, transform.forward, out var hit, transform.rotation, distance, LayerMask.GetMask("Enviroment")))
-            {
-                ProjectileCollision(hit.point);
-                return;
-            }
+            collision.onCollision.AddListener(ProjectileCollision);
 
+            var prediction = Predict((float)(NetworkTime.time - SpawnTime));
+            collision.CheckCollisionBetweenTwoPoints(_spawnPosition, prediction.position);
             rb.linearVelocity = transform.forward * speed;
         }
 
-        private void OnCollisionEnter(Collision collision)
-        {
-            if (!NetworkServer.active) return;
-            ProjectileCollision(collision.contacts[0].point);
-        }
-
-        private void ProjectileCollision(Vector3 point)
+        private void ProjectileCollision(Vector3 point, Collider other)
         {
             var explosion = Instantiate(explosionPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
             {
@@ -56,12 +44,12 @@ namespace Game.Projectiles
         public override ProjectilePredictionData Predict(float timePassed)
         {
             var velocity = speed * transform.forward;
-            var predictedPos = spawnPosition + velocity * timePassed;
+            var predictedPos = _spawnPosition + velocity * timePassed;
 
             return new()
             {
                 position = predictedPos,
-                rotation = spawnRotation,
+                rotation = _spawnRotation,
                 velocity = velocity,
             };
         }
