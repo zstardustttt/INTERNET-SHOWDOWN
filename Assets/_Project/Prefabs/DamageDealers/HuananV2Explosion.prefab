@@ -24739,6 +24739,7 @@ MonoBehaviour:
   owner: {fileID: 0}
   coll: {fileID: 5563388409014675495}
   singleHitScan: 1
+  knockbackForce: 75
   OnHit:
     m_PersistentCalls:
       m_Calls: []

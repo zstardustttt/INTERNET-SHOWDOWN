@@ -722,6 +722,12 @@ namespace Game.Player
                 EventBus<UnpureKillIndicatorRequest>.Invoke(new());
         }
 
+        [TargetRpc]
+        public void TargetKnockback(Vector3 force)
+        {
+            _additionalVelocity += force;
+        }
+
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.green;

@@ -58,7 +58,7 @@ namespace Game.Gameplay
                 {
                     dealer.observedDelta = dealer.transform.position - dealer.previousObservedPosition;
                     if (player.invincible) break;
-                    if (dealer.owner == player || (dealer.singleHitScan && dealer.hitScanCount > 0)) continue;
+                    if (dealer.singleHitScan && dealer.hitScanCount > 0) continue;
 
                     PlayerDealerCheck(player, dealer, player.previousObservedPosition, player.observedDelta, dealer.previousObservedPosition, dealer.observedDelta);
                 }
@@ -108,7 +108,7 @@ namespace Game.Gameplay
 
             foreach (var (_, player) in players)
             {
-                if (!player || player.invincible || dealer.owner == player) continue;
+                if (!player || player.invincible) continue;
                 PlayerDealerCheck(player, dealer, player.previousObservedPosition, player.observedDelta, point1, point2 - point1);
             }
         }
@@ -145,6 +145,14 @@ namespace Game.Gameplay
 
         private void RegisterHit(PlayerBase player, DamageDealer dealer, Vector3 point)
         {
+            if (dealer.knockbackForce != 0f)
+            {
+                var playerCenter = player.transform.position + player.motor.Capsule.center;
+                var direction = (playerCenter - dealer.transform.position).normalized;
+                player.TargetKnockback(direction * dealer.knockbackForce);
+            }
+
+            if (dealer.owner == player) return;
             var damage = dealer.EvaluateDamage(player);
             player.Damage(damage, dealer.owner);
             dealer.OnHit.Invoke(player, damage);
