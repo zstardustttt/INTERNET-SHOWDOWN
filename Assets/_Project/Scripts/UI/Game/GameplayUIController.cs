@@ -3,6 +3,7 @@ using Game.Core.Events;
 using Game.Events.GameLoop;
 using Game.Events.UI;
 using Game.Gameplay;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,7 @@ namespace Game.UI.Game
 {
     public class GameplayUIController : MonoBehaviour
     {
+        private GameState _gameState;
         public CanvasGroup canvasGroup;
 
         [Header("Health")]
@@ -26,7 +28,6 @@ namespace Game.UI.Game
         public CanvasGroup pureKillIndicator;
         public CanvasGroup unpureKillIndicator;
 
-        private GameState _gameState;
         private bool _uiSwitchRequested;
 
         private void Awake()

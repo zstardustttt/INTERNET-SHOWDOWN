@@ -23,6 +23,7 @@ namespace Game.Gameplay
     public struct GameState
     {
         public GamePhase phase;
+        public float phaseDuration;
         public double timerBeginTime;
         public int mapIndex;
         public int soundtrackIndex;
@@ -30,9 +31,10 @@ namespace Game.Gameplay
         // why tf are getters can be made readonly
         public readonly float SecondsSinceTimerStarted => (float)(NetworkTime.time - timerBeginTime);
 
-        public GameState(GamePhase phase, int mapIndex, int soundtrackIndex, double timerBeginTime)
+        public GameState(GamePhase phase, float phaseDuration, int mapIndex, int soundtrackIndex, double timerBeginTime)
         {
             this.phase = phase;
+            this.phaseDuration = phaseDuration;
             this.mapIndex = mapIndex;
             this.soundtrackIndex = soundtrackIndex;
             this.timerBeginTime = timerBeginTime;
@@ -49,6 +51,7 @@ namespace Game.Gameplay
         public float breakDuration;
         public float preparationDuration;
         public float matchDuration;
+        public float matchEndDuration;
 
         [SyncVar(hook = nameof(OnStateChanged)), ReadOnly] public GameState state;
 
@@ -62,7 +65,7 @@ namespace Game.Gameplay
         private void Start()
         {
             if (!isServer) return;
-            state = new(GamePhase.Break, -1, -1, NetworkTime.time);
+            state = new(GamePhase.Break, breakDuration, -1, -1, NetworkTime.time);
         }
 
         private void Update()
@@ -81,7 +84,7 @@ namespace Game.Gameplay
                 EnterPreparation();
             else if (state.phase == GamePhase.Preparation && state.SecondsSinceTimerStarted >= preparationDuration)
                 EnterMatch();
-            else if (state.phase == GamePhase.Match && state.SecondsSinceTimerStarted >= preparationDuration + matchDuration)
+            else if (state.phase == GamePhase.Match && state.SecondsSinceTimerStarted >= preparationDuration + matchDuration + matchEndDuration)
                 EnterBreak();
         }
 
@@ -98,7 +101,7 @@ namespace Game.Gameplay
                 player.ResetStats();
             }
 
-            state = new(GamePhase.Break, -1, -1, NetworkTime.time);
+            state = new(GamePhase.Break, breakDuration, -1, -1, NetworkTime.time);
         }
 
         [Server]
@@ -116,14 +119,14 @@ namespace Game.Gameplay
             }
             else soundtrackIdx = Random.Range(0, conf.soundtracks.Length);
 
-            state = new(GamePhase.Preparation, mapIdx, soundtrackIdx, NetworkTime.time);
+            state = new(GamePhase.Preparation, preparationDuration, mapIdx, soundtrackIdx, NetworkTime.time);
             _lastMatchState = state;
         }
 
         [Server]
         private void EnterMatch()
         {
-            state = new(GamePhase.Match, state.mapIndex, state.soundtrackIndex, state.timerBeginTime);
+            state = new(GamePhase.Match, matchDuration + preparationDuration, state.mapIndex, state.soundtrackIndex, state.timerBeginTime);
             _lastMatchState = state;
 
             EventBus<SetBoxSpawnerActive>.Invoke(new() { active = true });

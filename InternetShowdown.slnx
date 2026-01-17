@@ -55,6 +55,7 @@
   <Project Path="Unity.2D.Sprite.Editor.csproj" />
   <Project Path="Mirror.Transports.csproj" />
   <Project Path="Unity.AI.Navigation.Editor.csproj" />
+  <Project Path="EasyTextEffects.csproj" />
   <Project Path="EncryptionTransportEditor.csproj" />
   <Project Path="Unity.Multiplayer.Center.Common.csproj" />
   <Project Path="Unity.ProBuilder.KdTree.csproj" />
