@@ -48,5 +48,5 @@ MonoBehaviour:
   clampBetween0And1: 0
   timeType: 0
   centerOffset: {x: 0, y: 100}
-  startAngle: -2
-  endAngle: 2
+  startAngle: -1
+  endAngle: 1

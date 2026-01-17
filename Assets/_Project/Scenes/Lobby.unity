@@ -6543,16 +6543,6 @@ MonoBehaviour:
     onEffectCompleted:
       m_PersistentCalls:
         m_Calls: []
-  - triggerWhen: 1
-    effect: {fileID: 11400000, guid: 90b1b23ea10588e4cb3519fcf54523fe, type: 2}
-    onEffectCompleted:
-      m_PersistentCalls:
-        m_Calls: []
-  - triggerWhen: 1
-    effect: {fileID: 11400000, guid: b9d8455af1a41fc4d8c420965ebc4f60, type: 2}
-    onEffectCompleted:
-      m_PersistentCalls:
-        m_Calls: []
   globalEffects:
   - triggerWhen: 0
     effect: {fileID: 11400000, guid: 614bd5b216f9dad47b778c8bfd401dfa, type: 2}
