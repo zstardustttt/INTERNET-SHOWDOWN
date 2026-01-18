@@ -1,3 +1,4 @@
+using System;
 using Game.Core.Events;
 using Game.Events.HitWatcher;
 using Game.Player;
@@ -11,6 +12,7 @@ namespace Game.Core.Projectiles
     public abstract class DamageDealer : NetworkBehaviour
     {
         public abstract bool Direct { get; }
+        public Guid DealerGuid { get; private set; }
 
         [HideInInspector] public Vector3 previousObservedPosition;
         [HideInInspector] public Vector3 observedDelta;
@@ -33,13 +35,14 @@ namespace Game.Core.Projectiles
 
         private void Awake()
         {
+            DealerGuid = Guid.NewGuid();
             previousObservedPosition = transform.position;
             EventBus<OnDamageDealerCreate>.Invoke(new() { dealer = this });
         }
 
         private void OnDestroy()
         {
-            EventBus<OnDamageDealerDestroy>.Invoke(new() { dealer = this });
+            EventBus<OnDamageDealerDestroy>.Invoke(new() { guid = DealerGuid });
         }
     }
 }

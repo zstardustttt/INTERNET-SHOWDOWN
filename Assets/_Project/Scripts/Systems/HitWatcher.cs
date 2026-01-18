@@ -8,6 +8,7 @@ using Game.Player;
 using Mirror;
 using Random = UnityEngine.Random;
 using Game.Core.Items;
+using System;
 
 namespace Game.Systems
 {
@@ -18,16 +19,18 @@ namespace Game.Systems
         public float castMargin;
         public CapsuleCollider playerPrefabCollider;
 
-        private List<DamageDealer> _dealers;
+        private Dictionary<Guid, DamageDealer> _dealers;
+        private List<Guid> _dealersToRemove;
         private CapsuleCollider _playerColliderForChecking;
 
         public void Awake()
         {
             _dealers = new();
+            _dealersToRemove = new();
             InitPlayerColliderForChecking();
 
-            EventBus<OnDamageDealerCreate>.Listen((data) => _dealers.Add(data.dealer));
-            EventBus<OnDamageDealerDestroy>.Listen((data) => _dealers.Remove(data.dealer));
+            EventBus<OnDamageDealerCreate>.Listen((data) => _dealers.Add(data.dealer.DealerGuid, data.dealer));
+            EventBus<OnDamageDealerDestroy>.Listen((data) => _dealersToRemove.Add(data.guid));
             EventBus<RequestTwoPointsDealerCheck>.Listen((data) => TwoPointsDealerCheck(data.dealer, data.point1, data.point2));
         }
 
@@ -54,8 +57,10 @@ namespace Game.Systems
                 if (!player) continue;
                 player.observedDelta = player.transform.position - player.previousObservedPosition;
 
-                foreach (var dealer in _dealers)
+                foreach (var (_, dealer) in _dealers)
                 {
+                    if (!dealer) continue;
+
                     dealer.observedDelta = dealer.transform.position - dealer.previousObservedPosition;
                     if (player.invincible) break;
                     if (dealer.singleHitScan && dealer.hitScanCount > 0) continue;
@@ -72,7 +77,12 @@ namespace Game.Systems
                 player.previousObservedPosition = player.transform.position;
             }
 
-            foreach (var dealer in _dealers)
+            foreach (var guid in _dealersToRemove)
+            {
+                _dealers.Remove(guid);
+            }
+
+            foreach (var (_, dealer) in _dealers)
             {
                 dealer.previousObservedPosition = dealer.transform.position;
                 if (dealer.singleHitScan && dealer.hitScanCount > 0) continue;

@@ -1,3 +1,4 @@
+using System;
 using Game.Core.Events;
 using Game.Core.Projectiles;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace Game.Events.HitWatcher
 
     public struct OnDamageDealerDestroy : IEvent
     {
-        public DamageDealer dealer;
+        public Guid guid;
     }
 
     public struct RequestTwoPointsDealerCheck : IEvent
