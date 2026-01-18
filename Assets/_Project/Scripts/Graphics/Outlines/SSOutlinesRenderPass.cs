@@ -42,6 +42,8 @@ namespace Game.Graphics.Outlines
 
         public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
         {
+            if (_material == null) return;
+
             var resData = frameData.Get<UniversalResourceData>();
             if (resData.isActiveTargetBackBuffer)
                 return;

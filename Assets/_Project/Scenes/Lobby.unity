@@ -6637,7 +6637,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     overrideTagEffects: 0
-  updatesPerSecond: 45
+  updatesPerSecond: 60
 --- !u!114 &5281885355563859887
 MonoBehaviour:
   m_ObjectHideFlags: 0
