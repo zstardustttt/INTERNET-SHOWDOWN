@@ -24739,6 +24739,7 @@ MonoBehaviour:
   owner: {fileID: 0}
   coll: {fileID: 5563388409014675495}
   singleHitScan: 1
+  canDamageOwner: 0
   knockbackForce: 75
   OnHit:
     m_PersistentCalls:
@@ -24794,6 +24795,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc606dc11acb7694ca9c69c3f9d9bcd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Player.CameraShaker
-  amplitude: 3
+  amplitude: 2
   minDistance: 5
   maxDistance: 100
