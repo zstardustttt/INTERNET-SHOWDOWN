@@ -26,7 +26,7 @@ namespace Game.UI.Game
         private void Update()
         {
             var countdown = Mathf.CeilToInt(_gameState.phaseDuration - _gameState.SecondsSinceTimerStarted);
-            if (countdown != _previousCountdown)
+            if (countdown != _previousCountdown && countdown >= 0)
             {
                 TimerUpdate(countdown);
             }
