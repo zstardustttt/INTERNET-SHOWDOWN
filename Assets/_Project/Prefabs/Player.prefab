@@ -435,8 +435,8 @@ MonoBehaviour:
   cameraBopTiltAmplitude: 0.3
   cameraBopFrequency: 10.5
   cameraBopStopSpeed: 5
-  cameraShakeFrequency: 7
-  cameraShakeFalloffSpeed: 9
+  shakeFrequency: 7
+  shakeFalloffSpeed: 9
   groundSlamCameraShakeMultiplier: 0.06
   maxGroundSlamCameraShake: 3
 --- !u!136 &241399185085964307
@@ -504,7 +504,10 @@ MonoBehaviour:
   itemIndex: 0
   health: 0
   invincible: 0
-  serverObservedVelocity: {x: 0, y: 0, z: 0}
+  previousObservedPosition: {x: 0, y: 0, z: 0}
+  observedDelta: {x: 0, y: 0, z: 0}
+  playerGuid: 
+  playerName: 
 --- !u!114 &131148445153040676
 MonoBehaviour:
   m_ObjectHideFlags: 0

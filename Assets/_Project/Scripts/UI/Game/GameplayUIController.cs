@@ -3,9 +3,7 @@ using Game.Core.Events;
 using Game.Events.GameLoop;
 using Game.Events.UI;
 using Game.Gameplay;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Game.UI.Game
 {
@@ -13,14 +11,6 @@ namespace Game.UI.Game
     {
         private GameState _gameState;
         public CanvasGroup canvasGroup;
-
-        [Header("Health")]
-        public Slider health;
-        public Graphic healthFillGraphic;
-        public Color minHealthColor;
-        public float healthChangeSpeed = 5f;
-
-        private float _targetHealth;
 
         [Header("Indicators")]
         public CanvasGroup hitIndicator;
@@ -48,7 +38,6 @@ namespace Game.UI.Game
                 else _uiSwitchRequested = true;
             });
 
-            EventBus<OnHealthUpdate>.Listen(OnHealthUpdate);
             EventBus<HitIndicatorRequest>.Listen((_) => HitIndicatorAnimation());
             EventBus<DamageIndicatorRequest>.Listen((_) => DamageIndicatorAnimation());
             EventBus<PureKillIndicatorRequest>.Listen((_) => PureKillIndicatorAnimation());
@@ -99,18 +88,6 @@ namespace Game.UI.Game
             canvasGroup.alpha = enable ? 1f : 0f;
             canvasGroup.blocksRaycasts = enable;
             canvasGroup.interactable = enable;
-        }
-
-        private void OnHealthUpdate(OnHealthUpdate data)
-        {
-            health.maxValue = data.maxHealth;
-            _targetHealth = data.health;
-        }
-
-        private void Update()
-        {
-            health.value = Mathf.Lerp(health.value, _targetHealth, Time.deltaTime * healthChangeSpeed);
-            healthFillGraphic.color = Color.Lerp(minHealthColor, Color.white, health.value / health.maxValue);
         }
     }
 }

@@ -6,6 +6,7 @@ using Game.Core.Maps;
 using Game.Events.Player;
 using Game.Inputs;
 using Game.Network.Messages;
+using Game.Other;
 using Mirror;
 using Unity.Mathematics;
 using UnityEngine;
@@ -80,8 +81,9 @@ namespace Game.Player
         private float _cameraBopTilt;
 
         [Header("Camera Shake")]
-        public float cameraShakeFrequency;
-        public float cameraShakeFalloffSpeed;
+        public float shakeFrequency;
+        public float shakeFalloffSpeed;
+        private ShakeGenerator _shakeGenerator;
 
         [Space(9)]
         public float groundSlamCameraShakeMultiplier;
@@ -92,8 +94,6 @@ namespace Game.Player
         private Vector3 _prevPosition;
         private float _timeSinceRunning;
 
-        private Vector3 _cameraShake;
-        private float _cameraShakeMult;
         private float _mouseSens;
 
         private PlayerActions _actions;
@@ -113,6 +113,7 @@ namespace Game.Player
         public override void OnStartLocalPlayer()
         {
             _speedRecord = new(speedRecordSize);
+            _shakeGenerator = new();
 
             Cursor.lockState = CursorLockMode.Locked;
             _camera = Instantiate(cameraPrefab, cameraOrientation).GetComponent<PlayerCamera>();
@@ -125,7 +126,8 @@ namespace Game.Player
 
             player.onGroundSlamLanded.AddListener((dist) =>
             {
-                ShakeCamera(Mathf.Min(dist * groundSlamCameraShakeMultiplier, maxGroundSlamCameraShake));
+                var amplitude = Mathf.Min(dist * groundSlamCameraShakeMultiplier, maxGroundSlamCameraShake);
+                _shakeGenerator.Shake(amplitude, shakeFrequency, shakeFalloffSpeed);
             });
 
             player.onJump.AddListener(() =>
@@ -159,7 +161,7 @@ namespace Game.Player
                 if (distance > shaker.minDistance)
                     amplitude *= 1f - Mathf.InverseLerp(shaker.minDistance, shaker.maxDistance, distance);
 
-                ShakeCamera(amplitude);
+                _shakeGenerator.Shake(amplitude, shakeFrequency, shakeFalloffSpeed);
             });
         }
 
@@ -174,11 +176,6 @@ namespace Game.Player
             if (!isLocalPlayer) return;
             _actions.Disable();
             speedlinesFullscreenMaterial.SetFloat("_alpha", 0f);
-        }
-
-        public void ShakeCamera(float amplitude)
-        {
-            _cameraShakeMult = amplitude;
         }
 
         private int _hostPreviousSceneBuildIdx;
@@ -213,16 +210,6 @@ namespace Game.Player
             // TODO: new input system
             if (Input.GetMouseButtonDown(0)) player.TryUseItem();
 
-            // CAMERA SHAKE
-            var x = Time.time * cameraShakeFrequency;
-            _cameraShake = new Vector3
-            (
-                noise.snoise(new float2(x)),
-                noise.snoise(new float2(x + 1000f)),
-                noise.snoise(new float2(x - 1000f))
-            ) * _cameraShakeMult;
-            _cameraShakeMult = Mathf.Lerp(_cameraShakeMult, 0f, Time.deltaTime * cameraShakeFalloffSpeed);
-
             // SIDE RUN TILT
             var targetSideRunTilt = player.inputs.move.normalized.x * maxSideRunTilt;
             _sideRunTilt = Mathf.Lerp(_sideRunTilt, targetSideRunTilt, Time.deltaTime * sideRunTiltSmoothingSpeed);
@@ -250,7 +237,8 @@ namespace Game.Player
                 _cameraBopTilt = Mathf.Sin(_timeSinceRunning * cameraBopFrequency) * cameraBopTiltAmplitude;
             }
 
-            cameraOrientation.localPosition = _cameraShake + Vector3.up * _cameraBopHeight;
+            var shake = _shakeGenerator.GetShake();
+            cameraOrientation.localPosition = shake + Vector3.up * _cameraBopHeight;
 
             // FOOTSTEPS
             if (_footstepTimer >= Mathf.PI / cameraBopFrequency)

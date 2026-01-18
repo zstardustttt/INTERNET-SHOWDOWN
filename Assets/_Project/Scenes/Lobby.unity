@@ -128,6 +128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 28642308}
+  - component: {fileID: 28642309}
   m_Layer: 5
   m_Name: HealthBarContainer
   m_TagString: Untagged
@@ -156,6 +157,27 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 300, y: 30}
   m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &28642309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 28642307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd229286f5eaf8640acc0a3f68ccad7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.UI.Game.HealthBar
+  healthBarShake: {fileID: 28642308}
+  healthBarSlider: {fileID: 1310386476}
+  healthFillGraphic: {fileID: 106040570}
+  maxHealthColor: {r: 1, g: 1, b: 1, a: 1}
+  minHealthColor: {r: 0.54901963, g: 0.33333334, b: 0.70980394, a: 1}
+  healthChangeSpeed: 15
+  shakeAmplitude: 10
+  shakeFrequency: 7
+  shakeFalloffSpeed: 9
 --- !u!1 &40871723
 GameObject:
   m_ObjectHideFlags: 0
@@ -5392,10 +5414,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 1786643128}
-  health: {fileID: 1310386476}
-  healthFillGraphic: {fileID: 106040570}
-  minHealthColor: {r: 0.54901963, g: 0.33333334, b: 0.70980394, a: 1}
-  healthChangeSpeed: 10
   hitIndicator: {fileID: 2017527931}
   damageIndicator: {fileID: 1729660837}
   pureKillIndicator: {fileID: 781852401}
@@ -6030,8 +6048,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -9.999999}
+  m_SizeDelta: {x: 0, y: 20.000002}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2089219951
 MonoBehaviour:
@@ -6556,7 +6574,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     overrideTagEffects: 0
-  updatesPerSecond: 60
+  updatesPerSecond: 45
 --- !u!114 &5281885355563859887
 MonoBehaviour:
   m_ObjectHideFlags: 0
