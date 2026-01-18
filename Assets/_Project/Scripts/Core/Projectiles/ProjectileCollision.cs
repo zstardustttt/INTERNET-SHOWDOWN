@@ -8,7 +8,7 @@ namespace Game.Core.Projectiles
     {
         public Projectile projectile;
         public LayerMask collisionLayerMask;
-        public UnityEvent<Vector3, Collider> onCollision = new();
+        public UnityEvent<Vector3, Vector3, Collider> onCollision = new();
 
         protected virtual void OnValidate()
         {
@@ -21,14 +21,15 @@ namespace Game.Core.Projectiles
         {
             if (!Physics.Linecast(p1, p2, out var hit, collisionLayerMask)) return;
             if (hit.collider.gameObject == gameObject) return;
-            onCollision.Invoke(hit.point, hit.collider);
+            onCollision.Invoke(hit.point, hit.normal, hit.collider);
         }
 
         public abstract void CheckCollisionBetweenTwoPoints(Vector3 p1, Vector3 p2);
 
         private void OnCollisionEnter(Collision collision)
         {
-            onCollision.Invoke(collision.contacts[0].point, collision.collider);
+            var firstContact = collision.contacts[0];
+            onCollision.Invoke(firstContact.point, firstContact.normal, collision.collider);
         }
     }
 }

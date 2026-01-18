@@ -23,7 +23,7 @@ namespace Game.Projectiles
             rb.linearVelocity = transform.forward * speed;
         }
 
-        private void ProjectileCollision(Vector3 point, Collider other)
+        private void ProjectileCollision(Vector3 point, Vector3 normal, Collider other)
         {
             var explosion = Instantiate(explosionPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
             {

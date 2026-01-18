@@ -32,12 +32,13 @@ namespace Game.Projectiles
             rb.linearVelocity = transform.forward * speed;
         }
 
-        private void OnCollision(Vector3 point, Collider other)
+        private void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
             var field = Instantiate(fieldPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
             {
                 scene = MapLoader.loadedMap.scene
             });
+            field.transform.up = normal;
             field.GetComponent<DamageDealer>().owner = _owner;
             NetworkServer.Spawn(field);
             NetworkServer.Destroy(gameObject);

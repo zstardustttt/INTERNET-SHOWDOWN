@@ -20,7 +20,7 @@ namespace Game.Projectiles
                 return;
 
             if (hit.collider == coll) return;
-            onCollision.Invoke(hit.point, hit.collider);
+            onCollision.Invoke(hit.point, hit.normal, hit.collider);
         }
     }
 }
