@@ -18,6 +18,9 @@ namespace Game.Core.Projectiles
         public double SpawnTime { get; private set; }
         public float SpawnDelay { get; private set; }
 
+        [Header("Prediction Debug")]
+        public float predictionDebugTimePassed;
+
         public abstract ProjectilePredictionData Predict(float timePassed);
 
         public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation, double spawnTime, int checkIterations) where T : PredictableProjectile
@@ -47,6 +50,20 @@ namespace Game.Core.Projectiles
 
             projectile.transform.position = prediction.position;
             return projectile;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            var prediction = Predict(predictionDebugTimePassed);
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, prediction.position);
+
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(prediction.position, prediction.position + prediction.rotation * Vector3.up);
+
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(prediction.position, prediction.position + prediction.velocity);
         }
     }
 }

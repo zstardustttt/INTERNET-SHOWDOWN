@@ -61,6 +61,7 @@ MonoBehaviour:
   netRb: {fileID: 7706021185470277638}
   damageDealers:
   - {fileID: 1638724938105410804}
+  predictionDebugTimePassed: 0
   collision: {fileID: 3044793796010491125}
   explosionPrefab: {fileID: 697191921998550392, guid: d18396bccccba4c4abcc7971c45bb3ba, type: 3}
   speed: 100
@@ -297,6 +298,8 @@ MonoBehaviour:
   owner: {fileID: 0}
   coll: {fileID: 6480257299289842357}
   singleHitScan: 0
+  canDamageOwner: 0
+  knockbackForce: 0
   OnHit:
     m_PersistentCalls:
       m_Calls: []

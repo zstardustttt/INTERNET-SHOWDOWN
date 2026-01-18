@@ -233,6 +233,7 @@ MonoBehaviour:
   netRb: {fileID: 8195396347111606234}
   damageDealers:
   - {fileID: 7877562851342404184}
+  predictionDebugTimePassed: 0
   collision: {fileID: 6815060551347088938}
   fieldPrefab: {fileID: 3362834775927340723, guid: b457d7bf7fab32245b3320e698f2afa9, type: 3}
   playerFieldPrefab: {fileID: 4601800352319084863, guid: c55ce7a8bacd74a4ba6f290443a40e5c, type: 3}
