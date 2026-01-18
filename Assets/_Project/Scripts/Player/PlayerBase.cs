@@ -125,7 +125,7 @@ namespace Game.Player
             public readonly int GetScore()
             {
                 return indirectHits
-                    + directHits * 2
+                    + directHits * 3
                     + supportingKills * 2
                     + finishingKills * 2
                     + pureKills * 4;
@@ -253,20 +253,20 @@ namespace Game.Player
                     supporter = sortedDamages[0].Key;
                 }
 
-                if (killer && killer == supporter)
+                if (killer && killer != this && killer == supporter)
                 {
                     killer.stats.pureKills++;
                     killer.TargetOnKill(true);
                 }
                 else
                 {
-                    if (killer)
+                    if (killer && killer != this)
                     {
                         killer.stats.finishingKills++;
                         killer.TargetOnKill(false);
                     }
 
-                    if (supporter)
+                    if (supporter && supporter != this)
                     {
                         supporter.stats.supportingKills++;
                         supporter.TargetOnKill(false);
