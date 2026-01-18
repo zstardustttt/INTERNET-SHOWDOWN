@@ -19,6 +19,7 @@ namespace Game.Core.Projectiles
         public float SpawnDelay { get; private set; }
 
         [Header("Prediction Debug")]
+        public int predictionDebugIterations = 1;
         public float predictionDebugTimePassed;
 
         public abstract ProjectilePredictionData Predict(float timePassed);
@@ -29,41 +30,47 @@ namespace Game.Core.Projectiles
             projectile.SpawnTime = spawnTime;
             projectile.SpawnDelay = (float)(NetworkTime.time - spawnTime);
 
-            var prediction = projectile.Predict(projectile.SpawnDelay);
-
             var startCastPoint = position;
-            for (int i = checkIterations; i >= 1; i--)
+            var deltaTime = projectile.SpawnDelay / checkIterations;
+            for (int i = 0; i < checkIterations; i++)
             {
-                var localPrediction = projectile.Predict(projectile.SpawnDelay / i);
+                var prediction = projectile.Predict(deltaTime * i);
                 foreach (var dealer in projectile.damageDealers)
                 {
                     EventBus<RequestTwoPointsDealerCheck>.Invoke(new()
                     {
                         dealer = dealer,
                         point1 = startCastPoint,
-                        point2 = localPrediction.position,
+                        point2 = prediction.position,
                     });
                 }
 
-                startCastPoint = localPrediction.position;
+                startCastPoint = prediction.position;
             }
 
-            projectile.transform.position = prediction.position;
+            projectile.transform.position = startCastPoint;
             return projectile;
         }
 
         private void OnDrawGizmosSelected()
         {
-            var prediction = Predict(predictionDebugTimePassed);
+            var deltaTime = predictionDebugTimePassed / predictionDebugIterations;
+            var lastStartPoint = _spawnPosition;
+            for (int i = 0; i < predictionDebugIterations; i++)
+            {
+                var prediction = Predict(deltaTime * i);
 
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, prediction.position);
+                Gizmos.color = Color.red;
+                Gizmos.DrawLine(lastStartPoint, prediction.position);
 
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(prediction.position, prediction.position + prediction.rotation * Vector3.up);
+                Gizmos.color = Color.blue;
+                Gizmos.DrawLine(prediction.position, prediction.position + prediction.rotation * Vector3.up);
 
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(prediction.position, prediction.position + prediction.velocity);
+                Gizmos.color = Color.green;
+                Gizmos.DrawRay(prediction.position, prediction.velocity * deltaTime);
+
+                lastStartPoint = prediction.position;
+            }
         }
     }
 }

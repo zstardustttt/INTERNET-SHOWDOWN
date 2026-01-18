@@ -12,7 +12,7 @@ namespace Game.Projectiles
         public DamageDealer fieldPrefab;
         public DamageDealer playerFieldPrefab;
         public float speed;
-        public float gravityForce;
+        public float gravityAcceleration;
         public float activateGravityAfter;
         public int spawnCheckIterations;
 
@@ -21,9 +21,10 @@ namespace Game.Projectiles
             collision.onCollision.AddListener(OnCollision);
 
             var startCastPoint = _spawnPosition;
-            for (int i = spawnCheckIterations; i >= 1; i--)
+            var deltaTime = SpawnDelay / spawnCheckIterations;
+            for (int i = 0; i < spawnCheckIterations; i++)
             {
-                var prediction = Predict(SpawnDelay / i);
+                var prediction = Predict(deltaTime * i);
                 collision.CheckCollisionBetweenTwoPoints(startCastPoint, prediction.position);
                 _spawnPosition = prediction.position;
             }
@@ -44,11 +45,13 @@ namespace Game.Projectiles
 
         public override ProjectilePredictionData Predict(float timePassed)
         {
-            var flyingVelocity = speed * transform.forward;
-            var gravityVelocity = gravityForce * Mathf.Max(timePassed - activateGravityAfter, 0f);
-            var velocity = flyingVelocity - Vector3.up * gravityVelocity;
+            var timePassedSinceStartedAccelerating = Mathf.Max(timePassed - activateGravityAfter, 0f);
 
-            var predictedPos = _spawnPosition + velocity * timePassed;
+            var flyingVelocity = speed * transform.forward;
+            var gravityVelocity = gravityAcceleration * timePassedSinceStartedAccelerating * Vector3.down;
+            var velocity = flyingVelocity + gravityVelocity;
+
+            var predictedPos = _spawnPosition + flyingVelocity * timePassed + 0.5f * timePassedSinceStartedAccelerating * gravityVelocity;
 
             return new()
             {
@@ -75,7 +78,7 @@ namespace Game.Projectiles
             if (!NetworkServer.active) return;
 
             if (_lifetime <= activateGravityAfter) return;
-            rb.linearVelocity -= gravityForce * Time.deltaTime * Vector3.up;
+            rb.linearVelocity -= gravityAcceleration * Time.deltaTime * Vector3.up;
         }
     }
 }
