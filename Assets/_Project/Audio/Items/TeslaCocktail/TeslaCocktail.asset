@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1233149941 &-7443625961262927074
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TeslaCocktail3_{-7443625961262927074}
+  m_AudioClip: {fileID: 8300000, guid: b07491e9027bdd0478decf1ff12c7247, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &-5089631319112296053
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TeslaCocktail6_{-5089631319112296053}
+  m_AudioClip: {fileID: 8300000, guid: 6bb64ecf93cfd83498582ed7a57466ea, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &-844264811890576372
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TeslaCocktail8_{-844264811890576372}
+  m_AudioClip: {fileID: 8300000, guid: 459d0dbdd00c5f74685798762f6eb22e, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &153925929265066468
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TeslaCocktail2_{153925929265066468}
+  m_AudioClip: {fileID: 8300000, guid: f3a48813f7cdb9e428ded8009462f541, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &501184711167866471
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TeslaCocktail4_{501184711167866471}
+  m_AudioClip: {fileID: 8300000, guid: ff4b42694cbd81f4f800948a16f91215, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &785299481988590724
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TeslaCocktail1_{785299481988590724}
+  m_AudioClip: {fileID: 8300000, guid: 2f7ad8de8abdeff45807fab5c99d0906, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &2233655506247065563
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TeslaCocktail7_{2233655506247065563}
+  m_AudioClip: {fileID: 8300000, guid: 02c9d9de9f1aa3b40a8113d91da6b471, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &4746225201804623640
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TeslaCocktail5_{4746225201804623640}
+  m_AudioClip: {fileID: 8300000, guid: 5fe4801b78441054cb850957f21b0e10, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1307931743 &6418180475301049370
+AudioRandomContainer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TeslaCocktail
+  m_Volume: 0
+  m_Pitch: 0
+  m_AutomaticTriggerTime: 0
+  m_LoopCount: 1
+  m_VolumeRandomizationRange: {x: 0, y: 0}
+  m_PitchRandomizationRange: {x: -50, y: 50}
+  m_AutomaticTriggerTimeRandomizationRange: {x: 0, y: 0}
+  m_LoopCountRandomizationRange: {x: 0, y: 0}
+  m_Elements:
+  - {fileID: 785299481988590724}
+  - {fileID: 153925929265066468}
+  - {fileID: -7443625961262927074}
+  - {fileID: 501184711167866471}
+  - {fileID: 4746225201804623640}
+  - {fileID: -5089631319112296053}
+  - {fileID: 2233655506247065563}
+  - {fileID: -844264811890576372}
+  m_AvoidRepeatingLast: 1
+  m_PlaybackMode: 2
+  m_TriggerMode: 0
+  m_AutomaticTriggerMode: 1
+  m_LoopMode: 2
+  m_VolumeRandomizationEnabled: 0
+  m_PitchRandomizationEnabled: 1
+  m_AutomaticTriggerTimeRandomizationEnabled: 0
+  m_LoopCountRandomizationEnabled: 0

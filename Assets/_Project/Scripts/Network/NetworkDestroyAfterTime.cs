@@ -6,7 +6,7 @@ namespace Game.Network
     public class NetworkDestroyAfterTime : NetworkBehaviour
     {
         [Tooltip("Lifetime duration in seconds")] public float time;
-        private float _timer;
+        protected float _timer;
         private bool _destroyed;
 
         private void Update()
@@ -17,9 +17,13 @@ namespace Game.Network
             {
                 NetworkServer.Destroy(gameObject);
                 _destroyed = true;
+                return;
             }
 
             _timer += Time.deltaTime;
+            OnUpdate();
         }
+
+        protected virtual void OnUpdate() { }
     }
 }
