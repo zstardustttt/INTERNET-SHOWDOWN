@@ -190,8 +190,8 @@ MonoBehaviour:
   bufferTime: 0.2
   dashDistance: 4.5
   dashDuration: 0.12
-  dashCooldown: 0.5
-  dashBuffer: 0.25
+  dashCooldown: 0.4
+  dashBuffer: 0.2
   minGroundSlamForce: -20
   maxGroundSlamForce: -80
   groundSlamForceInterpolationDistance: 20

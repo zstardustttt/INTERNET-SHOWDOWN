@@ -22,4 +22,16 @@ namespace Game.Events.Player
     {
         public CameraShaker shaker;
     }
+
+    public struct OnDash : IEvent
+    {
+        public PlayerBase player;
+        public float cooldown;
+    }
+
+    public struct OnEndDash : IEvent
+    {
+        public PlayerBase player;
+        public bool reset;
+    }
 }

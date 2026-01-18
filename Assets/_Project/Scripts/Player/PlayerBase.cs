@@ -82,6 +82,7 @@ namespace Game.Player
         [HideInInspector] public UnityEvent<Vector3> onWalled = new();
         [HideInInspector] public UnityEvent onUnwalled = new();
         [HideInInspector] public UnityEvent onDash = new();
+        [HideInInspector] public UnityEvent<bool> onEndDash = new();
         [HideInInspector] public UnityEvent<Collider> onCollide = new();
         [HideInInspector] public UnityEvent onItemPickup = new();
         [HideInInspector] public UnityEvent onResetPlayer = new();
@@ -353,7 +354,14 @@ namespace Game.Player
 
         public void SetPosition(Vector3 position)
         {
-            _dashing = false;
+            if (_dashing)
+            {
+                _dashing = false;
+                onEndDash.Invoke(true);
+            }
+
+            _dashCooldownTimer = 0f;
+
             _jumping = false;
             _endingJump = false;
             motor.SetPosition(position);
@@ -418,8 +426,14 @@ namespace Game.Player
             {
                 _jumping = false;
                 _endingJump = false;
-                _dashing = false;
+
+                if (_dashing)
+                {
+                    _dashing = false;
+                    onEndDash.Invoke(true);
+                }
                 _dashCooldownTimer = 0f;
+
                 onWalled.Invoke(_wallHitInfo.normal);
             }
             else if (_prevWalled && !_walled) onUnwalled.Invoke();
@@ -443,7 +457,13 @@ namespace Game.Player
             {
                 _jumping = false;
                 _endingJump = false;
-                _dashing = false;
+
+                if (_dashing)
+                {
+                    _dashing = false;
+                    onEndDash.Invoke(false);
+                }
+
                 _groundSlamForce = Mathf.Lerp(config.minGroundSlamForce, config.maxGroundSlamForce, hitInfo.distance / config.groundSlamForceInterpolationDistance);
 
                 _groundSlamming = true;
@@ -599,7 +619,12 @@ namespace Game.Player
         {
             onCollide.Invoke(hitCollider);
 
-            if (Vector3.Dot(hitNormal, _dashDirection) < -0.9f) _dashing = false;
+            if (Vector3.Dot(hitNormal, _dashDirection) < -0.9f && _dashing)
+            {
+                _dashing = false;
+                onEndDash.Invoke(false);
+            }
+
             if (hitNormal.y < 0f)
             {
                 _jumping = false;
@@ -634,6 +659,7 @@ namespace Game.Player
                 if ((_dashTimer >= config.dashDuration) || (inputs.wishJumping && !_prevWishJumping))
                 {
                     _dashing = false;
+                    onEndDash.Invoke(false);
                     _additionalVelocity = _dashDirection * (config.dashDistance / config.dashDuration);
                 }
             }

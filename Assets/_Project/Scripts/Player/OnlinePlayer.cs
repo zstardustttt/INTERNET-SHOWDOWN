@@ -150,6 +150,26 @@ namespace Game.Player
                 itemPickupSource.Play();
             });
 
+            player.onDash.AddListener(() =>
+            {
+                if (!isLocalPlayer) return;
+                EventBus<OnDash>.Invoke(new()
+                {
+                    player = player,
+                    cooldown = player.config.dashCooldown
+                });
+            });
+
+            player.onEndDash.AddListener((reset) =>
+            {
+                if (!isLocalPlayer) return;
+                EventBus<OnEndDash>.Invoke(new()
+                {
+                    player = player,
+                    reset = reset,
+                });
+            });
+
             player.controller = this;
             _actions.Enable();
 
