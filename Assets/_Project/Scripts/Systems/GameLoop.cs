@@ -10,7 +10,7 @@ using System.Linq;
 
 using Random = UnityEngine.Random;
 
-namespace Game.Gameplay
+namespace Game.Systems
 {
     public enum GamePhase
     {

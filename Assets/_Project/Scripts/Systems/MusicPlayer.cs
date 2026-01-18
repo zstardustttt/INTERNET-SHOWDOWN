@@ -4,7 +4,7 @@ using Game.Events.GameLoop;
 using Game.Events.MusicPlayer;
 using UnityEngine;
 
-namespace Game.Gameplay
+namespace Game.Systems
 {
     [RequireComponent(typeof(AudioSource))]
     public class MusicPlayer : MonoBehaviour

@@ -5,7 +5,7 @@ using Game.Events.BoxSpawner;
 using Mirror;
 using UnityEngine;
 
-namespace Game.Gameplay
+namespace Game.Systems
 {
     // This object is only active on the server
     public class BoxSpawner : MonoBehaviour

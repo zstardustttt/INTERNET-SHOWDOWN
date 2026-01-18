@@ -2,7 +2,7 @@ using System.Collections;
 using Game.Core.Events;
 using Game.Events.GameLoop;
 using Game.Events.UI;
-using Game.Gameplay;
+using Game.Systems;
 using UnityEngine;
 
 namespace Game.UI.Game

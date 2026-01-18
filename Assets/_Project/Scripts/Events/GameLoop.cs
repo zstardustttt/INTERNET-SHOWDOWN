@@ -1,5 +1,5 @@
 using Game.Core.Events;
-using Game.Gameplay;
+using Game.Systems;
 
 namespace Game.Events.GameLoop
 {

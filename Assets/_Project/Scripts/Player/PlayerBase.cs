@@ -6,6 +6,7 @@ using Game.Core.Items;
 using Game.Core.Maps;
 using Game.Events.Player;
 using Game.Events.UI;
+using Game.Maps;
 using KinematicCharacterController;
 using Mirror;
 using UnityEngine;
@@ -598,6 +599,11 @@ namespace Game.Player
             {
                 _jumping = false;
                 _endingJump = false;
+            }
+
+            if (hitCollider.TryGetComponent(out JumpPad jumpPad))
+            {
+                _additionalVelocity.y = jumpPad.jumpForce;
             }
         }
 

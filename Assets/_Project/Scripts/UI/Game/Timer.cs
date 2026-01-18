@@ -1,7 +1,7 @@
 using EasyTextEffects;
 using Game.Core.Events;
 using Game.Events.GameLoop;
-using Game.Gameplay;
+using Game.Systems;
 using TMPro;
 using UnityEngine;
 

@@ -9,7 +9,7 @@ using Mirror;
 using Random = UnityEngine.Random;
 using Game.Core.Items;
 
-namespace Game.Gameplay
+namespace Game.Systems
 {
     public class HitWatcher : MonoBehaviour
     {
