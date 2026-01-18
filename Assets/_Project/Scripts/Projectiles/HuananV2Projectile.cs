@@ -18,7 +18,7 @@ namespace Game.Projectiles
         {
             collision.onCollision.AddListener(ProjectileCollision);
 
-            var prediction = Predict((float)(NetworkTime.time - SpawnTime));
+            var prediction = Predict(SpawnDelay);
             collision.CheckCollisionBetweenTwoPoints(_spawnPosition, prediction.position);
             rb.linearVelocity = transform.forward * speed;
         }

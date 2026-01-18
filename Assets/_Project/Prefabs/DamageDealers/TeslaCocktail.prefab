@@ -166,6 +166,7 @@ MonoBehaviour:
   owner: {fileID: 0}
   coll: {fileID: 2917248093975008040}
   singleHitScan: 0
+  canDamageOwner: 0
   knockbackForce: 0
   OnHit:
     m_PersistentCalls:
@@ -238,6 +239,7 @@ MonoBehaviour:
   speed: 50
   gravityForce: 25
   activateGravityAfter: 0.15
+  spawnCheckIterations: 4
 --- !u!54 &4815251024805592757
 Rigidbody:
   m_ObjectHideFlags: 0

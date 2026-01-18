@@ -14,13 +14,19 @@ namespace Game.Projectiles
         public float speed;
         public float gravityForce;
         public float activateGravityAfter;
+        public int spawnCheckIterations;
 
         public override void Init()
         {
             collision.onCollision.AddListener(OnCollision);
 
-            var prediction = Predict((float)(NetworkTime.time - SpawnTime));
-            collision.CheckCollisionBetweenTwoPoints(_spawnPosition, prediction.position);
+            var startCastPoint = _spawnPosition;
+            for (int i = spawnCheckIterations; i >= 1; i--)
+            {
+                var prediction = Predict(SpawnDelay / i);
+                collision.CheckCollisionBetweenTwoPoints(startCastPoint, prediction.position);
+                _spawnPosition = prediction.position;
+            }
 
             rb.linearVelocity = transform.forward * speed;
         }

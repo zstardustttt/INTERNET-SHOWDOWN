@@ -16,26 +16,36 @@ namespace Game.Core.Projectiles
     public abstract class PredictableProjectile : Projectile
     {
         public double SpawnTime { get; private set; }
+        public float SpawnDelay { get; private set; }
 
         public abstract ProjectilePredictionData Predict(float timePassed);
 
-        public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation, double spawnTime) where T : PredictableProjectile
+        public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation, double spawnTime, int checkIterations) where T : PredictableProjectile
         {
             var projectile = Spawn(prefab, owner, position, rotation);
             projectile.SpawnTime = spawnTime;
-            var prediction = projectile.Predict((float)(NetworkTime.time - spawnTime));
+            projectile.SpawnDelay = (float)(NetworkTime.time - spawnTime);
 
-            foreach (var dealer in projectile.damageDealers)
+            var prediction = projectile.Predict(projectile.SpawnDelay);
+
+            var startCastPoint = position;
+            for (int i = checkIterations; i >= 1; i--)
             {
-                EventBus<RequestTwoPointsDealerCheck>.Invoke(new()
+                var localPrediction = projectile.Predict(projectile.SpawnDelay / i);
+                foreach (var dealer in projectile.damageDealers)
                 {
-                    dealer = dealer,
-                    point1 = position,
-                    point2 = prediction.position,
-                });
-            }
-            projectile.transform.position = prediction.position;
+                    EventBus<RequestTwoPointsDealerCheck>.Invoke(new()
+                    {
+                        dealer = dealer,
+                        point1 = startCastPoint,
+                        point2 = localPrediction.position,
+                    });
+                }
 
+                startCastPoint = localPrediction.position;
+            }
+
+            projectile.transform.position = prediction.position;
             return projectile;
         }
     }
