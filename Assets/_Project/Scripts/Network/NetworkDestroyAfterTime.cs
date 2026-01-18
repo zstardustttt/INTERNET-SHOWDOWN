@@ -5,7 +5,7 @@ namespace Game.Network
 {
     public class NetworkDestroyAfterTime : NetworkBehaviour
     {
-        public float time;
+        [Tooltip("Lifetime duration in seconds")] public float time;
         private float _timer;
         private bool _destroyed;
 

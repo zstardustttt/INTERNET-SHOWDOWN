@@ -84,6 +84,7 @@ namespace Game.Player
         [HideInInspector] public UnityEvent onDash = new();
         [HideInInspector] public UnityEvent<Collider> onCollide = new();
         [HideInInspector] public UnityEvent onItemPickup = new();
+        [HideInInspector] public UnityEvent onResetPlayer = new();
 
         [SyncVar(hook = nameof(OnItemChange))] public int itemIndex;
         private Item _item;
@@ -187,6 +188,7 @@ namespace Game.Player
             _damageHistory.Clear();
             itemIndex = -1;
             health = config.maxHealth;
+            onResetPlayer.Invoke();
         }
 
         [Server]
