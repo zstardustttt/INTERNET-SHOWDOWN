@@ -83,6 +83,7 @@ namespace Game.Player
         [HideInInspector] public UnityEvent onUnwalled = new();
         [HideInInspector] public UnityEvent onDash = new();
         [HideInInspector] public UnityEvent<Collider> onCollide = new();
+        [HideInInspector] public UnityEvent onItemPickup = new();
 
         [SyncVar(hook = nameof(OnItemChange))] public int itemIndex;
         private Item _item;
@@ -216,6 +217,8 @@ namespace Game.Player
                         child.gameObject.layer = layer;
                     }
                 }
+
+                onItemPickup.Invoke();
             }
         }
 

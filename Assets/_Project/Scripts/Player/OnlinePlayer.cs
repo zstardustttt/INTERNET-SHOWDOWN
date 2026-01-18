@@ -8,7 +8,6 @@ using Game.Inputs;
 using Game.Network.Messages;
 using Game.Other;
 using Mirror;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Game.Player
@@ -26,10 +25,11 @@ namespace Game.Player
 
         private Queue<float> _speedRecord;
 
-        [Header("Sounds")]
+        [Header("Audio")]
         public AudioSource leftFootstepSource;
         public AudioSource rightFootstepSource;
         public AudioSource wallLockSource;
+        public AudioSource itemPickupSource;
 
         private float _footstepTimer;
 
@@ -142,6 +142,12 @@ namespace Game.Player
             {
                 if (!collider.CompareTag("Portal")) return;
                 NetworkClient.Send<ClientRequestMapLoad>(new());
+            });
+
+            player.onItemPickup.AddListener(() =>
+            {
+                if (!isLocalPlayer) return;
+                itemPickupSource.Play();
             });
 
             player.controller = this;
