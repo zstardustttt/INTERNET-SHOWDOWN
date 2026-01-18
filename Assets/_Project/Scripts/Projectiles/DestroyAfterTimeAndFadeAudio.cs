@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Projectiles
 {
-    public class TeslaCocktailField : NetworkDestroyAfterTime
+    public class DestroyAfterTimeAndFadeAudio : NetworkDestroyAfterTime
     {
         public AudioSource source;
         public float volume;

@@ -18,7 +18,7 @@ namespace Game.Projectiles
                 _addedCallback = true;
             }
 
-            transform.position = player.transform.position;
+            transform.position = player.transform.position + player.motor.Capsule.center;
         }
 
         private void OnResetPlayer()

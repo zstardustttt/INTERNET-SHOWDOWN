@@ -20,16 +20,18 @@ namespace Game.Systems
         public CapsuleCollider playerPrefabCollider;
 
         private Dictionary<Guid, DamageDealer> _dealers;
+        private List<DamageDealer> _dealersToAdd;
         private List<Guid> _dealersToRemove;
         private CapsuleCollider _playerColliderForChecking;
 
         public void Awake()
         {
             _dealers = new();
+            _dealersToAdd = new();
             _dealersToRemove = new();
             InitPlayerColliderForChecking();
 
-            EventBus<OnDamageDealerCreate>.Listen((data) => _dealers.Add(data.dealer.DealerGuid, data.dealer));
+            EventBus<OnDamageDealerCreate>.Listen((data) => _dealersToAdd.Add(data.dealer));
             EventBus<OnDamageDealerDestroy>.Listen((data) => _dealersToRemove.Add(data.guid));
             EventBus<RequestTwoPointsDealerCheck>.Listen((data) => TwoPointsDealerCheck(data.dealer, data.point1, data.point2));
         }
@@ -51,6 +53,13 @@ namespace Game.Systems
         {
             if (MapLoader.loadedMap == null) return;
             var players = MapLoader.loadedMap.players;
+
+            foreach (var dealer in _dealersToAdd)
+            {
+                if (!dealer) continue;
+                _dealers.Add(dealer.DealerGuid, dealer);
+            }
+            _dealersToAdd.Clear();
 
             foreach (var (_, player) in players)
             {
@@ -81,6 +90,7 @@ namespace Game.Systems
             {
                 _dealers.Remove(guid);
             }
+            _dealersToRemove.Clear();
 
             foreach (var (_, dealer) in _dealers)
             {
