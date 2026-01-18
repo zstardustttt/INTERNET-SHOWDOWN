@@ -1,0 +1,37 @@
+{
+  "name": "com.qiaozhilei.easy-text-effects",
+  "version": "1.0.8",
+  "displayName": "Easy Text Effects",
+  "description": "Easily animate TextMeshPro text with stunning, customizable effects!",
+  "unity": "2021.3",
+  "author": {
+    "name": "Qiaozhi Lei",
+    "email": "georgeleiqiaozhi@gmail.com",
+    "url": "github.com/LeiQiaoZhi"
+  },
+  "dependencies": {
+    "com.unity.ugui": "1.0.0"
+  },
+  "keywords": [
+    "text",
+    "text effects",
+    "TMP",
+    "TextMesh Pro",
+    "text animation",
+    "unity",
+    "package"
+  ],
+  "samples": [
+    {
+      "displayName": "Ready-to-use Effects",
+      "description": "Import and use ready-to-use effects.",
+      "path": "Samples~/Ready-to-use Effects"
+    },
+    {
+      "displayName": "Demo Scene",
+      "description": "Import to see how effects in the promo video are made.",
+      "path": "Samples~/Demo"
+    }
+  ],
+  "_fingerprint": "0e500390d9e1f46adb40b8cc2d5c80cedafdb1a3"
+}

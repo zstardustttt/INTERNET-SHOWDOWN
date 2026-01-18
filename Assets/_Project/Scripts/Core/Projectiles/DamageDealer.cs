@@ -20,6 +20,7 @@ namespace Game.Core.Projectiles
         [HideInInspector] public Collider coll;
 
         [Tooltip("Allows only one hit scan per dealer's lifetime")] public bool singleHitScan;
+        public bool canDamageOwner;
         public float knockbackForce;
         public UnityEvent<PlayerBase, float> OnHit = new();
         public abstract float EvaluateDamage(PlayerBase player);

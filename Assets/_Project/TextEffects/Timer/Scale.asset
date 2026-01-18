@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2676ef4f29b4d6891f834d4489f54da, type: 3}
+  m_Script: {fileID: 11500000, guid: 65308b0bac7d7ca45bf2ef7c8054af3b, type: 3}
   m_Name: Scale
   m_EditorClassIdentifier: EasyTextEffects::EasyTextEffects.Effects.Effect_Scale
   effectTag: Bounce

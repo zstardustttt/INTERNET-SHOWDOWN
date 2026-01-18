@@ -152,13 +152,14 @@ namespace Game.Systems
                 player.TargetKnockback(direction * dealer.knockbackForce);
             }
 
-            if (dealer.owner == player) return;
+            if (dealer.owner == player && !dealer.canDamageOwner) return;
+
             var damage = dealer.EvaluateDamage(player);
             player.Damage(damage, dealer.owner);
             dealer.OnHit.Invoke(player, damage);
 
             var direct = dealer.Direct;
-            if (dealer.owner)
+            if (dealer.owner && dealer.owner != player)
             {
                 dealer.owner.TargetOnHit();
                 if (direct) dealer.owner.stats.directHits++;

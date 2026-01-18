@@ -6335,8 +6335,8 @@ GameObject:
   - component: {fileID: 196367182725818911}
   - component: {fileID: 1858118175938907440}
   - component: {fileID: 2978247062934453006}
-  - component: {fileID: 5281885355563859886}
   - component: {fileID: 5281885355563859887}
+  - component: {fileID: 5281885355563859888}
   m_Layer: 5
   m_Name: TimerText
   m_TagString: Untagged
@@ -6598,7 +6598,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &5281885355563859886
+--- !u!114 &5281885355563859887
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6607,7 +6607,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 1711395410661219293}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9840f87219df84505803024c796e739d, type: 3}
+  m_Script: {fileID: 11500000, guid: d14c72fdcdfe4cc48915ff2412027006, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.UI.Game.Timer
+  timerText: {fileID: 2978247062934453006}
+  textEffect: {fileID: 5281885355563859888}
+--- !u!114 &5281885355563859888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1711395410661219293}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bea429d3dd340943a8f15fecd0c551b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: EasyTextEffects::EasyTextEffects.TextEffect
   text: {fileID: 2978247062934453006}
@@ -6615,12 +6629,12 @@ MonoBehaviour:
   preset: {fileID: 0}
   tagEffects:
   - triggerWhen: 1
-    effect: {fileID: 11400000, guid: cd735bc0dd1b9194d8448ed0a8b6fd0b, type: 2}
+    effect: {fileID: 11400000, guid: 0d9079ee72f6c5941b34e7ba6c4aa7e3, type: 2}
     onEffectCompleted:
       m_PersistentCalls:
         m_Calls: []
   - triggerWhen: 1
-    effect: {fileID: 11400000, guid: 0d9079ee72f6c5941b34e7ba6c4aa7e3, type: 2}
+    effect: {fileID: 11400000, guid: cd735bc0dd1b9194d8448ed0a8b6fd0b, type: 2}
     onEffectCompleted:
       m_PersistentCalls:
         m_Calls: []
@@ -6638,20 +6652,6 @@ MonoBehaviour:
         m_Calls: []
     overrideTagEffects: 0
   updatesPerSecond: 60
---- !u!114 &5281885355563859887
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1711395410661219293}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d14c72fdcdfe4cc48915ff2412027006, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.UI.Game.Timer
-  timerText: {fileID: 2978247062934453006}
-  textEffect: {fileID: 5281885355563859886}
 --- !u!4 &8078063641087463243
 Transform:
   m_ObjectHideFlags: 0
