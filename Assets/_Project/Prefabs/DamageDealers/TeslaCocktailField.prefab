@@ -79,6 +79,7 @@ MonoBehaviour:
   owner: {fileID: 0}
   coll: {fileID: 1835711590667591631}
   singleHitScan: 0
+  canDamageOwner: 1
   knockbackForce: 0
   OnHit:
     m_PersistentCalls:
