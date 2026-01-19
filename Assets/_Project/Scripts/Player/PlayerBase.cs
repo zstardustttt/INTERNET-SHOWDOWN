@@ -211,6 +211,7 @@ namespace Game.Player
             if (_new != -1)
             {
                 _item = Instantiate(ItemPool.items[itemIndex].prefab, itemHolder).GetComponent<Item>();
+                _item.transform.localPosition = _item.offset;
                 if (isLocalPlayer)
                 {
                     var layer = LayerMask.NameToLayer("ItemVisual");
