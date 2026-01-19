@@ -16,9 +16,11 @@ namespace Game.UI.Game
         [Header("Color")]
         public Color maxHealthColor;
         public Color minHealthColor;
+        public Color healColor;
 
         [Header("Animation")]
         public float healthChangeSpeed;
+        public float healColorFadeSpeed;
 
         [Header("Shake")]
         public float shakeAmplitude;
@@ -27,6 +29,7 @@ namespace Game.UI.Game
 
         private ShakeGenerator _shakeGenerator;
         private float _targetHealth;
+        private float _healColorAffection;
 
         private void Awake()
         {
@@ -38,6 +41,8 @@ namespace Game.UI.Game
         {
             if (data.health < _targetHealth)
                 _shakeGenerator.Shake(shakeAmplitude, shakeFrequency, shakeFalloffSpeed);
+            else
+                _healColorAffection = 1f;
 
             healthBarSlider.maxValue = data.maxHealth;
             _targetHealth = data.health;
@@ -46,7 +51,9 @@ namespace Game.UI.Game
         private void Update()
         {
             healthBarSlider.value = Mathf.Lerp(healthBarSlider.value, _targetHealth, Time.deltaTime * healthChangeSpeed);
-            healthFillGraphic.color = Color.Lerp(minHealthColor, Color.white, healthBarSlider.value / healthBarSlider.maxValue);
+            var rawFillColor = Color.Lerp(minHealthColor, maxHealthColor, healthBarSlider.value / healthBarSlider.maxValue);
+            healthFillGraphic.color = Color.Lerp(rawFillColor, healColor, _healColorAffection);
+            _healColorAffection = Mathf.Clamp01(_healColorAffection - Time.deltaTime * healColorFadeSpeed);
 
             var shake = _shakeGenerator.GetShake();
             healthBarShake.anchoredPosition = shake;

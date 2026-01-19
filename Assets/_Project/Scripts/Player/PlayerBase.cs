@@ -233,8 +233,30 @@ namespace Game.Player
             health -= damage;
         }
 
+        [Server]
+        public void Heal(float value)
+        {
+            var targetHealth = Mathf.Clamp(health + value, 0f, config.maxHealth);
+            var difference = targetHealth - health;
+
+            var differenceCounter = 0f;
+            while (_damageHistory.Count > 0)
+            {
+                var capture = _damageHistory.Pop();
+                differenceCounter += capture.damage;
+
+                if (differenceCounter <= difference) continue;
+                _damageHistory.Push(new() { author = capture.author, damage = differenceCounter - difference });
+                break;
+            }
+
+            health = targetHealth;
+        }
+
         private void OnHealthChange(float old, float _new)
         {
+            if (_new < old) _invincibleTimer = config.invincibleDuration;
+
             if (NetworkServer.active && _new <= 0f)
             {
                 // Death logic
@@ -259,6 +281,7 @@ namespace Game.Player
                 {
                     killer.stats.pureKills++;
                     killer.TargetOnKill(true);
+                    killer.Heal(damages[killer] / 2f);
                 }
                 else
                 {
@@ -266,12 +289,14 @@ namespace Game.Player
                     {
                         killer.stats.finishingKills++;
                         killer.TargetOnKill(false);
+                        killer.Heal(damages[killer] / 2f);
                     }
 
                     if (supporter && supporter != this)
                     {
                         supporter.stats.supportingKills++;
                         supporter.TargetOnKill(false);
+                        killer.Heal(damages[supporter] / 2f);
                     }
                 }
 
@@ -285,8 +310,6 @@ namespace Game.Player
                 EventBus<OnHealthUpdate>.Invoke(new() { maxHealth = config.maxHealth, health = health });
                 if (_new < old) EventBus<DamageIndicatorRequest>.Invoke(new());
             }
-
-            _invincibleTimer = config.invincibleDuration;
         }
 
         public void TryUseItem()

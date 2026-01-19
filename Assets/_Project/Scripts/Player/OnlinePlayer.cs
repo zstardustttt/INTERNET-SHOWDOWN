@@ -231,6 +231,11 @@ namespace Game.Player
             {
                 player.Damage(10f, null);
             }
+
+            if (NetworkServer.active && Input.GetKeyDown(KeyCode.F3))
+            {
+                player.Heal(10f);
+            }
 #endif
 
             // TODO: new input system

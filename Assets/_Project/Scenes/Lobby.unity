@@ -208,9 +208,11 @@ MonoBehaviour:
   healthBarShake: {fileID: 28642308}
   healthBarSlider: {fileID: 1310386476}
   healthFillGraphic: {fileID: 106040570}
-  maxHealthColor: {r: 1, g: 1, b: 1, a: 1}
-  minHealthColor: {r: 0.54901963, g: 0.33333334, b: 0.70980394, a: 1}
+  maxHealthColor: {r: 1, g: 0.21176471, b: 0.30980393, a: 1}
+  minHealthColor: {r: 0.40784314, g: 0.2901961, b: 0.59607846, a: 1}
+  healColor: {r: 0.3647059, g: 1, b: 0.4509804, a: 1}
   healthChangeSpeed: 15
+  healColorFadeSpeed: 2
   shakeAmplitude: 10
   shakeFrequency: 7
   shakeFalloffSpeed: 9
@@ -864,7 +866,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 2aff1d22dd036e043bdbd15921a62529, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.36320752, g: 1, b: 0.4475377, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
