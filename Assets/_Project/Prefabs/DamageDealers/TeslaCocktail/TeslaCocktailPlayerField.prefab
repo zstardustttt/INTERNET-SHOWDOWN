@@ -14776,6 +14776,7 @@ MonoBehaviour:
   hitScanCount: 0
   owner: {fileID: 0}
   coll: {fileID: 7333610585879673598}
+  active: 1
   singleHitScan: 0
   canDamageOwner: 1
   knockbackForce: 0
@@ -14784,9 +14785,9 @@ MonoBehaviour:
       m_Calls: []
   centerOffset: {x: 0, y: 0, z: 0}
   outerRadius: 2
-  outerDamage: 5
+  outerDamage: 6
   innerRadius: 0
-  innerDamage: 5
+  innerDamage: 6
 --- !u!114 &3139713581605469784
 MonoBehaviour:
   m_ObjectHideFlags: 0

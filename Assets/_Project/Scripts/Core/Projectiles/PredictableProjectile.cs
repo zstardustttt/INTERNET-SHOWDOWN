@@ -39,7 +39,7 @@ namespace Game.Core.Projectiles
             };
 
             var deltaTime = projectile.SpawnDelay / checkIterations;
-            for (int i = 0; i < checkIterations; i++)
+            for (int i = 1; i <= checkIterations; i++)
             {
                 var prediction = projectile.Predict(deltaTime * i);
                 foreach (var dealer in projectile.damageDealers)

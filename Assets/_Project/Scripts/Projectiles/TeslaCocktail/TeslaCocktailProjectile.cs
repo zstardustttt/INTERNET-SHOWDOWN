@@ -22,7 +22,7 @@ namespace Game.Projectiles.TeslaCocktail
 
             var startCastPoint = _spawnPosition;
             var deltaTime = SpawnDelay / spawnCheckIterations;
-            for (int i = 0; i < spawnCheckIterations; i++)
+            for (int i = 1; i <= spawnCheckIterations; i++)
             {
                 var prediction = Predict(deltaTime * i);
                 collision.CheckCollisionBetweenTwoPoints(startCastPoint, prediction.position);
