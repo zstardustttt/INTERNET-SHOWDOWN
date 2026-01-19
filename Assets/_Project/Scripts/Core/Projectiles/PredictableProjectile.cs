@@ -26,11 +26,18 @@ namespace Game.Core.Projectiles
 
         public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation, double spawnTime, int checkIterations) where T : PredictableProjectile
         {
-            var projectile = Spawn(prefab, owner, position, rotation);
+            var projectile = Spawn(prefab, owner, position, rotation, false);
             projectile.SpawnTime = spawnTime;
             projectile.SpawnDelay = (float)(NetworkTime.time - spawnTime);
+            projectile.Init();
 
-            var startCastPoint = position;
+            var previousPrediction = new ProjectilePredictionData()
+            {
+                position = position,
+                rotation = rotation,
+                velocity = Vector3.zero,
+            };
+
             var deltaTime = projectile.SpawnDelay / checkIterations;
             for (int i = 0; i < checkIterations; i++)
             {
@@ -40,15 +47,18 @@ namespace Game.Core.Projectiles
                     EventBus<RequestTwoPointsDealerCheck>.Invoke(new()
                     {
                         dealer = dealer,
-                        point1 = startCastPoint,
+                        point1 = previousPrediction.position,
                         point2 = prediction.position,
                     });
                 }
 
-                startCastPoint = prediction.position;
+                previousPrediction = prediction;
             }
 
-            projectile.transform.position = startCastPoint;
+            projectile.transform.SetPositionAndRotation(previousPrediction.position, previousPrediction.rotation);
+            projectile._lifetime = projectile.SpawnDelay;
+            projectile.rb.linearVelocity = previousPrediction.velocity;
+
             return projectile;
         }
 

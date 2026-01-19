@@ -14,7 +14,7 @@ namespace Game.Projectiles
         public float rotationSpeed;
         public Transform visual;
 
-        public override void Init()
+        protected override void Init()
         {
             collision.onCollision.AddListener(ProjectileCollision);
 

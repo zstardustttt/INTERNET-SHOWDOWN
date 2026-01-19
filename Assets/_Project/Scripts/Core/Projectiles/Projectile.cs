@@ -36,9 +36,8 @@ namespace Game.Core.Projectiles
         }
 
         [Server]
-        public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation) where T : Projectile
+        public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation, bool init = true) where T : Projectile
         {
-
             if (MapLoader.loadedMap == null || !MapLoader.loadedMap.scene.IsValid()) throw new("Map is not loaded");
 
             var projectileObject = Instantiate(prefab.gameObject, position, rotation, new InstantiateParameters()
@@ -56,6 +55,7 @@ namespace Game.Core.Projectiles
                 dealer.OnHit.AddListener((player, damage) => projectile.OnDealerHit(dealer, player, damage));
             }
 
+            if (init) projectile.Init();
             NetworkServer.Spawn(projectileObject);
             return projectile;
         }
@@ -63,7 +63,7 @@ namespace Game.Core.Projectiles
         protected abstract void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage);
         protected abstract void OnUpdate();
 
-        public abstract void Init();
+        protected abstract void Init();
 
         private void Update()
         {

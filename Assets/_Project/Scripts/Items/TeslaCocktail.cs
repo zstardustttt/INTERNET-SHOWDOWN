@@ -14,7 +14,6 @@ namespace Game.Items
         {
             var finalRotation = context.crosshairHit ? Quaternion.LookRotation(context.crosshairHitPoint - context.visualPosition) : context.visualRotation;
             var proj = PredictableProjectile.Spawn(projectile, user, context.visualPosition, finalRotation, context.useTime, projectile.spawnCheckIterations);
-            proj.Init();
             proj.collision.CheckLinecastBetweenTwoPoints(context.headPosition, context.visualPosition);
         }
     }
