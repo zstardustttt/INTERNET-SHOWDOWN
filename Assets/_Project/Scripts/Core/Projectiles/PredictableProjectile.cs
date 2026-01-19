@@ -35,7 +35,7 @@ namespace Game.Core.Projectiles
             {
                 position = position,
                 rotation = rotation,
-                velocity = Vector3.zero,
+                velocity = projectile.rb.linearVelocity,
             };
 
             var deltaTime = projectile.SpawnDelay / checkIterations;

@@ -16,7 +16,7 @@ namespace Game.Projectiles
         public float activateGravityAfter;
         public int spawnCheckIterations;
 
-        public override void Init()
+        protected override void Init()
         {
             collision.onCollision.AddListener(OnCollision);
 
