@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 418f73291c68b2e49a3036283a475a59, type: 3}
   m_Name: TeslaCocktail
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Items.ItemConfig
+  include: 1
   prefab: {fileID: 4842537934591459920, guid: d0ef9a2b655ace647badd60919e717dd, type: 3}
+  rarity: {fileID: 11400000, guid: 8e1dbfb413df3c64f8d873040f92b762, type: 2}

@@ -87,7 +87,22 @@ namespace Game.Player
         [HideInInspector] public UnityEvent onItemPickup = new();
         [HideInInspector] public UnityEvent onResetPlayer = new();
 
-        [SyncVar(hook = nameof(OnItemChange))] public int itemIndex;
+        public struct ItemData
+        {
+            public int rarityIndex;
+            public int itemIndex;
+
+            public static ItemData Default()
+            {
+                return new()
+                {
+                    rarityIndex = 0,
+                    itemIndex = -1
+                };
+            }
+        }
+
+        [SyncVar(hook = nameof(OnItemChange))] public ItemData itemData;
         private Item _item;
 
         public struct DamageCapture
@@ -140,6 +155,41 @@ namespace Game.Player
         private Stats _prevStats;
         [SyncVar] public Stats stats;
 
+        [Server]
+        public void SelectItem()
+        {
+            int rarityIdx;
+            for (rarityIdx = 0; rarityIdx < ItemPool.rarities.Length - 1; rarityIdx++)
+            {
+                if (Random.value <= 0.6f) break;
+            }
+
+            Debug.Log($"Picked rarity {rarityIdx} for player {gameObject.name}");
+
+            var itemPool = ItemPool.items[rarityIdx];
+            while (itemPool == null)
+            {
+                rarityIdx--;
+                if (rarityIdx < 0) break;
+                itemPool = ItemPool.items[rarityIdx];
+            }
+
+            if (itemPool == null)
+            {
+                Debug.LogWarning("No valid item pools were found");
+                return;
+            }
+
+            var itemIdx = Random.Range(0, itemPool.Count);
+            Debug.Log($"Picked item index {itemIdx} for player {gameObject.name}");
+
+            itemData = new()
+            {
+                rarityIndex = rarityIdx,
+                itemIndex = itemIdx
+            };
+        }
+
         private void InnerSetGuid(string guid)
         {
             if (string.IsNullOrEmpty(guid) || _guidReceived) return;
@@ -187,7 +237,7 @@ namespace Game.Player
         public void ResetPlayer()
         {
             _damageHistory.Clear();
-            itemIndex = -1;
+            itemData = ItemData.Default();
             health = config.maxHealth;
             onResetPlayer.Invoke();
         }
@@ -204,13 +254,13 @@ namespace Game.Player
             ResetPlayer();
         }
 
-        private void OnItemChange(int old, int _new)
+        private void OnItemChange(ItemData old, ItemData _new)
         {
             if (_item) Destroy(_item.gameObject);
 
-            if (_new != -1)
+            if (_new.itemIndex != -1)
             {
-                _item = Instantiate(ItemPool.items[itemIndex].prefab, itemHolder).GetComponent<Item>();
+                _item = Instantiate(ItemPool.items[_new.rarityIndex][_new.itemIndex].prefab, itemHolder).GetComponent<Item>();
                 _item.transform.localPosition = _item.offset;
                 if (isLocalPlayer)
                 {
@@ -314,7 +364,7 @@ namespace Game.Player
 
         public void TryUseItem()
         {
-            if (itemIndex == -1) return;
+            if (itemData.itemIndex == -1) return;
 
             var crosshairHit = Physics.Raycast(verticalOrientation.position, verticalOrientation.forward, out var hitInfo, 1000f, LayerMask.GetMask("Player", "Enviroment"));
             var ctx = new ItemUseClientContext()
@@ -373,7 +423,7 @@ namespace Game.Player
         private void UseItem(ItemUseClientContext context)
         {
             if (_item) _item.Use(this, context);
-            itemIndex = -1;
+            itemData = ItemData.Default();
         }
 
         public void SetPosition(Vector3 position)

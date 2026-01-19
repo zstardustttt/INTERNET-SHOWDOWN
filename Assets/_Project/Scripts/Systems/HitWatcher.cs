@@ -6,8 +6,6 @@ using Game.Events.HitWatcher;
 using Game.Core.Maps;
 using Game.Player;
 using Mirror;
-using Random = UnityEngine.Random;
-using Game.Core.Items;
 using System;
 
 namespace Game.Systems
@@ -77,9 +75,9 @@ namespace Game.Systems
                     PlayerDealerCheck(player, dealer, player.previousObservedPosition, player.observedDelta, dealer.previousObservedPosition, dealer.observedDelta);
                 }
 
-                if (player.itemIndex == -1 && PlayerBoxCheck(player, out var box))
+                if (player.itemData.itemIndex == -1 && PlayerBoxCheck(player, out var box))
                 {
-                    player.itemIndex = Random.Range(0, ItemPool.items.Length);
+                    player.SelectItem();
                     NetworkServer.Destroy(box);
                 }
 
