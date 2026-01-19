@@ -5059,8 +5059,8 @@ ParticleSystem:
     startColor:
       serializedVersion: 2
       minMaxState: 2
-      minColor: {r: 1, g: 1, b: 1, a: 0.2}
-      maxColor: {r: 0.5, g: 1, b: 1, a: 0.2}
+      minColor: {r: 1, g: 1, b: 1, a: 0.13333334}
+      maxColor: {r: 0.5, g: 1, b: 1, a: 0.18039216}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -11071,9 +11071,9 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 0.60640585, b: 0, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 0.5019608}
+        key1: {r: 1, g: 1, b: 1, a: 0.24313726}
         key2: {r: 0, g: 0.5, b: 1, a: 0.5019608}
-        key3: {r: 0.5, g: 0.5, b: 1, a: 0}
+        key3: {r: 0.5, g: 0.5, b: 1, a: 0.5019608}
         key4: {r: 0, g: 0, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
@@ -11087,17 +11087,17 @@ ParticleSystem:
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 7132
-        atime2: 58596
-        atime3: 65535
-        atime4: 0
+        atime1: 3662
+        atime2: 7132
+        atime3: 58596
+        atime4: 65535
         atime5: 0
         atime6: 0
         atime7: 0
         m_Mode: 0
         m_ColorSpace: 0
         m_NumColorKeys: 4
-        m_NumAlphaKeys: 4
+        m_NumAlphaKeys: 5
       minGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -14611,7 +14611,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 6418180475301049370, guid: 5dcac9ccf3a9a654fa7f30a9709f7b05, type: 2}
   m_PlayOnAwake: 1
-  m_Volume: 0.6
+  m_Volume: 0.55
   m_Pitch: 1
   Loop: 0
   Mute: 0
