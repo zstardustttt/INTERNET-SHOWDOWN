@@ -15,7 +15,7 @@ namespace Game.Core.Projectiles
         public NetworkRigidbodyReliable netRb;
 
         [Header("Base Settings")]
-        public List<DamageDealer> damageDealers = new();
+        public DamageDealer[] damageDealers;
 
         protected PlayerBase _owner;
         protected float _lifetime;
@@ -33,6 +33,8 @@ namespace Game.Core.Projectiles
             rb.interpolation = RigidbodyInterpolation.Interpolate;
             netTransform.syncDirection = SyncDirection.ServerToClient;
             netRb.syncDirection = SyncDirection.ServerToClient;
+
+            damageDealers = GetComponentsInChildren<DamageDealer>();
         }
 
         [Server]
