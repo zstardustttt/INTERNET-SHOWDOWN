@@ -67,6 +67,7 @@ namespace Game.Systems
                 foreach (var (_, dealer) in _dealers)
                 {
                     if (!dealer) continue;
+                    if (!dealer.active) continue;
 
                     dealer.observedDelta = dealer.transform.position - dealer.previousObservedPosition;
                     if (player.invincible) break;
@@ -121,6 +122,8 @@ namespace Game.Systems
 
         public void TwoPointsDealerCheck(DamageDealer dealer, Vector3 point1, Vector3 point2)
         {
+            if (!dealer.active) return;
+
             if (MapLoader.loadedMap == null) return;
             var players = MapLoader.loadedMap.players;
 
@@ -173,6 +176,13 @@ namespace Game.Systems
             if (dealer.owner == player && !dealer.canDamageOwner) return;
 
             var damage = dealer.EvaluateDamage(player);
+            if (damage == 0f)
+            {
+                dealer.OnHit.Invoke(player, 0f);
+                Debug.Log($"Zero damage hit! on: {player.gameObject.name} by: {dealer.owner.gameObject.name} at: {point}");
+                return;
+            }
+
             player.Damage(damage, dealer.owner);
             dealer.OnHit.Invoke(player, damage);
 
@@ -184,7 +194,7 @@ namespace Game.Systems
                 else dealer.owner.stats.indirectHits++;
             }
 
-            Debug.Log($"{(direct ? "Direct" : "Indirect")} hit! on: {player.gameObject.name} by: {dealer.owner.gameObject.name} at: {point}");
+            Debug.Log($"{(direct ? "Direct" : "Indirect")} hit! on: {player.gameObject.name} by: {dealer.owner.gameObject.name} at: {point} damage: {damage}");
         }
     }
 }

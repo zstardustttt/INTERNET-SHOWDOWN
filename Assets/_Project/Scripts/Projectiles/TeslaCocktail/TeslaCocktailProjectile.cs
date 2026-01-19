@@ -4,7 +4,7 @@ using Game.Player;
 using Mirror;
 using UnityEngine;
 
-namespace Game.Projectiles
+namespace Game.Projectiles.TeslaCocktail
 {
     public class TeslaCocktailProjectile : PredictableProjectile
     {

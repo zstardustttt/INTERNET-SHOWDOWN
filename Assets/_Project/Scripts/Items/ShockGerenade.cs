@@ -1,14 +1,14 @@
 using Game.Core.Items;
 using Game.Core.Projectiles;
 using Game.Player;
-using Game.Projectiles.TeslaCocktail;
+using Game.Projectiles;
 using UnityEngine;
 
 namespace Game.Items
 {
-    public class TeslaCocktail : Item
+    public class ShockGerenade : Item
     {
-        public TeslaCocktailProjectile projectile;
+        public ShockGerenadeProjectile projectile;
 
         public override void Use(PlayerBase user, ItemUseClientContext context)
         {

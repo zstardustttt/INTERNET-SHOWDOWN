@@ -86,6 +86,7 @@ namespace Game.Player
         [HideInInspector] public UnityEvent<Collider> onCollide = new();
         [HideInInspector] public UnityEvent onItemPickup = new();
         [HideInInspector] public UnityEvent onResetPlayer = new();
+        [HideInInspector] public UnityEvent onDamage = new();
 
         public struct ItemData
         {
@@ -281,6 +282,7 @@ namespace Game.Player
         {
             _damageHistory.Push(new() { damage = damage, author = author });
             health -= damage;
+            onDamage.Invoke();
         }
 
         [Server]
@@ -359,6 +361,7 @@ namespace Game.Player
             {
                 EventBus<OnHealthUpdate>.Invoke(new() { maxHealth = config.maxHealth, health = health });
                 if (_new < old) EventBus<DamageIndicatorRequest>.Invoke(new());
+                if (_new <= 0f) _additionalVelocity = Vector3.zero;
             }
         }
 

@@ -1,7 +1,7 @@
 using Game.Player;
 using Mirror;
 
-namespace Game.Projectiles
+namespace Game.Projectiles.TeslaCocktail
 {
     public class TeslaCocktailPlayerField : NetworkBehaviour
     {

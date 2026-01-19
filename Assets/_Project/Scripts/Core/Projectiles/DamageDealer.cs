@@ -21,6 +21,7 @@ namespace Game.Core.Projectiles
         [HideInInspector] public PlayerBase owner;
         [HideInInspector] public Collider coll;
 
+        public bool active = true;
         [Tooltip("Allows only one hit scan per dealer's lifetime")] public bool singleHitScan;
         public bool canDamageOwner;
         public float knockbackForce;

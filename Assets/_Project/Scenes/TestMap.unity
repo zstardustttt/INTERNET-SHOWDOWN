@@ -491,6 +491,12 @@ MonoBehaviour:
   defaultReflectionResolution: 128
   reflectionIntensity: 1
   reflectionBounces: 1
+  fog: 0
+  fogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  fogMode: 3
+  fogStartDistance: 0
+  fogEndDistance: 300
+  fogDensity: 0.01
 --- !u!1 &1300510910
 GameObject:
   m_ObjectHideFlags: 0
@@ -912,8 +918,8 @@ MonoBehaviour:
   - {fileID: 1891471364}
   - {fileID: 1268483036}
   - {fileID: 863571242}
-  boundsMin: {x: -46, y: -17.05, z: -70.9}
-  boundsMax: {x: 54.3, y: 34.2, z: 29.5}
+  boundsMin: {x: -50.4, y: -17.05, z: -75.3}
+  boundsMax: {x: 58.2, y: 34.2, z: 32.7}
   boxSpawnPlane: {x: -44.8, y: -69.3, z: 52.4, w: 27.1}
 --- !u!1 &1741298160
 GameObject:
