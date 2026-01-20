@@ -216,7 +216,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1459376448108328031}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 5341830137eaf174f87d0a80c6aebe32, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -243,7 +243,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 932b2b80620abaa4e9ebf507ec4f961b, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.45
+  m_Volume: 0.25
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -252,7 +252,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0
   MinDistance: 5
-  MaxDistance: 25
+  MaxDistance: 35
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0
@@ -444,7 +444,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cd166a6fdc0ee6b45b2c63b4ffc405f9, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cd166a6fdc0ee6b45b2c63b4ffc405f9, type: 3}
       propertyPath: m_LocalRotation.x
@@ -452,7 +452,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cd166a6fdc0ee6b45b2c63b4ffc405f9, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cd166a6fdc0ee6b45b2c63b4ffc405f9, type: 3}
       propertyPath: m_LocalRotation.z
@@ -464,7 +464,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cd166a6fdc0ee6b45b2c63b4ffc405f9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cd166a6fdc0ee6b45b2c63b4ffc405f9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z

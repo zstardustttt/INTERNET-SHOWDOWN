@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace Game.Projectiles
 {
+    // TODO: Shake visual based on countdown
+    // TODO: Explosion effect
+    // TODO: Texts on displays
+    // TODO: Gradients on glow parts
     public class ShockGerenadeProjectile : PredictableProjectile
     {
         public float speed;
