@@ -13,8 +13,8 @@ namespace Game.Items
         public override void Use(PlayerBase user, ItemUseClientContext context)
         {
             var finalRotation = context.crosshairHit ? Quaternion.LookRotation(context.crosshairHitPoint - context.visualPosition) : context.visualRotation;
-            var proj = PredictableProjectile.Spawn(projectile, user, context.visualPosition, finalRotation, context.useTime, 1);
-            proj.collision.CheckLinecastBetweenTwoPoints(context.headPosition, context.visualPosition);
+            var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, finalRotation);
+            proj.SetupPrediction(context.useTime, 1);
         }
     }
 }

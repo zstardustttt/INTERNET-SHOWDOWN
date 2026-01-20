@@ -32,6 +32,7 @@ namespace Game.Core.Projectiles
         {
             base.OnValidate();
             coll = GetComponent<Collider>();
+            coll.isTrigger = true;
         }
 
         private void Awake()

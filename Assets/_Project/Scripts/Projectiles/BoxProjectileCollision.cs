@@ -8,8 +8,6 @@ namespace Game.Projectiles
     {
         public BoxCollider coll;
 
-        public override Bounds Bounds => coll.bounds;
-
         protected override void OnValidate()
         {
             base.OnValidate();
@@ -19,11 +17,13 @@ namespace Game.Projectiles
         public override void CheckCollisionBetweenTwoPoints(Vector3 p1, Vector3 p2)
         {
             var delta = p2 - p1;
-            if (!Physics.BoxCast(p1, coll.size / 2f, delta.normalized, out var hit, transform.rotation, delta.magnitude, collisionLayerMask))
-                return;
+            var hits = Physics.BoxCastAll(p1, coll.size / 2f, delta.normalized, transform.rotation, delta.magnitude, collisionLayerMask);
 
-            if (hit.collider == coll) return;
-            onCollision.Invoke(hit.point, hit.normal, hit.collider);
+            foreach (var hit in hits)
+            {
+                if (hit.collider == coll) continue;
+                onCollision.Invoke(hit.point, hit.normal, hit.collider);
+            }
         }
     }
 }

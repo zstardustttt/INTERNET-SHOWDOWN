@@ -48,7 +48,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -75,6 +75,7 @@ MonoBehaviour:
   hitScanCount: 0
   owner: {fileID: 0}
   coll: {fileID: 2917248093975008040}
+  active: 1
   singleHitScan: 0
   canDamageOwner: 0
   knockbackForce: 0
@@ -141,17 +142,16 @@ MonoBehaviour:
   rb: {fileID: 4815251024805592757}
   netTransform: {fileID: 1789330743275152635}
   netRb: {fileID: 8195396347111606234}
+  collision: {fileID: 6815060551347088938}
   damageDealers:
   - {fileID: 7877562851342404184}
   predictionDebugIterations: 8
   predictionDebugTimePassed: 1.73
-  collision: {fileID: 6815060551347088938}
   fieldPrefab: {fileID: 3362834775927340723, guid: b457d7bf7fab32245b3320e698f2afa9, type: 3}
   playerFieldPrefab: {fileID: 4601800352319084863, guid: c55ce7a8bacd74a4ba6f290443a40e5c, type: 3}
   speed: 50
   gravityAcceleration: 25
   activateGravityAfter: 0.15
-  spawnCheckIterations: 4
 --- !u!54 &4815251024805592757
 Rigidbody:
   m_ObjectHideFlags: 0

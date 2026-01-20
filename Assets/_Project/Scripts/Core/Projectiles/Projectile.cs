@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Game.Core.Maps;
 using Game.Player;
 using Mirror;
@@ -13,6 +12,7 @@ namespace Game.Core.Projectiles
         public Rigidbody rb;
         public NetworkTransformReliable netTransform;
         public NetworkRigidbodyReliable netRb;
+        public ProjectileCollision collision;
 
         [Header("Base Settings")]
         public DamageDealer[] damageDealers;
@@ -35,10 +35,11 @@ namespace Game.Core.Projectiles
             netRb.syncDirection = SyncDirection.ServerToClient;
 
             damageDealers = GetComponentsInChildren<DamageDealer>();
+            TryGetComponent(out collision);
         }
 
         [Server]
-        public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation, bool init = true) where T : Projectile
+        public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 headPosition, Vector3 position, Quaternion rotation) where T : Projectile
         {
             if (MapLoader.loadedMap == null || !MapLoader.loadedMap.scene.IsValid()) throw new("Map is not loaded");
 
@@ -57,15 +58,28 @@ namespace Game.Core.Projectiles
                 dealer.OnHit.AddListener((player, damage) => projectile.OnDealerHit(dealer, player, damage));
             }
 
-            if (init) projectile.Init();
             NetworkServer.Spawn(projectileObject);
+
+            if (projectile.collision)
+            {
+                projectile.collision.onCollision.AddListener(projectile.OnCollision);
+                projectile.collision.CheckLinecastBetweenTwoPoints(headPosition, position);
+            }
+
             return projectile;
         }
 
         protected abstract void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage);
+        protected abstract void OnCollision(Vector3 point, Vector3 normal, Collider other);
         protected abstract void OnUpdate();
 
-        protected abstract void Init();
+        protected void DestroyProjectile()
+        {
+            if (collision)
+                collision.onCollision.RemoveAllListeners();
+
+            NetworkServer.Destroy(gameObject);
+        }
 
         private void Update()
         {

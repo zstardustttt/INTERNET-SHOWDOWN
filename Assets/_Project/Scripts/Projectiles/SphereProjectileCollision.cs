@@ -8,8 +8,6 @@ namespace Game.Projectiles
     {
         public SphereCollider coll;
 
-        public override Bounds Bounds => coll.bounds;
-
         protected override void OnValidate()
         {
             base.OnValidate();
@@ -19,11 +17,13 @@ namespace Game.Projectiles
         public override void CheckCollisionBetweenTwoPoints(Vector3 p1, Vector3 p2)
         {
             var delta = p2 - p1;
-            if (!Physics.SphereCast(p1, coll.radius, delta.normalized, out var hit, delta.magnitude, collisionLayerMask))
-                return;
+            var hits = Physics.SphereCastAll(p1, coll.radius, delta.normalized, delta.magnitude, collisionLayerMask);
 
-            if (hit.collider == coll) return;
-            onCollision.Invoke(hit.point, hit.normal, hit.collider);
+            foreach (var hit in hits)
+            {
+                if (hit.collider == coll || hit.point == Vector3.zero) continue;
+                onCollision.Invoke(hit.point, hit.normal, hit.collider);
+            }
         }
     }
 }

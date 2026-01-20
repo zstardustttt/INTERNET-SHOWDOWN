@@ -8,31 +8,10 @@ namespace Game.Projectiles
 {
     public class HuananV2Projectile : PredictableProjectile
     {
-        public ProjectileCollision collision;
         public DamageDealer explosionPrefab;
         public float speed;
         public float rotationSpeed;
         public Transform visual;
-
-        protected override void Init()
-        {
-            collision.onCollision.AddListener(ProjectileCollision);
-
-            var prediction = Predict(SpawnDelay);
-            collision.CheckCollisionBetweenTwoPoints(_spawnPosition, prediction.position);
-            rb.linearVelocity = transform.forward * speed;
-        }
-
-        private void ProjectileCollision(Vector3 point, Vector3 normal, Collider other)
-        {
-            var explosion = Instantiate(explosionPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
-            {
-                scene = MapLoader.loadedMap.scene
-            });
-            explosion.GetComponent<DamageDealer>().owner = _owner;
-            NetworkServer.Spawn(explosion);
-            NetworkServer.Destroy(gameObject);
-        }
 
         protected override void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage) { }
 
@@ -52,6 +31,17 @@ namespace Game.Projectiles
                 rotation = _spawnRotation,
                 velocity = velocity,
             };
+        }
+
+        protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
+        {
+            var explosion = Instantiate(explosionPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
+            {
+                scene = MapLoader.loadedMap.scene
+            });
+            explosion.GetComponent<DamageDealer>().owner = _owner;
+            NetworkServer.Spawn(explosion);
+            DestroyProjectile();
         }
     }
 }

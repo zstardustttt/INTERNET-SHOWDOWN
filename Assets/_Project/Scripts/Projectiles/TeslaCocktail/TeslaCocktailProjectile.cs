@@ -8,31 +8,13 @@ namespace Game.Projectiles.TeslaCocktail
 {
     public class TeslaCocktailProjectile : PredictableProjectile
     {
-        public ProjectileCollision collision;
         public DamageDealer fieldPrefab;
         public DamageDealer playerFieldPrefab;
         public float speed;
         public float gravityAcceleration;
         public float activateGravityAfter;
-        public int spawnCheckIterations;
 
-        protected override void Init()
-        {
-            collision.onCollision.AddListener(OnCollision);
-
-            var startCastPoint = _spawnPosition;
-            var deltaTime = SpawnDelay / spawnCheckIterations;
-            for (int i = 1; i <= spawnCheckIterations; i++)
-            {
-                var prediction = Predict(deltaTime * i);
-                collision.CheckCollisionBetweenTwoPoints(startCastPoint, prediction.position);
-                _spawnPosition = prediction.position;
-            }
-
-            rb.linearVelocity = transform.forward * speed;
-        }
-
-        private void OnCollision(Vector3 point, Vector3 normal, Collider other)
+        protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
             var field = Instantiate(fieldPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
             {
@@ -71,7 +53,7 @@ namespace Game.Projectiles.TeslaCocktail
             field.GetComponent<DamageDealer>().owner = _owner;
             field.GetComponent<TeslaCocktailPlayerField>().player = player;
             NetworkServer.Spawn(field);
-            NetworkServer.Destroy(gameObject);
+            DestroyProjectile();
         }
 
         protected override void OnUpdate()

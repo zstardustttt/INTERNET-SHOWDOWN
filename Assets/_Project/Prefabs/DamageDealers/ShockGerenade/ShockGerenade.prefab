@@ -79,15 +79,14 @@ MonoBehaviour:
   rb: {fileID: 8422152388811641674}
   netTransform: {fileID: 8203638565341032619}
   netRb: {fileID: 518300984145970512}
+  collision: {fileID: 8328632736421125881}
   damageDealers:
   - {fileID: 1595082852376827780}
   predictionDebugIterations: 5
   predictionDebugTimePassed: 1
-  collision: {fileID: 8328632736421125881}
   speed: 40
   gravityAcceleration: 25
   activateGravityAfter: 0.15
-  spawnCheckIterations: 8
   explodeAfter: 5
   detachTotalDelta: 100
   explosion: {fileID: 871211422364439796, guid: f18910510fd7d844d9b701fa7ed10828, type: 3}
@@ -274,11 +273,11 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 0.7
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1595082852376827780
 MonoBehaviour:

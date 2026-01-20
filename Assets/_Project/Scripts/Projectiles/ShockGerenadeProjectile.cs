@@ -8,50 +8,22 @@ namespace Game.Projectiles
 {
     public class ShockGerenadeProjectile : PredictableProjectile
     {
-        public ProjectileCollision collision;
         public float speed;
         public float gravityAcceleration;
         public float activateGravityAfter;
-        public int spawnCheckIterations;
         public float explodeAfter;
         public float detachTotalDelta;
         public DamageDealer explosion;
 
         private PlayerBase _attached;
         private Vector3 _previousAttachedPosition;
-        private bool _attachedToGround;
         private float _collectedAttachedDelta;
 
-        protected override void Init()
+        protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
-            collision.onCollision.AddListener(OnCollision);
+            if (_attached) return;
 
-            var startCastPoint = _spawnPosition;
-            var deltaTime = SpawnDelay / spawnCheckIterations;
-            for (int i = 1; i <= spawnCheckIterations; i++)
-            {
-                var prediction = Predict(deltaTime * i);
-                collision.CheckCollisionBetweenTwoPoints(startCastPoint, prediction.position);
-                _spawnPosition = prediction.position;
-            }
-
-            rb.linearVelocity = transform.forward * speed;
-        }
-
-        private void OnCollision(Vector3 point, Vector3 normal, Collider other)
-        {
-            if (_attached || _attachedToGround) return;
-
-            rb.linearVelocity = Vector3.zero;
-            var offset = new Vector3
-            (
-                collision.Bounds.extents.x * normal.x,
-                collision.Bounds.extents.y * normal.y,
-                collision.Bounds.extents.z * normal.z
-            );
-
-            transform.position = point + offset;
-            _attachedToGround = true;
+            transform.position = point + Vector3.up;
         }
 
         protected override void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage)
@@ -59,7 +31,6 @@ namespace Game.Projectiles
             if (_attached) return;
             dealer.active = false;
 
-            _attachedToGround = false;
             _attached = player;
             _attached.onDamage.AddListener(Explode);
             _previousAttachedPosition = player.transform.position;
@@ -89,7 +60,7 @@ namespace Game.Projectiles
                 else return;
             }
 
-            if (_lifetime <= activateGravityAfter || _attachedToGround || _attached) return;
+            if (_lifetime <= activateGravityAfter || _attached) return;
             rb.linearVelocity -= gravityAcceleration * Time.deltaTime * Vector3.up;
         }
 
@@ -102,7 +73,7 @@ namespace Game.Projectiles
             });
             exp.GetComponent<DamageDealer>().owner = _owner;
             NetworkServer.Spawn(exp);
-            NetworkServer.Destroy(gameObject);
+            DestroyProjectile();
         }
 
         private void LateUpdate()
@@ -118,7 +89,7 @@ namespace Game.Projectiles
             var forward = _attached.horizontalOrientation.transform.forward;
             var capsule = _attached.motor.Capsule;
 
-            var offsetFromPlayer = forward * capsule.radius;
+            /*var offsetFromPlayer = forward * capsule.radius;
             var offsetFromProjectile = new Vector3
             (
                 collision.Bounds.extents.x * forward.x,
@@ -126,7 +97,7 @@ namespace Game.Projectiles
                 collision.Bounds.extents.z * forward.z
             );
 
-            transform.position = _attached.transform.position + capsule.center + offsetFromPlayer + offsetFromProjectile;
+            transform.position = _attached.transform.position + capsule.center + offsetFromPlayer + offsetFromProjectile;*/
         }
 
         public override ProjectilePredictionData Predict(float timePassed)

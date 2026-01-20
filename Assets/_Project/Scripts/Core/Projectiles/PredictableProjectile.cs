@@ -2,6 +2,7 @@ using Game.Core.Events;
 using Game.Events.HitWatcher;
 using Game.Player;
 using Mirror;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Core.Projectiles
@@ -24,25 +25,28 @@ namespace Game.Core.Projectiles
 
         public abstract ProjectilePredictionData Predict(float timePassed);
 
-        public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 position, Quaternion rotation, double spawnTime, int checkIterations) where T : PredictableProjectile
+        public void SetupPrediction(double spawnTime, int checkIterations)
         {
-            var projectile = Spawn(prefab, owner, position, rotation, false);
-            projectile.SpawnTime = spawnTime;
-            projectile.SpawnDelay = (float)(NetworkTime.time - spawnTime);
-            projectile.Init();
+            SpawnTime = spawnTime;
+            SpawnDelay = (float)(NetworkTime.time - spawnTime);
+            _lifetime = SpawnDelay;
+
+            var finalPrediction = Predict(SpawnDelay);
+            transform.SetPositionAndRotation(finalPrediction.position, finalPrediction.rotation);
+            rb.linearVelocity = finalPrediction.velocity;
 
             var previousPrediction = new ProjectilePredictionData()
             {
-                position = position,
-                rotation = rotation,
-                velocity = projectile.rb.linearVelocity,
+                position = _spawnPosition,
+                rotation = _spawnRotation,
+                velocity = rb.linearVelocity,
             };
 
-            var deltaTime = projectile.SpawnDelay / checkIterations;
+            var deltaTime = SpawnDelay / checkIterations;
             for (int i = 1; i <= checkIterations; i++)
             {
-                var prediction = projectile.Predict(deltaTime * i);
-                foreach (var dealer in projectile.damageDealers)
+                var prediction = i == checkIterations ? finalPrediction : Predict(deltaTime * i);
+                foreach (var dealer in damageDealers)
                 {
                     EventBus<RequestTwoPointsDealerCheck>.Invoke(new()
                     {
@@ -52,14 +56,11 @@ namespace Game.Core.Projectiles
                     });
                 }
 
+                if (collision)
+                    collision.CheckCollisionBetweenTwoPoints(previousPrediction.position, prediction.position);
+
                 previousPrediction = prediction;
             }
-
-            projectile.transform.SetPositionAndRotation(previousPrediction.position, previousPrediction.rotation);
-            projectile._lifetime = projectile.SpawnDelay;
-            projectile.rb.linearVelocity = previousPrediction.velocity;
-
-            return projectile;
         }
 
         private void OnDrawGizmosSelected()
