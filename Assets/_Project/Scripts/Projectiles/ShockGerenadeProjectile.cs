@@ -15,6 +15,11 @@ namespace Game.Projectiles
         public float detachTotalDelta;
         public DamageDealer explosion;
         public float collisionRadius;
+        public GameObject visual;
+        public GameObject localGerenadeVisualPrefab;
+
+        // client
+        private GameObject _localGerenadeVisal;
 
         private PlayerBase _attached;
         private Vector3 _previousAttachedPosition;
@@ -35,6 +40,25 @@ namespace Game.Projectiles
             _attached = player;
             _attached.onDamage.AddListener(Explode);
             _previousAttachedPosition = player.transform.position;
+
+            TargetSpawnVisual(_attached.netIdentity.connectionToClient);
+        }
+
+        [TargetRpc]
+        private void TargetSpawnVisual(NetworkConnectionToClient _)
+        {
+            var player = NetworkClient.localPlayer.GetComponent<PlayerBase>();
+            _localGerenadeVisal = Instantiate(localGerenadeVisualPrefab, player.horizontalOrientation);
+            _localGerenadeVisal.transform.localPosition = player.motor.Capsule.center + Vector3.forward * (player.motor.Capsule.radius + collisionRadius);
+            visual.SetActive(false);
+        }
+
+        [TargetRpc]
+        private void TargetDestroyVisual(NetworkConnectionToClient _)
+        {
+            if (!_localGerenadeVisal) return;
+            Destroy(_localGerenadeVisal);
+            visual.SetActive(true);
         }
 
         protected override void OnUpdate()
@@ -55,6 +79,7 @@ namespace Game.Projectiles
                 _previousAttachedPosition = _attached.transform.position;
                 if (_collectedAttachedDelta >= detachTotalDelta)
                 {
+                    TargetDestroyVisual(_attached.netIdentity.connectionToClient);
                     _attached.onDamage.RemoveListener(Explode);
                     _attached = null;
                 }
@@ -67,7 +92,14 @@ namespace Game.Projectiles
 
         private void Explode()
         {
-            var pos = _attached ? _attached.transform.position : transform.position;
+            Vector3 pos;
+            if (_attached)
+            {
+                TargetDestroyVisual(_attached.netIdentity.connectionToClient);
+                pos = _attached.transform.position;
+            }
+            else pos = transform.position;
+
             var exp = Instantiate(explosion.gameObject, pos, Quaternion.identity, new InstantiateParameters()
             {
                 scene = MapLoader.loadedMap.scene
@@ -82,11 +114,6 @@ namespace Game.Projectiles
             if (!NetworkServer.active) return;
 
             if (!_attached) return;
-            UpdateAttached();
-        }
-
-        private void UpdateAttached()
-        {
             var forward = _attached.horizontalOrientation.transform.forward;
             var capsule = _attached.motor.Capsule;
 

@@ -88,9 +88,11 @@ MonoBehaviour:
   gravityAcceleration: 25
   activateGravityAfter: 0.15
   explodeAfter: 5
-  detachTotalDelta: 100
+  detachTotalDelta: 85
   explosion: {fileID: 871211422364439796, guid: f18910510fd7d844d9b701fa7ed10828, type: 3}
   collisionRadius: 0.35
+  visual: {fileID: 8326501886766244901}
+  localGerenadeVisualPrefab: {fileID: 8905043781987494722, guid: 4bd9b2a3092f793469e0538dc506de48, type: 3}
 --- !u!54 &8422152388811641674
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -321,7 +323,7 @@ GameObject:
   - component: {fileID: 5569196135820027040}
   - component: {fileID: 5553371486324128627}
   m_Layer: 10
-  m_Name: Sphere
+  m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
