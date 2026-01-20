@@ -17,13 +17,20 @@ namespace Game.Projectiles
         public float collisionRadius;
         public GameObject visual;
         public GameObject localGerenadeVisualPrefab;
+        public AudioSource tickAudioSource;
 
         // client
-        private GameObject _localGerenadeVisal;
+        private GameObject _localGerenadeVisual;
 
         private PlayerBase _attached;
         private Vector3 _previousAttachedPosition;
         private float _collectedAttachedDelta;
+
+        private void OnDestroy()
+        {
+            if (!_localGerenadeVisual) return;
+            Destroy(_localGerenadeVisual);
+        }
 
         protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
@@ -48,17 +55,24 @@ namespace Game.Projectiles
         private void TargetSpawnVisual(NetworkConnectionToClient _)
         {
             var player = NetworkClient.localPlayer.GetComponent<PlayerBase>();
-            _localGerenadeVisal = Instantiate(localGerenadeVisualPrefab, player.horizontalOrientation);
-            _localGerenadeVisal.transform.localPosition = player.motor.Capsule.center + Vector3.forward * (player.motor.Capsule.radius + collisionRadius);
+            _localGerenadeVisual = Instantiate(localGerenadeVisualPrefab, player.horizontalOrientation);
+            _localGerenadeVisual.transform.localPosition = player.motor.Capsule.center + Vector3.forward * (player.motor.Capsule.radius + collisionRadius);
             visual.SetActive(false);
+            tickAudioSource.spatialBlend = 0f;
         }
 
         [TargetRpc]
         private void TargetDestroyVisual(NetworkConnectionToClient _)
         {
-            if (!_localGerenadeVisal) return;
-            Destroy(_localGerenadeVisal);
+            LocalDestroyVisual();
+        }
+
+        private void LocalDestroyVisual()
+        {
+            if (!_localGerenadeVisual) return;
+            Destroy(_localGerenadeVisual);
             visual.SetActive(true);
+            tickAudioSource.spatialBlend = 1f;
         }
 
         protected override void OnUpdate()
@@ -92,13 +106,7 @@ namespace Game.Projectiles
 
         private void Explode()
         {
-            Vector3 pos;
-            if (_attached)
-            {
-                TargetDestroyVisual(_attached.netIdentity.connectionToClient);
-                pos = _attached.transform.position;
-            }
-            else pos = transform.position;
+            var pos = _attached ? _attached.transform.position : transform.position;
 
             var exp = Instantiate(explosion.gameObject, pos, Quaternion.identity, new InstantiateParameters()
             {
@@ -113,7 +121,7 @@ namespace Game.Projectiles
         {
             if (!NetworkServer.active) return;
 
-            if (!_attached) return;
+            if (!_attached || _attached.transform.position == Vector3.zero) return;
             var forward = _attached.horizontalOrientation.transform.forward;
             var capsule = _attached.motor.Capsule;
 
