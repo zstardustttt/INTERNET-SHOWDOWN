@@ -90,6 +90,7 @@ MonoBehaviour:
   explodeAfter: 5
   detachTotalDelta: 100
   explosion: {fileID: 871211422364439796, guid: f18910510fd7d844d9b701fa7ed10828, type: 3}
+  collisionRadius: 0.35
 --- !u!54 &8422152388811641674
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -14,6 +14,7 @@ namespace Game.Projectiles
         public float explodeAfter;
         public float detachTotalDelta;
         public DamageDealer explosion;
+        public float collisionRadius;
 
         private PlayerBase _attached;
         private Vector3 _previousAttachedPosition;
@@ -23,7 +24,7 @@ namespace Game.Projectiles
         {
             if (_attached) return;
 
-            transform.position = point + Vector3.up;
+            transform.position = point + normal * collisionRadius;
         }
 
         protected override void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage)
@@ -89,15 +90,10 @@ namespace Game.Projectiles
             var forward = _attached.horizontalOrientation.transform.forward;
             var capsule = _attached.motor.Capsule;
 
-            /*var offsetFromPlayer = forward * capsule.radius;
-            var offsetFromProjectile = new Vector3
-            (
-                collision.Bounds.extents.x * forward.x,
-                collision.Bounds.extents.y * forward.y,
-                collision.Bounds.extents.z * forward.z
-            );
+            var offsetFromPlayer = forward * capsule.radius;
+            var offsetFromProjectile = forward * collisionRadius;
 
-            transform.position = _attached.transform.position + capsule.center + offsetFromPlayer + offsetFromProjectile;*/
+            transform.position = _attached.transform.position + capsule.center + offsetFromPlayer + offsetFromProjectile;
         }
 
         public override ProjectilePredictionData Predict(float timePassed)
