@@ -125,6 +125,13 @@ namespace Game.Player
             invincible = false;
         }
 
+        [Server]
+        public void ActivateInvincibility(float duration)
+        {
+            _invincibleTimer = duration;
+            invincible = true;
+        }
+
         [HideInInspector] public Vector3 previousObservedPosition;
         [HideInInspector] public Vector3 observedDelta;
 
@@ -261,7 +268,7 @@ namespace Game.Player
         {
             _damageHistory.Push(new() { damage = damage, author = author });
             health -= damage;
-            if (activateInvincibility) _invincibleTimer = config.invincibleDuration;
+            if (activateInvincibility) ActivateInvincibility(config.damageInvincibilityDuration);
             onDamage.Invoke();
         }
 
@@ -371,9 +378,7 @@ namespace Game.Player
 
             // Handle invincibility
             _invincibleTimer -= Time.deltaTime;
-            if (_invincibleTimer > 0f && !invincible)
-                invincible = true;
-            else if (_invincibleTimer <= 0f && invincible)
+            if (_invincibleTimer <= 0f && invincible)
                 invincible = false;
 
             // Teleport back if clipped out of bounds

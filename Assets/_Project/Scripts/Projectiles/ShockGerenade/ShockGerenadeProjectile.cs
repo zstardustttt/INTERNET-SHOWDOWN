@@ -68,7 +68,7 @@ namespace Game.Projectiles.ShockGerenade
 
             _attached = player;
             _attached.onDeath.AddListener(Detach);
-            _damageInterval = _attached.config.invincibleDuration;
+            _damageInterval = _attached.config.damageInvincibilityDuration;
             _previousAttachedPosition = player.transform.position;
 
             TargetSpawnVisual(_attached.netIdentity.connectionToClient);

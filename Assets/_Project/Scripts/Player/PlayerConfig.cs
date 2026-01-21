@@ -72,6 +72,6 @@ namespace Game.Player
 
         [Header("Health")]
         public float maxHealth;
-        public float invincibleDuration;
+        public float damageInvincibilityDuration;
     }
 }
