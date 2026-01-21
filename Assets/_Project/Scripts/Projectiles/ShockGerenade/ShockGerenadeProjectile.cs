@@ -1,15 +1,18 @@
+using System;
+using System.Linq;
+using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
+using Game.Events.HitWatcher;
 using Game.Player;
 using Mirror;
 using UnityEngine;
 
-namespace Game.Projectiles
+namespace Game.Projectiles.ShockGerenade
 {
     // TODO: Shake visual based on countdown
     // TODO: Explosion effect
     // TODO: Texts on displays
-    // TODO: Gradients on glow parts
     public class ShockGerenadeProjectile : PredictableProjectile
     {
         public float speed;
@@ -22,6 +25,7 @@ namespace Game.Projectiles
         public GameObject visual;
         public GameObject localGerenadeVisualPrefab;
         public AudioSource tickAudioSource;
+        public float holdDamage;
 
         // client
         private GameObject _localGerenadeVisual;
@@ -30,8 +34,22 @@ namespace Game.Projectiles
         private Vector3 _previousAttachedPosition;
         private float _collectedAttachedDelta;
 
+        private Guid _onRegisterHitListenerGuid;
+
+        private void Awake()
+        {
+            if (!NetworkServer.active) return;
+            _onRegisterHitListenerGuid = EventBus<OnRegisterDamage>.Listen((data) =>
+            {
+                if (data.player != _attached || damageDealers.Contains(data.dealer)) return;
+                Explode();
+            });
+        }
+
         private void OnDestroy()
         {
+            if (NetworkServer.active) EventBus<OnRegisterDamage>.TryCancel(_onRegisterHitListenerGuid);
+
             if (!_localGerenadeVisual) return;
             Destroy(_localGerenadeVisual);
         }
@@ -49,7 +67,7 @@ namespace Game.Projectiles
             dealer.active = false;
 
             _attached = player;
-            _attached.onDamage.AddListener(Explode);
+            _attached.onDeath.AddListener(Detach);
             _previousAttachedPosition = player.transform.position;
 
             TargetSpawnVisual(_attached.netIdentity.connectionToClient);
@@ -91,21 +109,41 @@ namespace Game.Projectiles
 
             if (_attached)
             {
-                var attachedDelta = _attached.transform.position - _previousAttachedPosition;
-                _collectedAttachedDelta += attachedDelta.magnitude;
+                rb.linearVelocity = Vector3.zero;
 
-                _previousAttachedPosition = _attached.transform.position;
-                if (_collectedAttachedDelta >= detachTotalDelta)
+                if (_attached.transform.position != Vector3.zero)
                 {
-                    TargetDestroyVisual(_attached.netIdentity.connectionToClient);
-                    _attached.onDamage.RemoveListener(Explode);
-                    _attached = null;
+                    var capsule = _attached.motor.Capsule;
+                    transform.position = _attached.transform.position + capsule.center + _attached.transform.forward * (capsule.radius + collisionRadius);
+
+                    var attachedDelta = _attached.transform.position - _previousAttachedPosition;
+                    _collectedAttachedDelta += attachedDelta.magnitude;
+
+                    _previousAttachedPosition = _attached.transform.position;
                 }
-                else return;
+
+                if (_collectedAttachedDelta >= detachTotalDelta) Detach();
+                else
+                {
+                    if (!_attached.invincible)
+                    {
+                        _attached.Damage(holdDamage, _owner);
+                        if (_owner) _owner.RegisterHit(DamageType.Continuous);
+                    }
+
+                    return;
+                }
             }
 
             if (_lifetime <= activateGravityAfter || _attached) return;
             rb.linearVelocity -= gravityAcceleration * Time.deltaTime * Vector3.up;
+        }
+
+        private void Detach()
+        {
+            TargetDestroyVisual(_attached.netIdentity.connectionToClient);
+            _attached.onDeath.RemoveListener(Detach);
+            _attached = null;
         }
 
         private void Explode()
@@ -119,20 +157,6 @@ namespace Game.Projectiles
             exp.GetComponent<DamageDealer>().owner = _owner;
             NetworkServer.Spawn(exp);
             DestroyProjectile();
-        }
-
-        private void LateUpdate()
-        {
-            if (!NetworkServer.active) return;
-
-            if (!_attached || _attached.transform.position == Vector3.zero) return;
-            var forward = _attached.horizontalOrientation.transform.forward;
-            var capsule = _attached.motor.Capsule;
-
-            var offsetFromPlayer = forward * capsule.radius;
-            var offsetFromProjectile = forward * collisionRadius;
-
-            transform.position = _attached.transform.position + capsule.center + offsetFromPlayer + offsetFromProjectile;
         }
 
         public override ProjectilePredictionData Predict(float timePassed)

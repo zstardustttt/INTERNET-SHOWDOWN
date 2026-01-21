@@ -12,8 +12,6 @@ namespace Game.Projectiles
         public float innerRadius;
         public float innerDamage;
 
-        public override bool Direct => false;
-
         public override float EvaluateDamage(PlayerBase player)
         {
             var center = transform.position + centerOffset;

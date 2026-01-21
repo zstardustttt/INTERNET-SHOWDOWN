@@ -159,7 +159,12 @@ namespace Game.Systems
                 return;
             }
 
-            if (!didHit) return;
+            if (!didHit)
+            {
+                Debug.Log($"{dealerPosition} {playerPosition} {relativeDelta} {deltaLength}");
+                return;
+            }
+
             var hitPoint = Vector3.Lerp(dealerPosition, dealerPosition + dealerDelta, hit.distance / deltaLength);
             RegisterHit(player, dealer, hitPoint);
         }
@@ -174,27 +179,22 @@ namespace Game.Systems
             }
 
             if (dealer.owner == player && !dealer.canDamageOwner) return;
-
-            var damage = dealer.EvaluateDamage(player);
-            if (damage == 0f)
+            if (dealer.damageType == DamageType.None)
             {
                 dealer.OnHit.Invoke(player, 0f);
                 Debug.Log($"Zero damage hit! on: {player.gameObject.name} by: {dealer.owner.gameObject.name} at: {point}");
                 return;
             }
 
+            var damage = dealer.EvaluateDamage(player);
             player.Damage(damage, dealer.owner);
             dealer.OnHit.Invoke(player, damage);
 
-            var direct = dealer.Direct;
             if (dealer.owner && dealer.owner != player)
-            {
-                dealer.owner.TargetOnHit();
-                if (direct) dealer.owner.stats.directHits++;
-                else dealer.owner.stats.indirectHits++;
-            }
+                dealer.owner.RegisterHit(dealer.damageType);
 
-            Debug.Log($"{(direct ? "Direct" : "Indirect")} hit! on: {player.gameObject.name} by: {dealer.owner.gameObject.name} at: {point} damage: {damage}");
+            EventBus<OnRegisterDamage>.Invoke(new() { dealer = dealer, player = player });
+            Debug.Log($"{dealer.damageType} hit! on: {player.gameObject.name} by: {dealer.owner.gameObject.name} at: {point} damage: {damage}");
         }
     }
 }

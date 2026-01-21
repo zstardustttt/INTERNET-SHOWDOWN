@@ -23,7 +23,7 @@ namespace Game.Network
         public static CustomNetworkManager CustomSingleton => (CustomNetworkManager)singleton;
         private GameObject _portal;
 
-        private Dictionary<string, PlayerBase.Stats> _disconnectedPlayersStats;
+        private Dictionary<string, PlayerStats> _disconnectedPlayersStats;
         private GameState _gameState;
 
         public override void OnStartServer()

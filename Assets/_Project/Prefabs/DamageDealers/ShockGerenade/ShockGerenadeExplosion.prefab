@@ -79,7 +79,8 @@ MonoBehaviour:
   owner: {fileID: 0}
   coll: {fileID: 7299828617124353764}
   active: 1
-  singleHitScan: 1
+  damageType: 2
+  singleHitScan: 0
   canDamageOwner: 1
   knockbackForce: 50
   OnHit:
@@ -87,9 +88,9 @@ MonoBehaviour:
       m_Calls: []
   centerOffset: {x: 0, y: 0, z: 0}
   outerRadius: 8
-  outerDamage: 20
+  outerDamage: 30
   innerRadius: 5
-  innerDamage: 80
+  innerDamage: 60
 --- !u!114 &3353753891631006950
 MonoBehaviour:
   m_ObjectHideFlags: 0

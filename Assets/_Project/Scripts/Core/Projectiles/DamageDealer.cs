@@ -8,10 +8,17 @@ using UnityEngine.Events;
 
 namespace Game.Core.Projectiles
 {
+    public enum DamageType
+    {
+        None,
+        Direct,
+        Indirect,
+        Continuous
+    }
+
     [RequireComponent(typeof(Collider))]
     public abstract class DamageDealer : NetworkBehaviour
     {
-        public abstract bool Direct { get; }
         public Guid DealerGuid { get; private set; }
 
         [HideInInspector] public Vector3 previousObservedPosition;
@@ -22,6 +29,7 @@ namespace Game.Core.Projectiles
         [HideInInspector] public Collider coll;
 
         public bool active = true;
+        public DamageType damageType;
         [Tooltip("Allows only one hit scan per dealer's lifetime")] public bool singleHitScan;
         public bool canDamageOwner;
         public float knockbackForce;

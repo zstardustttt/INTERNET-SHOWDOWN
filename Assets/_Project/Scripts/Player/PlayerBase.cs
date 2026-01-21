@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Core.Events;
 using Game.Core.Items;
 using Game.Core.Maps;
+using Game.Core.Projectiles;
 using Game.Events.Player;
 using Game.Events.UI;
 using Game.Maps;
@@ -87,6 +87,7 @@ namespace Game.Player
         [HideInInspector] public UnityEvent onItemPickup = new();
         [HideInInspector] public UnityEvent onResetPlayer = new();
         [HideInInspector] public UnityEvent onDamage = new();
+        [HideInInspector] public UnityEvent onDeath = new();
 
         public struct ItemData
         {
@@ -120,41 +121,12 @@ namespace Game.Player
         [HideInInspector] public Vector3 previousObservedPosition;
         [HideInInspector] public Vector3 observedDelta;
 
-        public struct Stats : IEquatable<Stats>
-        {
-            public int activity;
-            public int indirectHits;
-            public int directHits;
-            public int supportingKills;
-            public int finishingKills;
-            public int pureKills;
-
-            public readonly bool Equals(Stats other)
-            {
-                return activity.Equals(other.activity)
-                    && indirectHits.Equals(other.indirectHits)
-                    && directHits.Equals(other.directHits)
-                    && supportingKills.Equals(other.supportingKills)
-                    && finishingKills.Equals(other.finishingKills)
-                    && pureKills.Equals(other.pureKills);
-            }
-
-            public readonly int GetScore()
-            {
-                return indirectHits
-                    + directHits * 3
-                    + supportingKills * 2
-                    + finishingKills * 2
-                    + pureKills * 4;
-            }
-        }
-
         private bool _guidReceived;
         [SyncVar] public string playerGuid;
         [SyncVar] public string playerName;
 
-        private Stats _prevStats;
-        [SyncVar] public Stats stats;
+        private PlayerStats _prevStats;
+        [SyncVar] public PlayerStats stats;
 
         [Server]
         public void SelectItem()
@@ -307,7 +279,8 @@ namespace Game.Player
 
         private void OnHealthChange(float old, float _new)
         {
-            if (_new < old) _invincibleTimer = config.invincibleDuration;
+            if (NetworkServer.active && _new < old)
+                _invincibleTimer = config.invincibleDuration;
 
             if (NetworkServer.active && _new <= 0f)
             {
@@ -355,6 +328,8 @@ namespace Game.Player
                 var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
                 ServerMovePlayer(position);
                 ResetPlayer();
+
+                onDeath.Invoke();
             }
 
             if (netIdentity.isLocalPlayer)
@@ -390,12 +365,11 @@ namespace Game.Player
             if (!NetworkServer.active) return;
 
             // Handle invincibility
-            if (_invincibleTimer > 0f)
-            {
-                _invincibleTimer -= Time.deltaTime;
-                if (!invincible) invincible = true;
-            }
-            else if (invincible) invincible = false;
+            _invincibleTimer -= Time.deltaTime;
+            if (_invincibleTimer > 0f && !invincible)
+                invincible = true;
+            else if (_invincibleTimer <= 0f && invincible)
+                invincible = false;
 
             // Teleport back if clipped out of bounds
             if (MapLoader.loadedMap != null && transform.position.y < MapLoader.loadedMap.info.boundsMin.y)
@@ -822,6 +796,13 @@ namespace Game.Player
             {
                 _gravityVelocity += config.gravity * deltaTime;
             }
+        }
+
+        [Server]
+        public void RegisterHit(DamageType damageType)
+        {
+            stats.AddHit(damageType);
+            TargetOnHit();
         }
 
         [TargetRpc]

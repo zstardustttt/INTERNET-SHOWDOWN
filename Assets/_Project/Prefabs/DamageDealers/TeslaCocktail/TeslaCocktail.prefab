@@ -76,13 +76,14 @@ MonoBehaviour:
   owner: {fileID: 0}
   coll: {fileID: 2917248093975008040}
   active: 1
+  damageType: 0
   singleHitScan: 0
   canDamageOwner: 0
   knockbackForce: 0
   OnHit:
     m_PersistentCalls:
       m_Calls: []
-  baseDamage: 5
+  baseDamage: 0
 --- !u!1 &6565942098022493468
 GameObject:
   m_ObjectHideFlags: 0

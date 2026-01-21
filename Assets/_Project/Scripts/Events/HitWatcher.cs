@@ -1,6 +1,7 @@
 using System;
 using Game.Core.Events;
 using Game.Core.Projectiles;
+using Game.Player;
 using UnityEngine;
 
 namespace Game.Events.HitWatcher
@@ -20,5 +21,11 @@ namespace Game.Events.HitWatcher
         public DamageDealer dealer;
         public Vector3 point1;
         public Vector3 point2;
+    }
+
+    public struct OnRegisterDamage : IEvent
+    {
+        public DamageDealer dealer;
+        public PlayerBase player;
     }
 }

@@ -14777,6 +14777,7 @@ MonoBehaviour:
   owner: {fileID: 0}
   coll: {fileID: 7333610585879673598}
   active: 1
+  damageType: 3
   singleHitScan: 0
   canDamageOwner: 1
   knockbackForce: 0

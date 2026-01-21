@@ -1,7 +1,7 @@
 using Game.Core.Items;
 using Game.Core.Projectiles;
 using Game.Player;
-using Game.Projectiles;
+using Game.Projectiles.ShockGerenade;
 using UnityEngine;
 
 namespace Game.Items

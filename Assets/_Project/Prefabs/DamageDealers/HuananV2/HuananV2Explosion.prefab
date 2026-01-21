@@ -24738,6 +24738,8 @@ MonoBehaviour:
   hitScanCount: 0
   owner: {fileID: 0}
   coll: {fileID: 5563388409014675495}
+  active: 1
+  damageType: 2
   singleHitScan: 1
   canDamageOwner: 0
   knockbackForce: 75
