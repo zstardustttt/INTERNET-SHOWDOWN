@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
@@ -34,21 +33,22 @@ namespace Game.Projectiles.ShockGerenade
         private Vector3 _previousAttachedPosition;
         private float _collectedAttachedDelta;
 
-        private Guid _onRegisterHitListenerGuid;
+        private Guid _onRegisterDamageListenerGuid;
+        private float _damageInterval;
+        private float _damageTimer;
 
-        private void Awake()
+        public override void OnStartServer()
         {
-            if (!NetworkServer.active) return;
-            _onRegisterHitListenerGuid = EventBus<OnRegisterDamage>.Listen((data) =>
+            _onRegisterDamageListenerGuid = EventBus<OnRegisterDamage>.Listen((data) =>
             {
-                if (data.player != _attached || damageDealers.Contains(data.dealer)) return;
+                if (data.player != _attached) return;
                 Explode();
             });
         }
 
         private void OnDestroy()
         {
-            if (NetworkServer.active) EventBus<OnRegisterDamage>.TryCancel(_onRegisterHitListenerGuid);
+            if (NetworkServer.active) EventBus<OnRegisterDamage>.TryCancel(_onRegisterDamageListenerGuid);
 
             if (!_localGerenadeVisual) return;
             Destroy(_localGerenadeVisual);
@@ -68,6 +68,7 @@ namespace Game.Projectiles.ShockGerenade
 
             _attached = player;
             _attached.onDeath.AddListener(Detach);
+            _damageInterval = _attached.config.invincibleDuration;
             _previousAttachedPosition = player.transform.position;
 
             TargetSpawnVisual(_attached.netIdentity.connectionToClient);
@@ -107,6 +108,12 @@ namespace Game.Projectiles.ShockGerenade
                 return;
             }
 
+            MainUpdate();
+            if (_damageTimer > 0f) _damageTimer -= Time.deltaTime;
+        }
+
+        private void MainUpdate()
+        {
             if (_attached)
             {
                 rb.linearVelocity = Vector3.zero;
@@ -125,10 +132,11 @@ namespace Game.Projectiles.ShockGerenade
                 if (_collectedAttachedDelta >= detachTotalDelta) Detach();
                 else
                 {
-                    if (!_attached.invincible)
+                    if (_damageTimer <= 0f)
                     {
-                        _attached.Damage(holdDamage, _owner);
+                        _attached.Damage(holdDamage, _owner, false);
                         if (_owner) _owner.RegisterHit(DamageType.Continuous);
+                        _damageTimer = _damageInterval;
                     }
 
                     return;
@@ -148,7 +156,14 @@ namespace Game.Projectiles.ShockGerenade
 
         private void Explode()
         {
-            var pos = _attached ? _attached.transform.position : transform.position;
+            Vector3 pos;
+            if (_attached)
+            {
+                _attached.ForceRemoveInvincibility();
+                _attached.onDeath.RemoveListener(Detach);
+                pos = _attached.transform.position;
+            }
+            else pos = transform.position;
 
             var exp = Instantiate(explosion.gameObject, pos, Quaternion.identity, new InstantiateParameters()
             {

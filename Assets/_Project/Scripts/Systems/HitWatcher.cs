@@ -7,6 +7,7 @@ using Game.Core.Maps;
 using Game.Player;
 using Mirror;
 using System;
+using Unity.Mathematics;
 
 namespace Game.Systems
 {
@@ -159,11 +160,8 @@ namespace Game.Systems
                 return;
             }
 
-            if (!didHit)
-            {
-                Debug.Log($"{dealerPosition} {playerPosition} {relativeDelta} {deltaLength}");
-                return;
-            }
+            // TODO: observed position might be broken if setting dealer's position manually
+            if (!didHit) return;
 
             var hitPoint = Vector3.Lerp(dealerPosition, dealerPosition + dealerDelta, hit.distance / deltaLength);
             RegisterHit(player, dealer, hitPoint);

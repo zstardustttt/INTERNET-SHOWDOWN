@@ -118,6 +118,13 @@ namespace Game.Player
         [SyncVar] public bool invincible;
         private float _invincibleTimer; // server only
 
+        [Server]
+        public void ForceRemoveInvincibility()
+        {
+            _invincibleTimer = 0f;
+            invincible = false;
+        }
+
         [HideInInspector] public Vector3 previousObservedPosition;
         [HideInInspector] public Vector3 observedDelta;
 
@@ -250,10 +257,11 @@ namespace Game.Player
         }
 
         [Server]
-        public void Damage(float damage, PlayerBase author)
+        public void Damage(float damage, PlayerBase author, bool activateInvincibility = true)
         {
             _damageHistory.Push(new() { damage = damage, author = author });
             health -= damage;
+            if (activateInvincibility) _invincibleTimer = config.invincibleDuration;
             onDamage.Invoke();
         }
 
@@ -279,9 +287,6 @@ namespace Game.Player
 
         private void OnHealthChange(float old, float _new)
         {
-            if (NetworkServer.active && _new < old)
-                _invincibleTimer = config.invincibleDuration;
-
             if (NetworkServer.active && _new <= 0f)
             {
                 // Death logic
