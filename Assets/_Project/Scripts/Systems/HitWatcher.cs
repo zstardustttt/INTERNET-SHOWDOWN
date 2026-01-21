@@ -7,7 +7,6 @@ using Game.Core.Maps;
 using Game.Player;
 using Mirror;
 using System;
-using Unity.Mathematics;
 
 namespace Game.Systems
 {
