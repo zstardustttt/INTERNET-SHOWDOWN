@@ -14,6 +14,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Up
     second: {fileID: 2100000, guid: 29b7a9260aba8054ea750cc759fa9b31, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: props
+    second: {fileID: 2100000, guid: 37a57c8928d2b4242be223be78993e06, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
