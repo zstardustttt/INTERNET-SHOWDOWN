@@ -29,7 +29,7 @@ namespace Game.Projectiles.ShockGerenade
         public float visualShakeIncreaseRate;
 
         // client
-        private GameObject _localGerenadeVisual;
+        private ShockGerenadeLocalVisual _localGerenadeVisual;
 
         private PlayerBase _attached;
         private Vector3 _previousAttachedPosition;
@@ -64,7 +64,7 @@ namespace Game.Projectiles.ShockGerenade
             if (NetworkServer.active) EventBus<OnRegisterDamage>.TryCancel(_onRegisterDamageListenerGuid);
 
             if (!_localGerenadeVisual) return;
-            Destroy(_localGerenadeVisual);
+            Destroy(_localGerenadeVisual.gameObject);
         }
 
         protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
@@ -91,7 +91,7 @@ namespace Game.Projectiles.ShockGerenade
         private void TargetSpawnVisual(NetworkConnectionToClient _)
         {
             var player = NetworkClient.localPlayer.GetComponent<PlayerBase>();
-            _localGerenadeVisual = Instantiate(localGerenadeVisualPrefab, player.horizontalOrientation);
+            _localGerenadeVisual = Instantiate(localGerenadeVisualPrefab, player.horizontalOrientation).GetComponent<ShockGerenadeLocalVisual>();
             _localGerenadeVisual.transform.localPosition = player.motor.Capsule.center + Vector3.forward * (player.motor.Capsule.radius + collisionRadius);
             visual.SetActive(false);
             tickAudioSource.spatialBlend = 0f;
@@ -106,16 +106,18 @@ namespace Game.Projectiles.ShockGerenade
         private void LocalDestroyVisual()
         {
             if (!_localGerenadeVisual) return;
-            Destroy(_localGerenadeVisual);
+            Destroy(_localGerenadeVisual.gameObject);
             visual.SetActive(true);
             tickAudioSource.spatialBlend = 1f;
         }
 
         protected override void OnUpdate()
         {
-            _shakeGenerator.shakeAmplitude = _lifetime * visualShakeIncreaseRate;
+            _shakeGenerator.shakeAmplitude = _lifetime * _lifetime * visualShakeIncreaseRate;
             var shake = _shakeGenerator.GetShake();
             shakee.localPosition = shake;
+            if (_localGerenadeVisual)
+                _localGerenadeVisual.visual.localPosition = shake;
 
             if (!NetworkServer.active) return;
 

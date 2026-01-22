@@ -5,6 +5,7 @@ namespace Game.Projectiles.ShockGerenade
 {
     public class ShockGerenadeLocalVisual : MonoBehaviour
     {
+        public Transform visual;
         public float toggleTextInterval;
         public TMP_Text displayText;
 

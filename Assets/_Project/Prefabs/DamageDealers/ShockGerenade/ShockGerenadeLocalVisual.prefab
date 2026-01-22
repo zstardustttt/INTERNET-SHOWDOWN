@@ -275,6 +275,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48430fbd2217f27489cab2f97d4d0331, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Projectiles.ShockGerenade.ShockGerenadeLocalVisual
+  visual: {fileID: 2741983898748109170}
   toggleTextInterval: 0.2
   displayText: {fileID: 4746319606119324315}
 --- !u!1001 &1381099605422398937

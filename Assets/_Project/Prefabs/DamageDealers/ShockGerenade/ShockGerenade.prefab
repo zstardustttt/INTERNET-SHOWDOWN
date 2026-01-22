@@ -98,7 +98,7 @@ MonoBehaviour:
   holdDamage: 3.5
   shakee: {fileID: 6290191911296125310}
   visualShakeFrequency: 10
-  visualShakeIncreaseRate: 0.05
+  visualShakeIncreaseRate: 0.005
 --- !u!54 &8422152388811641674
 Rigidbody:
   m_ObjectHideFlags: 0
