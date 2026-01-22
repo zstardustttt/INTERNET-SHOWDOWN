@@ -3,15 +3,14 @@ using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
 using Game.Events.HitWatcher;
+using Game.Other;
 using Game.Player;
 using Mirror;
 using UnityEngine;
 
 namespace Game.Projectiles.ShockGerenade
 {
-    // TODO: Shake visual based on countdown
     // TODO: Explosion effect
-    // TODO: Texts on displays
     public class ShockGerenadeProjectile : PredictableProjectile
     {
         public float speed;
@@ -25,6 +24,9 @@ namespace Game.Projectiles.ShockGerenade
         public GameObject localGerenadeVisualPrefab;
         public AudioSource tickAudioSource;
         public float holdDamage;
+        public Transform shakee;
+        public float visualShakeFrequency;
+        public float visualShakeIncreaseRate;
 
         // client
         private GameObject _localGerenadeVisual;
@@ -36,6 +38,17 @@ namespace Game.Projectiles.ShockGerenade
         private Guid _onRegisterDamageListenerGuid;
         private float _damageInterval;
         private float _damageTimer;
+
+        private ShakeGenerator _shakeGenerator;
+
+        private void Awake()
+        {
+            _shakeGenerator = new()
+            {
+                shakeFrequency = visualShakeFrequency,
+                shakeFalloffSpeed = 0f,
+            };
+        }
 
         public override void OnStartServer()
         {
@@ -100,6 +113,10 @@ namespace Game.Projectiles.ShockGerenade
 
         protected override void OnUpdate()
         {
+            _shakeGenerator.shakeAmplitude = _lifetime * visualShakeIncreaseRate;
+            var shake = _shakeGenerator.GetShake();
+            shakee.localPosition = shake;
+
             if (!NetworkServer.active) return;
 
             if (_lifetime > explodeAfter)

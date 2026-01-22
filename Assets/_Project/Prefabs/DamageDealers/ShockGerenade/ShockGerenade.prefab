@@ -96,6 +96,9 @@ MonoBehaviour:
   localGerenadeVisualPrefab: {fileID: 8905043781987494722, guid: 4bd9b2a3092f793469e0538dc506de48, type: 3}
   tickAudioSource: {fileID: 65647630199678033}
   holdDamage: 3.5
+  shakee: {fileID: 6290191911296125310}
+  visualShakeFrequency: 10
+  visualShakeIncreaseRate: 0.05
 --- !u!54 &8422152388811641674
 Rigidbody:
   m_ObjectHideFlags: 0
