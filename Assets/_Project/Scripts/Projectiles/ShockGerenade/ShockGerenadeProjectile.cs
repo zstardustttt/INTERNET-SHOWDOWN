@@ -140,7 +140,7 @@ namespace Game.Projectiles.ShockGerenade
                 if (_attached.transform.position != Vector3.zero)
                 {
                     var capsule = _attached.motor.Capsule;
-                    transform.position = _attached.transform.position + capsule.center + _attached.transform.forward * (capsule.radius + collisionRadius);
+                    rb.position = _attached.transform.position + capsule.center + _attached.transform.forward * (capsule.radius + collisionRadius);
 
                     var attachedDelta = _attached.transform.position - _previousAttachedPosition;
                     _collectedAttachedDelta += attachedDelta.magnitude;
