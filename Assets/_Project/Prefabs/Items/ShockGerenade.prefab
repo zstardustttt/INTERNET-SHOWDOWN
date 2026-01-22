@@ -237,7 +237,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: OwO
+  m_text: born 2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: df2f542592cd99e44b66da483bd81cc6, type: 2}
   m_sharedMaterial: {fileID: -4868316215074770659, guid: df2f542592cd99e44b66da483bd81cc6, type: 2}
@@ -264,12 +264,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.08
-  m_fontSizeBase: 0.08
+  m_fontSize: 0.07
+  m_fontSizeBase: 0.07
   m_fontWeight: 400
   m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMin: 1
+  m_fontSizeMax: 10
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 4096
@@ -494,6 +494,71 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Items.ShockGerenade
   offset: {x: -0.05, y: -0.05, z: 0}
+  displayText: {fileID: 8577208436520984464}
+  textVariants:
+  - OwO
+  - HI !!!
+  - Hi :3
+  - Yooo
+  - YOOO
+  - Nooo
+  - Hello
+  - Zzz...
+  - VvV
+  - LOVE
+  - hate
+  - Omg
+  - pain
+  - GOOO
+  - Lol
+  - PEAK
+  - suffer
+  - death
+  - HAPPY
+  - DON'T
+  - DIE
+  - JUST
+  - Sad :(
+  - I AM
+  - IDIOT
+  - YOU R
+  - I hope
+  - BOOM
+  - STAY
+  - ALIVE
+  - UwU
+  - LETS
+  - WE R
+  - okay
+  - Fine
+  - No
+  - Yeah
+  - Nah
+  - smart
+  - :3 :3
+  - tired
+  - ...
+  - sleep
+  - VOID
+  - shame
+  - I can't
+  - RAGE
+  - AAA
+  - It's
+  - END
+  - HAHA
+  - :)
+  - :(
+  - :3
+  - alone
+  - dumb
+  - please
+  - TALK
+  - born 2
+  - SAY
+  - GOD
+  textChangeIntervalMin: 0.8
+  textChangeIntervalMax: 5
   projectile: {fileID: 2634283477714140036, guid: bd5f83fb0876eaa4b928e03afa8a5850, type: 3}
 --- !u!1001 &1924108997602510492
 PrefabInstance:
