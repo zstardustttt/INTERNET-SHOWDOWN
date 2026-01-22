@@ -108,12 +108,15 @@ MonoBehaviour:
   properties:
     color: {r: 0, g: 0, b: 0, a: 1}
     thickness: 0.1
+    enableDepth: 1
     depthStrength: 1
     depthThickness: 50
     depthThreshold: 0.05
+    enableColor: 1
     colorStrength: 1
     colorThickness: 10
     colorThreshold: 0.5
+    enableNormals: 1
     normalsStrength: 1
     normalsThickness: 100
     normalsThreshold: 0.3
@@ -123,7 +126,7 @@ MonoBehaviour:
     adjustFarDepth: 50
     normalsFarThreshold: 1
     colorFarThreshold: 1
-  shader: {fileID: -6465566751694194690, guid: 41d6dd11df2d9994bb6b223400c00807, type: 3}
+  shader: {fileID: 4800000, guid: 8b5766d62e247e846b16a0459904bd52, type: 3}
   injectionPoint: 550
 --- !u!114 &8623111402142229734
 MonoBehaviour:

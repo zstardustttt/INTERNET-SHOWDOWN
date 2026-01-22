@@ -11,14 +11,17 @@ namespace Game.Graphics.Outlines
         private static readonly int _colorID = Shader.PropertyToID("_Color");
         private static readonly int _thicknessID = Shader.PropertyToID("_Thickness");
 
+        private static readonly int _enableDepthID = Shader.PropertyToID("_EnableDepth");
         private static readonly int _depthStrengthID = Shader.PropertyToID("_DepthStrength");
         private static readonly int _depthThicknessID = Shader.PropertyToID("_DepthThickness");
         private static readonly int _depthThresholdID = Shader.PropertyToID("_DepthThreshold");
 
+        private static readonly int _enableColorID = Shader.PropertyToID("_EnableColor");
         private static readonly int _colorStrengthID = Shader.PropertyToID("_ColorStrength");
         private static readonly int _colorThicknessID = Shader.PropertyToID("_ColorThickness");
         private static readonly int _colorThresholdID = Shader.PropertyToID("_ColorThreshold");
 
+        private static readonly int _enableNormalsID = Shader.PropertyToID("_EnableNormals");
         private static readonly int _normalsStrengthID = Shader.PropertyToID("_NormalsStrength");
         private static readonly int _normalsThicknessID = Shader.PropertyToID("_NormalsThickness");
         private static readonly int _normalsThresholdID = Shader.PropertyToID("_NormalsThreshold");
@@ -69,14 +72,17 @@ namespace Game.Graphics.Outlines
             _material.SetColor(_colorID, _properties.color);
             _material.SetFloat(_thicknessID, _properties.thickness);
 
+            _material.SetFloat(_enableDepthID, _properties.enableDepth ? 1f : 0f);
             _material.SetFloat(_depthStrengthID, _properties.depthStrength);
             _material.SetFloat(_depthThicknessID, _properties.depthThickness);
             _material.SetFloat(_depthThresholdID, _properties.depthThreshold);
 
+            _material.SetFloat(_enableColorID, _properties.enableColor ? 1f : 0f);
             _material.SetFloat(_colorStrengthID, _properties.colorStrength);
             _material.SetFloat(_colorThicknessID, _properties.colorThickness);
             _material.SetFloat(_colorThresholdID, _properties.colorThreshold);
 
+            _material.SetFloat(_enableNormalsID, _properties.enableNormals ? 1f : 0f);
             _material.SetFloat(_normalsStrengthID, _properties.normalsStrength);
             _material.SetFloat(_normalsThicknessID, _properties.normalsThickness);
             _material.SetFloat(_normalsThresholdID, _properties.normalsThreshold);

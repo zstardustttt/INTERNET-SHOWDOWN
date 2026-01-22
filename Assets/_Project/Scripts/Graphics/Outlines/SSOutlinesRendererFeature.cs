@@ -11,16 +11,19 @@ namespace Game.Graphics.Outlines
         public float thickness;
 
         [Space(9)]
+        public bool enableDepth;
         public float depthStrength;
         public float depthThickness;
         public float depthThreshold;
 
         [Space(9)]
+        public bool enableColor;
         public float colorStrength;
         public float colorThickness;
         public float colorThreshold;
 
         [Space(9)]
+        public bool enableNormals;
         public float normalsStrength;
         public float normalsThickness;
         public float normalsThreshold;
