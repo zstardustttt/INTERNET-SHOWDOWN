@@ -9,7 +9,6 @@ using UnityEngine;
 
 namespace Game.Projectiles.ShockGerenade
 {
-    // TODO: Explosion effect
     public class ShockGerenadeProjectile : PredictableProjectile
     {
         public float speed;
