@@ -39,6 +39,7 @@ namespace Game.Projectiles.ShockGerenade
         private float _damageTimer;
 
         private ShakeGenerator _shakeGenerator;
+        private bool _exploded;
 
         private void Awake()
         {
@@ -185,6 +186,9 @@ namespace Game.Projectiles.ShockGerenade
 
         private void Explode()
         {
+            if (_exploded) return;
+            _exploded = true;
+
             Vector3 pos;
             if (_attached)
             {
