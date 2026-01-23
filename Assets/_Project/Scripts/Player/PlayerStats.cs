@@ -1,5 +1,5 @@
 using System;
-using Game.Core.Projectiles;
+using Game.Core.Damage;
 
 namespace Game.Player
 {

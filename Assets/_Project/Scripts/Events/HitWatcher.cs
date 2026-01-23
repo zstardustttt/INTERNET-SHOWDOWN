@@ -1,6 +1,6 @@
 using System;
+using Game.Core.Damage;
 using Game.Core.Events;
-using Game.Core.Projectiles;
 using Game.Player;
 using UnityEngine;
 

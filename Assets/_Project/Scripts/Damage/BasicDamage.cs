@@ -1,9 +1,9 @@
-using Game.Core.Projectiles;
+using Game.Core.Damage;
 using Game.Player;
 
-namespace Game.Projectiles
+namespace Game.Damage
 {
-    public class DirectDamage : DamageDealer
+    public class BasicDamage : DamageDealer
     {
         public float baseDamage = 10f;
 

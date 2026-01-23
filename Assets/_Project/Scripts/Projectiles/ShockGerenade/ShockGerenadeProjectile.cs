@@ -1,4 +1,5 @@
 using System;
+using Game.Core.Damage;
 using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Core.Projectiles;

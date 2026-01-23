@@ -1,8 +1,8 @@
-using Game.Core.Projectiles;
+using Game.Core.Damage;
 using Game.Player;
 using UnityEngine;
 
-namespace Game.Projectiles
+namespace Game.Damage
 {
     public class RadialDamage : DamageDealer
     {

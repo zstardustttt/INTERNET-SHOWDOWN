@@ -6,7 +6,7 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Game.Core.Projectiles
+namespace Game.Core.Damage
 {
     public enum DamageType
     {

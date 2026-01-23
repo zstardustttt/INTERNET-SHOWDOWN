@@ -1,5 +1,4 @@
 using UnityEngine;
-using Game.Core.Projectiles;
 using System.Collections.Generic;
 using Game.Core.Events;
 using Game.Events.HitWatcher;
@@ -7,6 +6,7 @@ using Game.Core.Maps;
 using Game.Player;
 using Mirror;
 using System;
+using Game.Core.Damage;
 
 namespace Game.Systems
 {

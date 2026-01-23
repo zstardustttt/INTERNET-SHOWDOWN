@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Core.Damage;
 using Game.Core.Events;
 using Game.Core.Items;
 using Game.Core.Maps;
-using Game.Core.Projectiles;
 using Game.Events.Player;
 using Game.Events.UI;
 using Game.Maps;
