@@ -101,6 +101,7 @@ Shader "Custom/SSOutlines"
 
             half GetOutlinesBlendOpacity(half2 uv)
             {
+                half uvRawDepth = SampleRawDepth(uv);
                 half2 thickness = half2(_Thickness, mul(_Thickness, _ScreenParams.x / _ScreenParams.y)) / 100; 
                 half depthAdjust = smoothstep(_AdjustNearDepth, _AdjustFarDepth, SampleEyeDepth(uv));
                 
@@ -110,7 +111,7 @@ Shader "Custom/SSOutlines"
                     half depthSobel = DepthSobel_half(uv, thickness);
                     half3 vsnorm = GetViewSpaceNormals_half(uv);
                     half3 viewdir = ViewDirectionFromScreenUV_half(uv);
-                    half depthThreshold = mul(SampleRawDepth(uv), lerp(_DepthThreshold, _AcuteDepthThreshold, smoothstep(_AcuteAngleStartDot, 1, 1 - dot(vsnorm, viewdir))));
+                    half depthThreshold = mul(uvRawDepth, lerp(_DepthThreshold, _AcuteDepthThreshold, smoothstep(_AcuteAngleStartDot, 1, 1 - dot(vsnorm, viewdir))));
                     depthEdge = FineTuneEdgeDetection(depthSobel, _DepthStrength, _DepthThickness, depthThreshold);
                 }
                 else
@@ -123,7 +124,7 @@ Shader "Custom/SSOutlines"
                 {
                     half colorSobel = ColorSobel_half(uv, thickness);
                     half colorThreshold = lerp(_ColorThreshold, _ColorFarThreshold, depthAdjust);
-                    if (SampleRawDepth(uv) == 0)
+                    if (uvRawDepth == 0)
                     {
                         colorEdge = 0;
                     }
@@ -155,7 +156,7 @@ Shader "Custom/SSOutlines"
 
             float4 Frag (Varyings input) : SV_Target
             {
-                half4 base = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, input.texcoord).rgba;
+                float4 base = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, input.texcoord).rgba;
                 half opacity = GetOutlinesBlendOpacity(input.texcoord);
                 float4 color = lerp(base, _Color, opacity);
                 return color;
