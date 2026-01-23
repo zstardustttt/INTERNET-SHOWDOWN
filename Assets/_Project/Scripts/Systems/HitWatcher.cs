@@ -4,7 +4,6 @@ using Game.Core.Events;
 using Game.Events.HitWatcher;
 using System;
 using Game.Core.Damage;
-using System.Linq;
 
 namespace Game.Systems
 {
