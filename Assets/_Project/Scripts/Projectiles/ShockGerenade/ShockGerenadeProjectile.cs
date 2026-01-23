@@ -1,3 +1,4 @@
+using System;
 using Game.Core.Damage;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
@@ -25,6 +26,7 @@ namespace Game.Projectiles.ShockGerenade
         public Transform shakee;
         public float visualShakeFrequency;
         public float visualShakeIncreaseRate;
+        public DamageReceiver damageReceiver;
 
         // client
         private ShockGerenadeLocalVisual _localGerenadeVisual;
@@ -47,8 +49,26 @@ namespace Game.Projectiles.ShockGerenade
             };
         }
 
+        public override void OnStartServer()
+        {
+            damageReceiver.onDamage.AddListener(OnDamageReceived);
+            damageReceiver.Register(Guid.NewGuid());
+        }
+
+        private void OnDamageReceived(DamageDealer dealer, float _)
+        {
+            if (dealer.damageType == DamageType.None) return;
+            Explode();
+        }
+
         private void OnDestroy()
         {
+            if (NetworkServer.active)
+            {
+                damageReceiver.Unregister();
+                damageReceiver.onDamage.RemoveListener(OnDamageReceived);
+            }
+
             if (!_localGerenadeVisual) return;
             Destroy(_localGerenadeVisual.gameObject);
         }

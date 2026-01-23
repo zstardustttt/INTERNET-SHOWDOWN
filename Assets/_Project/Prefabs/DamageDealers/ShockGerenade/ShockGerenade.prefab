@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 490452635148387784}
   - component: {fileID: 3814544164326343549}
   - component: {fileID: 65647630199678033}
+  - component: {fileID: 4050009569507431300}
   m_Layer: 10
   m_Name: ShockGerenade
   m_TagString: Untagged
@@ -99,6 +100,7 @@ MonoBehaviour:
   shakee: {fileID: 6290191911296125310}
   visualShakeFrequency: 10
   visualShakeIncreaseRate: 0.005
+  damageReceiver: {fileID: 4050009569507431300}
 --- !u!54 &8422152388811641674
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -331,6 +333,31 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &4050009569507431300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1459376448108328031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bfe8a0521ace9747bc0c29027d7b9b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damage.DamageReceiver
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  active: 1
+  onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  coll: {fileID: 3814544164326343549}
+  ignoreDealers:
+  - {fileID: 1595082852376827780}
+  previousObservedPosition: {x: 0, y: 0, z: 0}
+  observedDelta: {x: 0, y: 0, z: 0}
 --- !u!1 &2011318079426229929
 GameObject:
   m_ObjectHideFlags: 0
@@ -411,7 +438,7 @@ MonoBehaviour:
   singleHitScan: 0
   canDamageOwner: 0
   knockbackForce: 0
-  OnHit:
+  onHit:
     m_PersistentCalls:
       m_Calls: []
   baseDamage: 0

@@ -4,6 +4,7 @@ using Game.Core.Events;
 using Game.Events.HitWatcher;
 using System;
 using Game.Core.Damage;
+using System.Linq;
 
 namespace Game.Systems
 {
@@ -128,6 +129,7 @@ namespace Game.Systems
 
                         if (!dealer.active) continue;
                         if (dealer.singleHitScan && dealer.hitScanCount > 0) continue;
+                        if (receiver.ignoreDealers.Contains(dealer)) continue;
                         ReceiverDealerCheck(receiver, dealer, receiver.previousObservedPosition, receiver.observedDelta, dealer.previousObservedPosition, dealer.observedDelta);
                     }
                 }
@@ -162,6 +164,7 @@ namespace Game.Systems
             foreach (var (_, receiver) in _receivers)
             {
                 if (!receiver || !receiver.active) continue;
+                if (receiver.ignoreDealers.Contains(dealer)) continue;
                 ReplaceReceiverCheckCollider(receiver);
                 ReceiverDealerCheck(receiver, dealer, receiver.previousObservedPosition, receiver.observedDelta, point1, point2 - point1);
             }

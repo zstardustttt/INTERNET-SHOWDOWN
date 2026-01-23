@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Game.Core.Events;
 using Game.Events.HitWatcher;
 using Mirror;
@@ -14,6 +15,7 @@ namespace Game.Core.Damage
         public bool active = true;
         public UnityEvent<DamageDealer, float> onDamage = new();
         public Collider coll;
+        public List<DamageDealer> ignoreDealers = new();
 
         [HideInInspector] public Vector3 previousObservedPosition;
         [HideInInspector] public Vector3 observedDelta;
