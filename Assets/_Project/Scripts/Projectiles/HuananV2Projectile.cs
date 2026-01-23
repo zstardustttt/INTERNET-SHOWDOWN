@@ -14,7 +14,7 @@ namespace Game.Projectiles
         public float rotationSpeed;
         public Transform visual;
 
-        protected override void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage) { }
+        protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage) { }
 
         protected override void OnUpdate()
         {

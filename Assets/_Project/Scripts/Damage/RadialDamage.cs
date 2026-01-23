@@ -12,10 +12,10 @@ namespace Game.Damage
         public float innerRadius;
         public float innerDamage;
 
-        public override float EvaluateDamage(PlayerBase player)
+        public override float EvaluateDamage(DamageReceiver receiver)
         {
             var center = transform.position + centerOffset;
-            var distance = Vector3.Distance(player.transform.position, center);
+            var distance = Vector3.Distance(receiver.transform.position, center);
             if (distance <= innerRadius)
                 return innerDamage;
 

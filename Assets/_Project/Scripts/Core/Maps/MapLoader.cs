@@ -76,6 +76,7 @@ namespace Game.Core.Maps
             {
                 loadedMap.players.Add(player.playerGuid, player);
                 EventBus<OnAddPlayerOnMap>.Invoke(new() { player = player });
+                player.damageReceiver.Register(new Guid(player.playerGuid));
             }
             return true;
         }
@@ -125,6 +126,7 @@ namespace Game.Core.Maps
                 });
 
                 player.ServerMovePlayer(Vector3.zero);
+                player.damageReceiver.Unregister();
             }
 
             EventBus<OnUnloadMap>.Invoke(new());

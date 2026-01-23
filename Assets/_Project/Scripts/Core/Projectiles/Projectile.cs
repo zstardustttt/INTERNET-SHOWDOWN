@@ -56,7 +56,7 @@ namespace Game.Core.Projectiles
             foreach (var dealer in projectile.damageDealers)
             {
                 dealer.owner = owner;
-                dealer.OnHit.AddListener((player, damage) => projectile.OnDealerHit(dealer, player, damage));
+                dealer.onHit.AddListener((player, damage) => projectile.OnDealerHit(dealer, player, damage));
             }
 
             NetworkServer.Spawn(projectileObject);
@@ -70,7 +70,7 @@ namespace Game.Core.Projectiles
             return projectile;
         }
 
-        protected abstract void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage);
+        protected abstract void OnDealerHit(DamageDealer dealer, DamageReceiver player, float damage);
         protected abstract void OnCollision(Vector3 point, Vector3 normal, Collider other);
         protected abstract void OnUpdate();
 

@@ -340,7 +340,7 @@ GameObject:
   - component: {fileID: 48328929}
   - component: {fileID: 48328928}
   m_Layer: 0
-  m_Name: ServerBoxSpawner
+  m_Name: ServerBoxHandler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -375,8 +375,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ce165ee96f541747ab91e3dcff5768e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerBoxCheckLayerMask:
+    serializedVersion: 2
+    m_Bits: 8192
   boxPrefab: {fileID: 4198238566599423486, guid: 2beec17498cc07a43b8285f504979ce2, type: 3}
   spawnRate: 0.35
+  castMargin: 0.01
   layerMask:
     serializedVersion: 2
     m_Bits: 2048

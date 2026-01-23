@@ -45,8 +45,11 @@ namespace Game.Projectiles.TeslaCocktail
             };
         }
 
-        protected override void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage)
+        protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage)
         {
+            if (!receiver.TryGetComponent(out PlayerBase player)) return;
+            if (player == _owner) return;
+
             var field = Instantiate(playerFieldPrefab.gameObject, player.transform.position, Quaternion.identity, new InstantiateParameters()
             {
                 scene = MapLoader.loadedMap.scene

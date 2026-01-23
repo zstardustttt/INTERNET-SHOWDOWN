@@ -2,16 +2,19 @@ using System.Collections.Generic;
 using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Events.BoxSpawner;
+using Game.Player;
 using Mirror;
 using UnityEngine;
 
 namespace Game.Systems
 {
     // This object is only active on the server
-    public class BoxSpawner : MonoBehaviour
+    public class BoxHandler : MonoBehaviour
     {
+        public LayerMask playerBoxCheckLayerMask;
         public GameObject boxPrefab;
         public float spawnRate;
+        public float castMargin;
         public LayerMask layerMask;
         public int maxSpawnFails;
 
@@ -43,6 +46,41 @@ namespace Game.Systems
                     if (TrySpawnBox()) break;
                 }
             }
+
+            foreach (var (_, player) in MapLoader.loadedMap.players)
+            {
+                if (!player) continue;
+                player.boxSpawnerObservedDelta = player.transform.position - player.boxSpawnerPreviousObservedPosition;
+
+                if (player.itemData.itemIndex == -1 && PlayerBoxCheck(player, out var box))
+                {
+                    player.SelectItem();
+                    NetworkServer.Destroy(box);
+                }
+
+                player.boxSpawnerPreviousObservedPosition = player.transform.position;
+            }
+        }
+
+        private bool PlayerBoxCheck(PlayerBase player, out GameObject box)
+        {
+            var radius = player.motor.Capsule.radius;
+
+            var pos = player.boxSpawnerPreviousObservedPosition;
+            var p1 = pos + Vector3.up * radius;
+            var p2 = pos + Vector3.up * (player.motor.Capsule.height - radius);
+
+            var velDir = player.boxSpawnerObservedDelta.normalized;
+            var delta = player.boxSpawnerObservedDelta.magnitude + castMargin;
+
+            if (!Physics.CapsuleCast(p1, p2, radius, velDir, out var hit, delta, playerBoxCheckLayerMask, QueryTriggerInteraction.Collide))
+            {
+                box = null;
+                return false;
+            }
+
+            box = hit.collider.gameObject;
+            return true;
         }
 
         private bool TrySpawnBox()

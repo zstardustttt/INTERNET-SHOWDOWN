@@ -36,7 +36,6 @@ namespace Game.Projectiles.ShockGerenade
         private Vector3 _previousAttachedPosition;
         private float _collectedAttachedDelta;
 
-        private Guid _onRegisterDamageListenerGuid;
         private float _damageInterval;
         private float _damageTimer;
 
@@ -51,19 +50,8 @@ namespace Game.Projectiles.ShockGerenade
             };
         }
 
-        public override void OnStartServer()
-        {
-            _onRegisterDamageListenerGuid = EventBus<OnRegisterDamage>.Listen((data) =>
-            {
-                if (data.player != _attached) return;
-                Explode();
-            });
-        }
-
         private void OnDestroy()
         {
-            if (NetworkServer.active) EventBus<OnRegisterDamage>.TryCancel(_onRegisterDamageListenerGuid);
-
             if (!_localGerenadeVisual) return;
             Destroy(_localGerenadeVisual.gameObject);
         }
@@ -75,12 +63,15 @@ namespace Game.Projectiles.ShockGerenade
             transform.position = point + normal * collisionRadius;
         }
 
-        protected override void OnDealerHit(DamageDealer dealer, PlayerBase player, float damage)
+        protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage)
         {
             if (_attached) return;
+            if (!receiver.TryGetComponent(out PlayerBase player)) return;
+            if (player == _owner) return;
             dealer.active = false;
 
             _attached = player;
+            _attached.onDamage.AddListener(Explode);
             _attached.onDeath.AddListener(Detach);
             _damageInterval = _attached.config.damageInvincibilityDuration;
             _previousAttachedPosition = player.transform.position;
@@ -171,6 +162,7 @@ namespace Game.Projectiles.ShockGerenade
         {
             TargetDestroyVisual(_attached.netIdentity.connectionToClient);
             _attached.onDeath.RemoveListener(Detach);
+            _attached.onDamage.RemoveListener(Explode);
             _attached = null;
         }
 
@@ -181,6 +173,7 @@ namespace Game.Projectiles.ShockGerenade
             {
                 _attached.ForceRemoveInvincibility();
                 _attached.onDeath.RemoveListener(Detach);
+                _attached.onDamage.RemoveListener(Explode);
                 pos = _attached.transform.position;
             }
             else pos = transform.position;

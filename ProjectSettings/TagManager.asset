@@ -18,7 +18,7 @@ TagManager:
   - DamageDealer
   - Projectile
   - Enviroment
-  - PlayerCheckingForHit
+  - ReceiverCheck
   - Box
   - 
   - 

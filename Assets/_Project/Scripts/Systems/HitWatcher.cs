@@ -2,9 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using Game.Core.Events;
 using Game.Events.HitWatcher;
-using Game.Core.Maps;
-using Game.Player;
-using Mirror;
 using System;
 using Game.Core.Damage;
 
@@ -13,45 +10,93 @@ namespace Game.Systems
     public class HitWatcher : MonoBehaviour
     {
         public LayerMask playerDealerCheckLayerMask;
-        public LayerMask playerBoxCheckLayerMask;
         public float castMargin;
         public CapsuleCollider playerPrefabCollider;
 
         private Dictionary<Guid, DamageDealer> _dealers;
         private List<DamageDealer> _dealersToAdd;
         private List<Guid> _dealersToRemove;
-        private CapsuleCollider _playerColliderForChecking;
+
+        private Dictionary<Guid, DamageReceiver> _receivers;
+        private List<DamageReceiver> _receiversToAdd;
+        private List<Guid> _receiversToRemove;
+
+        private GameObject _receiverCheckGameObject;
+        private Collider _receiverCheckCollider;
 
         public void Awake()
         {
             _dealers = new();
             _dealersToAdd = new();
             _dealersToRemove = new();
-            InitPlayerColliderForChecking();
-
             EventBus<OnDamageDealerCreate>.Listen((data) => _dealersToAdd.Add(data.dealer));
             EventBus<OnDamageDealerDestroy>.Listen((data) => _dealersToRemove.Add(data.guid));
+
+            _receivers = new();
+            _receiversToAdd = new();
+            _receiversToRemove = new();
+            EventBus<OnDamageReceiverRegister>.Listen((data) => _receiversToAdd.Add(data.receiver));
+            EventBus<OnDamageReceiverUnregister>.Listen((data) => _receiversToRemove.Add(data.guid));
+
+            _receiverCheckGameObject = new GameObject("Receiver Check")
+            {
+                layer = LayerMask.NameToLayer("ReceiverCheck")
+            };
+
             EventBus<RequestTwoPointsDealerCheck>.Listen((data) => TwoPointsDealerCheck(data.dealer, data.point1, data.point2));
         }
 
-        private void InitPlayerColliderForChecking()
+        // Insanity
+        // Previously was implemented with more cleaner custom Utility.CopyComponent but that ate alot of frames
+        private void ReplaceReceiverCheckCollider(DamageReceiver receiver)
         {
-            var playerColliderForChecking = new GameObject("Player Collider For Checking")
-            {
-                layer = LayerMask.NameToLayer("PlayerCheckingForHit")
-            };
-            _playerColliderForChecking = playerColliderForChecking.AddComponent<CapsuleCollider>();
+            _receiverCheckGameObject.transform.rotation = receiver.transform.rotation;
+            _receiverCheckGameObject.transform.localScale = receiver.transform.lossyScale;
 
-            _playerColliderForChecking.height = playerPrefabCollider.height;
-            _playerColliderForChecking.radius = playerPrefabCollider.radius;
-            _playerColliderForChecking.center = playerPrefabCollider.center;
+            if (receiver.coll is CapsuleCollider cc)
+            {
+                if (_receiverCheckCollider is not CapsuleCollider rcc)
+                {
+                    Destroy(_receiverCheckCollider);
+                    rcc = _receiverCheckGameObject.AddComponent<CapsuleCollider>();
+                }
+
+                rcc.center = cc.center;
+                rcc.radius = cc.radius;
+                rcc.height = cc.height;
+
+                _receiverCheckCollider = rcc;
+            }
+            else if (receiver.coll is BoxCollider bc)
+            {
+                if (_receiverCheckCollider is not BoxCollider rbc)
+                {
+                    Destroy(_receiverCheckCollider);
+                    rbc = _receiverCheckGameObject.AddComponent<BoxCollider>();
+                }
+
+                rbc.center = bc.center;
+                rbc.size = bc.size;
+
+                _receiverCheckCollider = rbc;
+            }
+            else if (receiver.coll is SphereCollider sc)
+            {
+                if (_receiverCheckCollider is not SphereCollider rsc)
+                {
+                    Destroy(_receiverCheckCollider);
+                    rsc = _receiverCheckGameObject.AddComponent<SphereCollider>();
+                }
+
+                rsc.center = sc.center;
+                rsc.radius = sc.radius;
+
+                _receiverCheckCollider = rsc;
+            }
         }
 
         private void Update()
         {
-            if (MapLoader.loadedMap == null) return;
-            var players = MapLoader.loadedMap.players;
-
             foreach (var dealer in _dealersToAdd)
             {
                 if (!dealer) continue;
@@ -59,30 +104,34 @@ namespace Game.Systems
             }
             _dealersToAdd.Clear();
 
-            foreach (var (_, player) in players)
+            foreach (var receiver in _receiversToAdd)
             {
-                if (!player) continue;
-                player.observedDelta = player.transform.position - player.previousObservedPosition;
+                if (!receiver) continue;
+                _receivers.Add(receiver.Guid, receiver);
+            }
+            _receiversToAdd.Clear();
 
-                foreach (var (_, dealer) in _dealers)
+            foreach (var (_, receiver) in _receivers)
+            {
+                if (!receiver) continue;
+                receiver.observedDelta = receiver.transform.position - receiver.previousObservedPosition;
+
+                if (receiver.active)
                 {
-                    if (!dealer) continue;
-                    if (!dealer.active) continue;
+                    ReplaceReceiverCheckCollider(receiver);
 
-                    dealer.observedDelta = dealer.transform.position - dealer.previousObservedPosition;
-                    if (player.invincible) break;
-                    if (dealer.singleHitScan && dealer.hitScanCount > 0) continue;
+                    foreach (var (_, dealer) in _dealers)
+                    {
+                        if (!dealer) continue;
+                        dealer.observedDelta = dealer.transform.position - dealer.previousObservedPosition;
 
-                    PlayerDealerCheck(player, dealer, player.previousObservedPosition, player.observedDelta, dealer.previousObservedPosition, dealer.observedDelta);
+                        if (!dealer.active) continue;
+                        if (dealer.singleHitScan && dealer.hitScanCount > 0) continue;
+                        ReceiverDealerCheck(receiver, dealer, receiver.previousObservedPosition, receiver.observedDelta, dealer.previousObservedPosition, dealer.observedDelta);
+                    }
                 }
 
-                if (player.itemData.itemIndex == -1 && PlayerBoxCheck(player, out var box))
-                {
-                    player.SelectItem();
-                    NetworkServer.Destroy(box);
-                }
-
-                player.previousObservedPosition = player.transform.position;
+                receiver.previousObservedPosition = receiver.transform.position;
             }
 
             foreach (var guid in _dealersToRemove)
@@ -90,6 +139,12 @@ namespace Game.Systems
                 _dealers.Remove(guid);
             }
             _dealersToRemove.Clear();
+
+            foreach (var guid in _receiversToRemove)
+            {
+                _receivers.Remove(guid);
+            }
+            _receiversToRemove.Clear();
 
             foreach (var (_, dealer) in _dealers)
             {
@@ -99,45 +154,22 @@ namespace Game.Systems
             }
         }
 
-        private bool PlayerBoxCheck(PlayerBase player, out GameObject box)
-        {
-            var radius = player.motor.Capsule.radius;
-
-            var pos = player.previousObservedPosition;
-            var p1 = pos + Vector3.up * radius;
-            var p2 = pos + Vector3.up * (player.motor.Capsule.height - radius);
-
-            var velDir = player.observedDelta.normalized;
-            var delta = player.observedDelta.magnitude + castMargin;
-
-            if (!Physics.CapsuleCast(p1, p2, radius, velDir, out var hit, delta, playerBoxCheckLayerMask, QueryTriggerInteraction.Collide))
-            {
-                box = null;
-                return false;
-            }
-
-            box = hit.collider.gameObject;
-            return true;
-        }
-
         public void TwoPointsDealerCheck(DamageDealer dealer, Vector3 point1, Vector3 point2)
         {
             if (!dealer.active) return;
 
-            if (MapLoader.loadedMap == null) return;
-            var players = MapLoader.loadedMap.players;
-
-            foreach (var (_, player) in players)
+            foreach (var (_, receiver) in _receivers)
             {
-                if (!player || player.invincible) continue;
-                PlayerDealerCheck(player, dealer, player.previousObservedPosition, player.observedDelta, point1, point2 - point1);
+                if (!receiver || !receiver.active) continue;
+                ReplaceReceiverCheckCollider(receiver);
+                ReceiverDealerCheck(receiver, dealer, receiver.previousObservedPosition, receiver.observedDelta, point1, point2 - point1);
             }
         }
 
-        public void PlayerDealerCheck(PlayerBase player, DamageDealer dealer, Vector3 playerPosition, Vector3 playerDelta, Vector3 dealerPosition, Vector3 dealerDelta)
+        public void ReceiverDealerCheck(DamageReceiver player, DamageDealer dealer, Vector3 receiverPosition, Vector3 receiverDelta, Vector3 dealerPosition, Vector3 dealerDelta)
         {
-            var relativePosition = dealerPosition - playerPosition;
-            var relativeDelta = dealerDelta - playerDelta;
+            var relativePosition = dealerPosition - receiverPosition;
+            var relativeDelta = dealerDelta - receiverDelta;
 
             var deltaLength = relativeDelta.magnitude + castMargin;
 
@@ -166,32 +198,14 @@ namespace Game.Systems
             RegisterHit(player, dealer, hitPoint);
         }
 
-        private void RegisterHit(PlayerBase player, DamageDealer dealer, Vector3 point)
+        private void RegisterHit(DamageReceiver receiver, DamageDealer dealer, Vector3 point)
         {
-            if (dealer.knockbackForce != 0f)
-            {
-                var playerCenter = player.transform.position + player.motor.Capsule.center;
-                var direction = (playerCenter - dealer.transform.position).normalized;
-                player.TargetKnockback(direction * dealer.knockbackForce);
-            }
+            var damage = dealer.damageType == DamageType.None ? 0f : dealer.EvaluateDamage(receiver);
+            receiver.onDamage.Invoke(dealer, damage);
+            dealer.onHit.Invoke(receiver, damage);
 
-            if (dealer.owner == player && !dealer.canDamageOwner) return;
-            if (dealer.damageType == DamageType.None)
-            {
-                dealer.OnHit.Invoke(player, 0f);
-                Debug.Log($"Zero damage hit! on: {player.gameObject.name} by: {dealer.owner.gameObject.name} at: {point}");
-                return;
-            }
-
-            var damage = dealer.EvaluateDamage(player);
-            player.Damage(damage, dealer.owner);
-            dealer.OnHit.Invoke(player, damage);
-
-            if (dealer.owner && dealer.owner != player)
-                dealer.owner.RegisterHit(dealer.damageType);
-
-            EventBus<OnRegisterDamage>.Invoke(new() { dealer = dealer, player = player });
-            Debug.Log($"{dealer.damageType} hit! on: {player.gameObject.name} by: {dealer.owner.gameObject.name} at: {point} damage: {damage}");
+            EventBus<OnRegisterHit>.Invoke(new() { dealer = dealer, receiver = receiver });
+            Debug.Log($"{dealer.damageType} hit! on: {receiver.gameObject.name} by: {dealer.owner.gameObject.name} at: {point} damage: {damage}");
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Game.Damage
     {
         public float baseDamage = 10f;
 
-        public override float EvaluateDamage(PlayerBase player)
+        public override float EvaluateDamage(DamageReceiver _)
         {
             return baseDamage;
         }

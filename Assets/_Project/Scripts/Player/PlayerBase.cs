@@ -27,6 +27,7 @@ namespace Game.Player
         public Transform horizontalOrientation;
         public Transform verticalOrientation;
         public Transform itemHolder;
+        public DamageReceiver damageReceiver;
 
         // movement
         private float _targetSpeed;
@@ -123,6 +124,7 @@ namespace Game.Player
         {
             _invincibleTimer = 0f;
             invincible = false;
+            damageReceiver.active = true;
         }
 
         [Server]
@@ -130,10 +132,8 @@ namespace Game.Player
         {
             _invincibleTimer = duration;
             invincible = true;
+            damageReceiver.active = false;
         }
-
-        [HideInInspector] public Vector3 previousObservedPosition;
-        [HideInInspector] public Vector3 observedDelta;
 
         private bool _guidReceived;
         [SyncVar] public string playerGuid;
@@ -141,6 +141,9 @@ namespace Game.Player
 
         private PlayerStats _prevStats;
         [SyncVar] public PlayerStats stats;
+
+        [HideInInspector] public Vector3 boxSpawnerPreviousObservedPosition;
+        [HideInInspector] public Vector3 boxSpawnerObservedDelta;
 
         [Server]
         public void SelectItem()
@@ -211,6 +214,12 @@ namespace Game.Player
         [Server]
         public void ServerMovePlayer(Vector3 position)
         {
+            damageReceiver.previousObservedPosition = position;
+            damageReceiver.observedDelta = Vector3.zero;
+
+            boxSpawnerPreviousObservedPosition = position;
+            boxSpawnerObservedDelta = Vector3.zero;
+
             TargetMovePlayer(position);
         }
 
@@ -238,29 +247,26 @@ namespace Game.Player
         public override void OnStartServer()
         {
             _damageHistory = new();
+            damageReceiver.onDamage.AddListener(OnReceiveDamage);
             ResetPlayer();
         }
 
-        private void OnItemChange(ItemData old, ItemData _new)
+        [Server]
+        private void OnReceiveDamage(DamageDealer dealer, float damage)
         {
-            if (_item) Destroy(_item.gameObject);
-
-            if (_new.itemIndex != -1)
+            if (dealer.knockbackForce != 0f)
             {
-                _item = Instantiate(ItemPool.items[_new.rarityIndex][_new.itemIndex].prefab, itemHolder).GetComponent<Item>();
-                _item.transform.localPosition = _item.offset;
-                if (isLocalPlayer)
-                {
-                    var layer = LayerMask.NameToLayer("ItemVisual");
-                    var children = _item.GetComponentsInChildren<Transform>(includeInactive: true);
-                    foreach (var child in children)
-                    {
-                        child.gameObject.layer = layer;
-                    }
-                }
-
-                onItemPickup.Invoke();
+                var playerCenter = transform.position + motor.Capsule.center;
+                var direction = (playerCenter - dealer.transform.position).normalized;
+                TargetKnockback(direction * dealer.knockbackForce);
             }
+
+            if (dealer.owner == this && !dealer.canDamageOwner) return;
+            if (dealer.damageType == DamageType.None) return;
+
+            Damage(damage, dealer.owner);
+            if (dealer.owner && dealer.owner != this)
+                dealer.owner.RegisterHit(dealer.damageType);
         }
 
         [Server]
@@ -352,6 +358,28 @@ namespace Game.Player
             }
         }
 
+        private void OnItemChange(ItemData old, ItemData _new)
+        {
+            if (_item) Destroy(_item.gameObject);
+
+            if (_new.itemIndex != -1)
+            {
+                _item = Instantiate(ItemPool.items[_new.rarityIndex][_new.itemIndex].prefab, itemHolder).GetComponent<Item>();
+                _item.transform.localPosition = _item.offset;
+                if (isLocalPlayer)
+                {
+                    var layer = LayerMask.NameToLayer("ItemVisual");
+                    var children = _item.GetComponentsInChildren<Transform>(includeInactive: true);
+                    foreach (var child in children)
+                    {
+                        child.gameObject.layer = layer;
+                    }
+                }
+
+                onItemPickup.Invoke();
+            }
+        }
+
         public void TryUseItem()
         {
             if (itemData.itemIndex == -1) return;
@@ -379,7 +407,10 @@ namespace Game.Player
             // Handle invincibility
             _invincibleTimer -= Time.deltaTime;
             if (_invincibleTimer <= 0f && invincible)
+            {
                 invincible = false;
+                damageReceiver.active = true;
+            }
 
             // Teleport back if clipped out of bounds
             if (MapLoader.loadedMap != null && transform.position.y < MapLoader.loadedMap.info.boundsMin.y)
