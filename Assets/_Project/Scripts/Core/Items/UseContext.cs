@@ -8,8 +8,9 @@ namespace Game.Core.Items
         public Quaternion visualRotation;
         public Vector3 headPosition;
         public Quaternion headRotation;
-        public Vector3 crosshairHitPoint;
-        public bool crosshairHit;
+        public bool didCrosshairHit;
+        public RaycastHit crosshairHit;
         public double useTime;
+        public Vector3 velocity;
     }
 }

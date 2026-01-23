@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 418f73291c68b2e49a3036283a475a59, type: 3}
   m_Name: HUANANV2
   m_EditorClassIdentifier: 
-  include: 1
+  include: 0
   prefab: {fileID: 5983974874118107349, guid: a974dda1d13cc5c43a0e67879eeaa047, type: 3}
   rarity: {fileID: 11400000, guid: 728896c93a1299e468e7f7c259067434, type: 2}

@@ -1,7 +1,7 @@
 using Game.Core.Projectiles;
 using UnityEngine;
 
-namespace Game.Projectiles
+namespace Game.Projectiles.Collisions
 {
     [RequireComponent(typeof(BoxCollider))]
     public class BoxProjectileCollision : ProjectileCollision

@@ -394,9 +394,10 @@ namespace Game.Player
                 visualRotation = _item.transform.rotation,
                 headPosition = verticalOrientation.position,
                 headRotation = verticalOrientation.rotation,
-                crosshairHitPoint = hitInfo.point,
-                crosshairHit = crosshairHit,
+                didCrosshairHit = crosshairHit,
+                crosshairHit = hitInfo,
                 useTime = NetworkTime.time,
+                velocity = motor.Velocity
             };
 
             if (NetworkServer.active) UseItem(ctx);

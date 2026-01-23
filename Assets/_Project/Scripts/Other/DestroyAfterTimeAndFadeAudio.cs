@@ -1,7 +1,7 @@
 using Game.Network;
 using UnityEngine;
 
-namespace Game.Projectiles
+namespace Game.Other
 {
     public class DestroyAfterTimeAndFadeAudio : NetworkDestroyAfterTime
     {
