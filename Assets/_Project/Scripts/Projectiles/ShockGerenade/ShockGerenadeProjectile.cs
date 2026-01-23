@@ -71,7 +71,7 @@ namespace Game.Projectiles.ShockGerenade
             dealer.active = false;
 
             _attached = player;
-            _attached.onDamage.AddListener(Explode);
+            _attached.onReceiveDamage.AddListener(Explode);
             _attached.onDeath.AddListener(Detach);
             _damageInterval = _attached.config.damageInvincibilityDuration;
             _previousAttachedPosition = player.transform.position;
@@ -162,7 +162,7 @@ namespace Game.Projectiles.ShockGerenade
         {
             TargetDestroyVisual(_attached.netIdentity.connectionToClient);
             _attached.onDeath.RemoveListener(Detach);
-            _attached.onDamage.RemoveListener(Explode);
+            _attached.onReceiveDamage.RemoveListener(Explode);
             _attached = null;
         }
 
@@ -173,7 +173,7 @@ namespace Game.Projectiles.ShockGerenade
             {
                 _attached.ForceRemoveInvincibility();
                 _attached.onDeath.RemoveListener(Detach);
-                _attached.onDamage.RemoveListener(Explode);
+                _attached.onReceiveDamage.RemoveListener(Explode);
                 pos = _attached.transform.position;
             }
             else pos = transform.position;
