@@ -93,6 +93,7 @@ namespace Game.Systems
 
                 _receiverCheckCollider = rsc;
             }
+            else Debug.LogError($"{receiver.coll} on {receiver.gameObject.name} is not supported");
         }
 
         private void Update()
