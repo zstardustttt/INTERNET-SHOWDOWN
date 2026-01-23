@@ -4939,7 +4939,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 6418180475301049370, guid: 5dcac9ccf3a9a654fa7f30a9709f7b05, type: 2}
   m_PlayOnAwake: 1
-  m_Volume: 0.55
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -5107,7 +5107,7 @@ MonoBehaviour:
   singleHitScan: 0
   canDamageOwner: 1
   knockbackForce: 0
-  OnHit:
+  onHit:
     m_PersistentCalls:
       m_Calls: []
   centerOffset: {x: 0, y: 0, z: 0}
@@ -5247,7 +5247,7 @@ MonoBehaviour:
   syncInterval: 0
   time: 20
   source: {fileID: 5430840458658788007}
-  volume: 0.7
+  volume: 0.65
   volumeFalloffCurve:
     serializedVersion: 2
     m_Curve:
