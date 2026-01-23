@@ -1,5 +1,4 @@
 using Game.Core.Damage;
-using Game.Player;
 using UnityEngine;
 
 namespace Game.Damage
