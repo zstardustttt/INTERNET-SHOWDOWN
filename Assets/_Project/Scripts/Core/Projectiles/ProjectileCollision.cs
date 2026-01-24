@@ -6,6 +6,7 @@ namespace Game.Core.Projectiles
     [RequireComponent(typeof(Projectile))]
     public abstract class ProjectileCollision : MonoBehaviour
     {
+        public abstract Bounds Bounds { get; }
         public Projectile projectile;
         public LayerMask collisionLayerMask;
         public UnityEvent<Vector3, Vector3, Collider> onCollision = new();

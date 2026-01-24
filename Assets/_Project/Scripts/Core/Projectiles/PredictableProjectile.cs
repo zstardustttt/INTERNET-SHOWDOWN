@@ -33,7 +33,7 @@ namespace Game.Core.Projectiles
 
             var finalPrediction = Predict(SpawnDelay);
             transform.SetPositionAndRotation(finalPrediction.position, finalPrediction.rotation);
-            rb.linearVelocity = finalPrediction.velocity;
+            if (!rb.isKinematic) rb.linearVelocity = finalPrediction.velocity;
 
             var previousPrediction = new ProjectilePredictionData()
             {

@@ -14,6 +14,7 @@ namespace Game.Items
         {
             var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, context.visualRotation);
 
+            // Retrieve damage multiplier
             proj.damageMultiply = 1;
             foreach (var arg in args)
             {
@@ -22,18 +23,25 @@ namespace Game.Items
             }
             proj.damageHitBox.baseDamage = proj.directDamage * proj.DamageMultiply;
 
-            var wishPosDist = context.didCrosshairHit ?
-                Mathf.Clamp(context.crosshairHit.distance, proj.minWishPositionDistance, proj.maxWishPositionDistance) :
+            // Get wish position
+            var didBoxHit = Physics.BoxCast
+            (
+                context.headPosition,
+                proj.collision.Bounds.extents,
+                context.headRotation * Vector3.forward,
+                out var boxHitInfo,
+                proj.transform.rotation,
+                proj.maxWishPositionDistance,
+                LayerMask.GetMask("Enviroment", "Player")
+            );
+
+            var wishPosDist = didBoxHit ?
+                Mathf.Clamp(boxHitInfo.distance, proj.minWishPositionDistance, proj.maxWishPositionDistance) :
                 proj.maxWishPositionDistance;
 
+            proj.wishPositionDistance = wishPosDist;
             proj.wishPosition = context.headPosition + proj.transform.forward * wishPosDist;
 
-            var vel = new Vector3(
-                context.velocity.x,
-                Mathf.Min(context.velocity.y, 0f),
-                context.velocity.z
-            );
-            proj.endPosition = context.headPosition + vel * 0.5f / proj.loopDuration;
             proj.SetupPrediction(context.useTime, 2);
         }
     }

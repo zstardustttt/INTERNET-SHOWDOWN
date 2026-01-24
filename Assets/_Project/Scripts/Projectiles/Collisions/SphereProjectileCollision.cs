@@ -8,6 +8,8 @@ namespace Game.Projectiles.Collisions
     {
         public SphereCollider coll;
 
+        public override Bounds Bounds => coll.bounds;
+
         protected override void OnValidate()
         {
             base.OnValidate();

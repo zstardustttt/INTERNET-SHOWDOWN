@@ -12,7 +12,7 @@ namespace Game.Projectiles
 {
     public class BOOMerangProjectle : PredictableProjectile
     {
-        public float loopDuration;
+        public float maxDistanceLoopDuration;
         public float minWishPositionDistance;
         public float maxWishPositionDistance;
         public BasicDamage damageHitBox;
@@ -23,22 +23,26 @@ namespace Game.Projectiles
         public int damageMultiplyCap;
         public RadialDamage explosionPrefab;
 
+        [HideInInspector] public float wishPositionDistance;
         [HideInInspector] public int damageMultiply;
         [HideInInspector] public Vector3 wishPosition;
-        [HideInInspector] public Vector3 endPosition;
 
         public float DamageMultiply => Mathf.Min(damageMultiply, damageMultiplyCap);
+        public float LoopDuration => maxDistanceLoopDuration * (wishPositionDistance / maxWishPositionDistance);
+
+        private void Start()
+        {
+            if (!NetworkServer.active) return;
+            previousBezierPosition = transform.position;
+        }
 
         public override ProjectilePredictionData Predict(float timePassed)
         {
-            var t = timePassed / loopDuration;
-            var position = Vector3.Lerp(Vector3.Lerp(_spawnPosition, wishPosition, t * 2f), Vector3.Lerp(wishPosition, endPosition, t), t);
-            var velocity = 2f * (1f - t) * (wishPosition - _spawnPosition) + t * (endPosition - wishPosition);
             return new()
             {
-                position = position,
+                position = GetBezierPosition(wishPosition, _owner.transform.position, timePassed / LoopDuration),
                 rotation = _spawnRotation,
-                velocity = velocity,
+                velocity = Vector3.zero,
             };
         }
 
@@ -68,18 +72,28 @@ namespace Game.Projectiles
             }
             else if (dealer == grabHitBox)
             {
-                if (player != _owner || _lifetime < loopDuration / 2f) return;
+                if (player != _owner || _lifetime < LoopDuration / 2f) return;
                 _owner.SetItem(boomerangItem, new BOOMerangDamageMultiplier() { damageMultiplier = damageMultiply });
                 DestroyProjectile();
             }
         }
 
+        private Vector3 previousBezierPosition;
+
         protected override void OnUpdate()
         {
             if (!NetworkServer.active) return;
 
-            var t = _lifetime / loopDuration;
-            rb.linearVelocity = 2f * (1f - t) * (wishPosition - _spawnPosition) + t * (endPosition - wishPosition);
+            var t = _lifetime / LoopDuration;
+            var position = GetBezierPosition(wishPosition, _owner.verticalOrientation.position, t);
+
+            rb.linearVelocity = (position - previousBezierPosition) / Time.deltaTime;
+            previousBezierPosition = position;
+        }
+
+        private Vector3 GetBezierPosition(Vector3 wishPosition, Vector3 endPosition, float t)
+        {
+            return Vector3.LerpUnclamped(Vector3.LerpUnclamped(_spawnPosition, wishPosition, t * 2f), Vector3.LerpUnclamped(wishPosition, endPosition, t), t);
         }
     }
 }
