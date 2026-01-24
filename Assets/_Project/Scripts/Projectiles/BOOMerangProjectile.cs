@@ -30,34 +30,37 @@ namespace Game.Projectiles
         public float DamageMultiply => Mathf.Min(damageMultiply, damageMultiplyCap);
         public float LoopDuration => maxDistanceLoopDuration * (wishPositionDistance / maxWishPositionDistance);
 
+        private Vector3 _previousBezierPosition;
+
+        private bool _explosionRequest;
+        private int _explosionRequestFrameCounter;
+        private Vector3 _explosionPoint;
+
         private void Start()
         {
             if (!NetworkServer.active) return;
-            previousBezierPosition = transform.position;
+            _previousBezierPosition = transform.position;
         }
 
         public override ProjectilePredictionData Predict(float timePassed)
         {
+            var delta = 0.05f;
+            var endPos = _owner ? _owner.transform.position : transform.position;
+            var pos = GetBezierPosition(wishPosition, endPos, timePassed / LoopDuration);
+            var prevPos = GetBezierPosition(wishPosition, endPos, (timePassed - delta) / LoopDuration);
             return new()
             {
-                position = GetBezierPosition(wishPosition, _owner.transform.position, timePassed / LoopDuration),
+                position = pos,
                 rotation = _spawnRotation,
-                velocity = Vector3.zero,
+                velocity = (pos - prevPos) / delta,
             };
         }
 
         protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
-            var explosion = Instantiate(explosionPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
-            {
-                scene = MapLoader.loadedMap.scene
-            });
-            var radialDamage = explosion.GetComponent<RadialDamage>();
-            radialDamage.owner = _owner;
-            radialDamage.outerDamage = explosionDamage * DamageMultiply;
-            radialDamage.innerDamage = radialDamage.outerDamage;
-            NetworkServer.Spawn(explosion);
-            DestroyProjectile();
+            if (_explosionRequest) return;
+            _explosionRequest = true;
+            _explosionPoint = point;
         }
 
         protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage)
@@ -78,8 +81,6 @@ namespace Game.Projectiles
             }
         }
 
-        private Vector3 previousBezierPosition;
-
         protected override void OnUpdate()
         {
             if (!NetworkServer.active) return;
@@ -87,13 +88,36 @@ namespace Game.Projectiles
             var t = _lifetime / LoopDuration;
             var position = GetBezierPosition(wishPosition, _owner.verticalOrientation.position, t);
 
-            rb.linearVelocity = (position - previousBezierPosition) / Time.deltaTime;
-            previousBezierPosition = position;
+            rb.linearVelocity = (position - _previousBezierPosition) / Time.deltaTime;
+            _previousBezierPosition = position;
         }
 
         private Vector3 GetBezierPosition(Vector3 wishPosition, Vector3 endPosition, float t)
         {
             return Vector3.LerpUnclamped(Vector3.LerpUnclamped(_spawnPosition, wishPosition, t * 2f), Vector3.LerpUnclamped(wishPosition, endPosition, t), t);
+        }
+
+        private void LateUpdate()
+        {
+            if (!NetworkServer.active) return;
+
+            if (!_explosionRequest) return;
+
+            if (_explosionRequestFrameCounter >= 2)
+            {
+                var explosion = Instantiate(explosionPrefab.gameObject, _explosionPoint, Quaternion.identity, new InstantiateParameters()
+                {
+                    scene = MapLoader.loadedMap.scene
+                });
+                var radialDamage = explosion.GetComponent<RadialDamage>();
+                radialDamage.owner = _owner;
+                radialDamage.outerDamage = explosionDamage * DamageMultiply;
+                radialDamage.innerDamage = radialDamage.outerDamage;
+                NetworkServer.Spawn(explosion);
+                DestroyProjectile();
+            }
+
+            _explosionRequestFrameCounter++;
         }
     }
 }

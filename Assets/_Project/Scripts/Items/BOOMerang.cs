@@ -32,7 +32,7 @@ namespace Game.Items
                 out var boxHitInfo,
                 proj.transform.rotation,
                 proj.maxWishPositionDistance,
-                LayerMask.GetMask("Enviroment", "Player")
+                LayerMask.GetMask("Enviroment")
             );
 
             var wishPosDist = didBoxHit ?

@@ -84,8 +84,8 @@ namespace Game.Core.Projectiles
 
         private void Update()
         {
-            OnUpdate();
             _lifetime += Time.deltaTime;
+            OnUpdate();
 
             if (!NetworkServer.active) return;
 

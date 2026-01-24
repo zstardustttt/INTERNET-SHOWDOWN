@@ -52,7 +52,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.1, y: 1, z: 1.1}
+  m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1316192804864265524
 MonoBehaviour:
@@ -289,7 +289,7 @@ MonoBehaviour:
   syncMethod: 0
   syncDirection: 0
   syncMode: 0
-  syncInterval: 0.05
+  syncInterval: 0.025
   target: {fileID: 262730139569086693}
   updateMethod: 0
   syncPosition: 1
@@ -324,7 +324,7 @@ MonoBehaviour:
   syncMethod: 0
   syncDirection: 0
   syncMode: 0
-  syncInterval: 0.05
+  syncInterval: 0.025
   target: {fileID: 262730139569086693}
   updateMethod: 0
   syncPosition: 1
@@ -370,14 +370,14 @@ MonoBehaviour:
   predictionDebugIterations: 6
   predictionDebugTimePassed: 1
   maxDistanceLoopDuration: 1.25
-  minWishPositionDistance: 20
-  maxWishPositionDistance: 80
+  minWishPositionDistance: 30
+  maxWishPositionDistance: 90
   damageHitBox: {fileID: 724236280424678512}
   grabHitBox: {fileID: 1316192804864265524}
   boomerangItem: {fileID: 11400000, guid: bf9c23e044b8f6949b63e31d208dd3bb, type: 2}
-  directDamage: 20
-  explosionDamage: 10
-  damageMultiplyCap: 5
+  directDamage: 25
+  explosionDamage: 12.5
+  damageMultiplyCap: 4
   explosionPrefab: {fileID: 1959433415532568738, guid: 48b20d2e7f9da204fa7188006818e37d, type: 3}
   wishPositionDistance: 0
   damageMultiply: 0
@@ -492,7 +492,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.1, y: 0.3, z: 1.1}
+  m_Size: {x: 1.2, y: 0.6, z: 1.2}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &724236280424678512
 MonoBehaviour:
