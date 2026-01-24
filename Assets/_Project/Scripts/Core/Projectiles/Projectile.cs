@@ -70,7 +70,7 @@ namespace Game.Core.Projectiles
             return projectile;
         }
 
-        protected abstract void OnDealerHit(DamageDealer dealer, DamageReceiver player, float damage);
+        protected abstract void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage);
         protected abstract void OnCollision(Vector3 point, Vector3 normal, Collider other);
         protected abstract void OnUpdate();
 

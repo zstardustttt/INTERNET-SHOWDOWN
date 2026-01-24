@@ -10,7 +10,7 @@ namespace Game.Items
     {
         public HuananV2Projectile projectile;
 
-        public override void Use(PlayerBase user, ItemUseClientContext context)
+        public override void Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] _)
         {
             var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHit.point - context.visualPosition) : context.visualRotation;
             var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, finalRotation);

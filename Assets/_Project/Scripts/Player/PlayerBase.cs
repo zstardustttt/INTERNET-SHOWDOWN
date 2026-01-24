@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Core.Damage;
@@ -109,6 +110,8 @@ namespace Game.Player
         [SyncVar(hook = nameof(OnItemChange))] public ItemData itemData;
         private Item _item;
 
+        public ItemArgument[] currentItemArgs;
+
         public struct DamageCapture
         {
             public PlayerBase author;
@@ -146,8 +149,24 @@ namespace Game.Player
         [HideInInspector] public Vector3 boxSpawnerPreviousObservedPosition;
         [HideInInspector] public Vector3 boxSpawnerObservedDelta;
 
+        private Vector3 _transientVelocity;
+        private Vector3 _prevTransientPosition;
+
         [Server]
-        public void SelectItem()
+        public void SetItem(ItemConfig item, params ItemArgument[] args)
+        {
+            var rarityIdx = Array.IndexOf(ItemPool.rarities, item.rarity);
+            itemData = new()
+            {
+                rarityIndex = rarityIdx,
+                itemIndex = ItemPool.items[rarityIdx].IndexOf(item)
+            };
+
+            currentItemArgs = args;
+        }
+
+        [Server]
+        public void PickRandomItem()
         {
             int rarityIdx;
             for (rarityIdx = 0; rarityIdx < ItemPool.rarities.Length - 1; rarityIdx++)
@@ -235,6 +254,7 @@ namespace Game.Player
         {
             _damageHistory.Clear();
             itemData = ItemData.Default();
+            currentItemArgs = Array.Empty<ItemArgument>();
             health = config.maxHealth;
             onResetPlayer.Invoke();
         }
@@ -397,7 +417,7 @@ namespace Game.Player
                 didCrosshairHit = crosshairHit,
                 crosshairHit = hitInfo,
                 useTime = NetworkTime.time,
-                velocity = motor.Velocity
+                velocity = _transientVelocity
             };
 
             if (NetworkServer.active) UseItem(ctx);
@@ -442,10 +462,12 @@ namespace Game.Player
             UseItem(context);
         }
 
+        [Server]
         private void UseItem(ItemUseClientContext context)
         {
-            if (_item) _item.Use(this, context);
+            if (_item) _item.Use(this, context, currentItemArgs);
             itemData = ItemData.Default();
+            currentItemArgs = Array.Empty<ItemArgument>();
         }
 
         public void SetPosition(Vector3 position)
@@ -492,6 +514,9 @@ namespace Game.Player
 
             if (new Vector2(_additionalVelocity.x, _additionalVelocity.z).magnitude <= 0.5f)
                 _additionalVelocity = Vector3.up * _additionalVelocity.y;
+
+            _transientVelocity = (motor.TransientPosition - _prevTransientPosition) / deltaTime;
+            _prevTransientPosition = motor.TransientPosition;
         }
 
         private void CheckWalled()

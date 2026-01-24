@@ -54,7 +54,7 @@ namespace Game.Systems
 
                 if (player.itemData.itemIndex == -1 && PlayerBoxCheck(player, out var box))
                 {
-                    player.SelectItem();
+                    player.PickRandomItem();
                     NetworkServer.Destroy(box);
                 }
 
