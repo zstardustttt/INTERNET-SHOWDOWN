@@ -23,24 +23,40 @@ namespace Game.Items
             }
             proj.damageHitBox.baseDamage = proj.directDamage * proj.DamageMultiply;
 
-            // Get wish position
-            var didBoxHit = Physics.BoxCast
-            (
-                context.headPosition,
-                proj.collision.Bounds.extents,
-                context.headRotation * Vector3.forward,
-                out var boxHitInfo,
-                proj.transform.rotation,
-                proj.maxWishPositionDistance,
-                LayerMask.GetMask("Enviroment")
-            );
+            proj.secondary = context.secondary;
+            if (context.secondary)
+            {
+                proj.flyDirection = (context.crosshairHit.point - context.visualPosition).normalized;
+            }
+            else
+            {
+                // Get wish position
+                var projBounds = proj.collision.Bounds;
+                var didBoxHit = Physics.BoxCast
+                (
+                    context.headPosition,
+                    projBounds.extents,
+                    context.headRotation * Vector3.forward,
+                    out var boxHitInfo,
+                    proj.transform.rotation,
+                    proj.maxWishPositionDistance,
+                    LayerMask.GetMask("Enviroment")
+                );
 
-            var wishPosDist = didBoxHit ?
-                Mathf.Clamp(boxHitInfo.distance, proj.minWishPositionDistance, proj.maxWishPositionDistance) :
-                proj.maxWishPositionDistance;
+                // I dont fucking know okay
+                var hitWishPos = boxHitInfo.point + new Vector3(
+                    projBounds.extents.x * boxHitInfo.normal.x,
+                    projBounds.extents.y * boxHitInfo.normal.y,
+                    projBounds.extents.z * boxHitInfo.normal.z
+                );
 
-            proj.wishPositionDistance = wishPosDist;
-            proj.wishPosition = context.headPosition + proj.transform.forward * wishPosDist;
+                var wishPosDist = didBoxHit ?
+                    Mathf.Min(Vector3.Distance(context.headPosition, hitWishPos), proj.maxWishPositionDistance) :
+                    proj.maxWishPositionDistance;
+
+                proj.wishPositionDistance = wishPosDist;
+                proj.wishPosition = context.headPosition + proj.transform.forward * wishPosDist;
+            }
 
             proj.SetupPrediction(context.useTime, 2);
         }

@@ -13,8 +13,8 @@ namespace Game.Projectiles
     public class BOOMerangProjectle : PredictableProjectile
     {
         public float maxDistanceLoopDuration;
-        public float minWishPositionDistance;
         public float maxWishPositionDistance;
+        public float flySpeed;
         public BasicDamage damageHitBox;
         public DamageDealer grabHitBox;
         public ItemConfig boomerangItem;
@@ -23,6 +23,8 @@ namespace Game.Projectiles
         public int damageMultiplyCap;
         public RadialDamage explosionPrefab;
 
+        [HideInInspector] public bool secondary;
+        [HideInInspector] public Vector3 flyDirection;
         [HideInInspector] public float wishPositionDistance;
         [HideInInspector] public int damageMultiply;
         [HideInInspector] public Vector3 wishPosition;
@@ -32,10 +34,6 @@ namespace Game.Projectiles
 
         private Vector3 _previousBezierPosition;
 
-        private bool _explosionRequest;
-        private int _explosionRequestFrameCounter;
-        private Vector3 _explosionPoint;
-
         private void Start()
         {
             if (!NetworkServer.active) return;
@@ -44,28 +42,53 @@ namespace Game.Projectiles
 
         public override ProjectilePredictionData Predict(float timePassed)
         {
-            var delta = 0.05f;
-            var endPos = _owner ? _owner.transform.position : transform.position;
-            var pos = GetBezierPosition(wishPosition, endPos, timePassed / LoopDuration);
-            var prevPos = GetBezierPosition(wishPosition, endPos, (timePassed - delta) / LoopDuration);
-            return new()
+            if (secondary)
             {
-                position = pos,
-                rotation = _spawnRotation,
-                velocity = (pos - prevPos) / delta,
-            };
+                var velocity = flySpeed * flyDirection;
+                var predictedPos = _spawnPosition + velocity * timePassed;
+
+                return new()
+                {
+                    position = predictedPos,
+                    rotation = _spawnRotation,
+                    velocity = velocity,
+                };
+            }
+            else
+            {
+                var delta = 0.05f;
+                var endPos = _owner ? _owner.transform.position : transform.position;
+                var pos = GetBezierPosition(wishPosition, endPos, timePassed / LoopDuration);
+                var prevPos = GetBezierPosition(wishPosition, endPos, (timePassed - delta) / LoopDuration);
+                return new()
+                {
+                    position = pos,
+                    rotation = _spawnRotation,
+                    velocity = (pos - prevPos) / delta,
+                };
+            }
         }
 
         protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
-            if (_explosionRequest) return;
-            _explosionRequest = true;
-            _explosionPoint = point;
+            if (!secondary && _lifetime <= LoopDuration + 0.1f) return;
+
+            var explosion = Instantiate(explosionPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
+            {
+                scene = MapLoader.loadedMap.scene
+            });
+            var radialDamage = explosion.GetComponent<RadialDamage>();
+            radialDamage.owner = _owner;
+            radialDamage.outerDamage = explosionDamage * DamageMultiply;
+            radialDamage.innerDamage = radialDamage.outerDamage;
+            NetworkServer.Spawn(explosion);
+            DestroyProjectile();
         }
 
         protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage)
         {
             if (!receiver.TryGetComponent(out PlayerBase player)) return;
+            if (secondary) return;
 
             if (dealer == damageHitBox)
             {
@@ -84,6 +107,7 @@ namespace Game.Projectiles
         protected override void OnUpdate()
         {
             if (!NetworkServer.active) return;
+            if (secondary) return;
 
             var t = _lifetime / LoopDuration;
             var position = GetBezierPosition(wishPosition, _owner.verticalOrientation.position, t);
@@ -95,29 +119,6 @@ namespace Game.Projectiles
         private Vector3 GetBezierPosition(Vector3 wishPosition, Vector3 endPosition, float t)
         {
             return Vector3.LerpUnclamped(Vector3.LerpUnclamped(_spawnPosition, wishPosition, t * 2f), Vector3.LerpUnclamped(wishPosition, endPosition, t), t);
-        }
-
-        private void LateUpdate()
-        {
-            if (!NetworkServer.active) return;
-
-            if (!_explosionRequest) return;
-
-            if (_explosionRequestFrameCounter >= 2)
-            {
-                var explosion = Instantiate(explosionPrefab.gameObject, _explosionPoint, Quaternion.identity, new InstantiateParameters()
-                {
-                    scene = MapLoader.loadedMap.scene
-                });
-                var radialDamage = explosion.GetComponent<RadialDamage>();
-                radialDamage.owner = _owner;
-                radialDamage.outerDamage = explosionDamage * DamageMultiply;
-                radialDamage.innerDamage = radialDamage.outerDamage;
-                NetworkServer.Spawn(explosion);
-                DestroyProjectile();
-            }
-
-            _explosionRequestFrameCounter++;
         }
     }
 }

@@ -403,7 +403,7 @@ namespace Game.Player
             }
         }
 
-        public void TryUseItem()
+        public void TryUseItem(bool secondary)
         {
             if (itemData.itemIndex == -1) return;
 
@@ -417,7 +417,8 @@ namespace Game.Player
                 didCrosshairHit = crosshairHit,
                 crosshairHit = hitInfo,
                 useTime = NetworkTime.time,
-                velocity = _transientVelocity
+                velocity = _transientVelocity,
+                secondary = secondary
             };
 
             if (NetworkServer.active) UseItem(ctx);

@@ -171,7 +171,7 @@ MonoBehaviour:
   active: 1
   damageType: 2
   singleHitScan: 1
-  canDamageOwner: 1
+  canDamageOwner: 0
   knockbackForce: 75
   onHit:
     m_PersistentCalls:
@@ -197,7 +197,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  time: 0.3
+  time: 1
 --- !u!114 &2253322943813229088
 MonoBehaviour:
   m_ObjectHideFlags: 0

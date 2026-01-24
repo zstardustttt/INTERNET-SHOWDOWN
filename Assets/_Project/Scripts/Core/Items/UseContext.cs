@@ -12,5 +12,6 @@ namespace Game.Core.Items
         public RaycastHit crosshairHit;
         public double useTime;
         public Vector3 velocity;
+        public bool secondary;
     }
 }

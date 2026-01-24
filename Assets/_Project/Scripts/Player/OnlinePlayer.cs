@@ -239,7 +239,8 @@ namespace Game.Player
 #endif
 
             // TODO: new input system
-            if (Input.GetMouseButtonDown(0)) player.TryUseItem();
+            if (Input.GetMouseButtonDown(0)) player.TryUseItem(false);
+            else if (Input.GetMouseButtonDown(1)) player.TryUseItem(true);
 
             // SIDE RUN TILT
             var targetSideRunTilt = player.inputs.move.normalized.x * maxSideRunTilt;
