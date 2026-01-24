@@ -71,7 +71,7 @@ namespace Game.Projectiles
 
         protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
-            if (!secondary && _lifetime <= LoopDuration + 0.1f) return;
+            if (!secondary && _lifetime <= LoopDuration + 0.05f) return;
 
             var explosion = Instantiate(explosionPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
             {
