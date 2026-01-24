@@ -377,7 +377,7 @@ MonoBehaviour:
   boomerangItem: {fileID: 11400000, guid: bf9c23e044b8f6949b63e31d208dd3bb, type: 2}
   directDamage: 25
   explosionDamage: 12.5
-  damageMultiplyCap: 4
+  damageMultiplyCap: 8
   explosionPrefab: {fileID: 1959433415532568738, guid: 48b20d2e7f9da204fa7188006818e37d, type: 3}
   wishPositionDistance: 0
   damageMultiply: 0
