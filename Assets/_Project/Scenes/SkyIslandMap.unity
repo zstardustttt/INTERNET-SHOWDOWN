@@ -15,7 +15,7 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 1
-  m_FogColor: {r: 0.4245283, g: 0.4245283, b: 0.3984959, a: 1}
+  m_FogColor: {r: 0.7098405, g: 0.7169812, b: 0.6189036, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.01
   m_LinearFogStart: 0
@@ -911,7 +911,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.ProbeVolume
   mode: 1
-  size: {x: 175.93933, y: 158.318, z: 198.3026}
+  size: {x: 175.9458, y: 158.3244, z: 198.309}
   overrideRendererFilters: 0
   minRendererVolumeSize: 0.1
   objectLayerMask:
@@ -951,7 +951,7 @@ Transform:
   m_GameObject: {fileID: 873742960}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.743469, y: -28.583588, z: -0.32339478}
+  m_LocalPosition: {x: -4.7435303, y: -28.583588, z: -0.32339478}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1062,6 +1062,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
+    - target: {fileID: -3095768410723509649, guid: 0828f78e306491e4bade6a16491ba7c7, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d55e04c4ad1ebdc44b135d38a556e2fd, type: 2}
     - target: {fileID: -2715989862769026830, guid: 0828f78e306491e4bade6a16491ba7c7, type: 3}
       propertyPath: m_Layer
       value: 11
@@ -1075,6 +1079,14 @@ PrefabInstance:
       value: 11
       objectReference: {fileID: 0}
     - target: {fileID: -2608191117149633007, guid: 0828f78e306491e4bade6a16491ba7c7, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -2298760360718682344, guid: 0828f78e306491e4bade6a16491ba7c7, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: -2298760360718682344, guid: 0828f78e306491e4bade6a16491ba7c7, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -1130,6 +1142,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
+    - target: {fileID: 3895325063153911223, guid: 0828f78e306491e4bade6a16491ba7c7, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7113232789235503381, guid: 0828f78e306491e4bade6a16491ba7c7, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -1164,6 +1180,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: -5517143981119163113, guid: 0828f78e306491e4bade6a16491ba7c7, type: 3}
+    - {fileID: 3895325063153911223, guid: 0828f78e306491e4bade6a16491ba7c7, type: 3}
     m_RemovedGameObjects:
     - {fileID: -7172935503458021674, guid: 0828f78e306491e4bade6a16491ba7c7, type: 3}
     - {fileID: -4915828207828896103, guid: 0828f78e306491e4bade6a16491ba7c7, type: 3}
@@ -1283,7 +1300,7 @@ MonoBehaviour:
   reflectionIntensity: 0.226
   reflectionBounces: 1
   fog: 1
-  fogColor: {r: 0.4245283, g: 0.4245283, b: 0.3984959, a: 1}
+  fogColor: {r: 0.7098405, g: 0.7169812, b: 0.6189036, a: 1}
   fogMode: 3
   fogStartDistance: 0
   fogEndDistance: 300
@@ -1350,6 +1367,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 264328607}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1695347682
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5068157160698124617, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_Name
+      value: JumpPad
+      objectReference: {fileID: 0}
+    - target: {fileID: 8821395964928196951, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1012.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8821395964928196951, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 30.369
+      objectReference: {fileID: 0}
+    - target: {fileID: 8821395964928196951, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 45.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 8821395964928196951, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8821395964928196951, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8821395964928196951, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8821395964928196951, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8821395964928196951, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8821395964928196951, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8821395964928196951, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 77343da56c2a4884e92045b868b998da, type: 3}
 --- !u!1 &1741776739
 GameObject:
   m_ObjectHideFlags: 0
@@ -1515,3 +1589,4 @@ SceneRoots:
   - {fileID: 194710616}
   - {fileID: 1283845902}
   - {fileID: 1280582697}
+  - {fileID: 1695347682}
