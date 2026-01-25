@@ -8,5 +8,7 @@ namespace Game.Core.Items
         public bool include = true;
         public GameObject prefab;
         public ItemRarity rarity;
+        public string displayName;
+        [TextArea] public string description;
     }
 }
