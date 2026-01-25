@@ -26,7 +26,9 @@ namespace Game.Items
             proj.secondary = context.secondary;
             if (context.secondary)
             {
-                proj.flyDirection = (context.crosshairHit.point - context.visualPosition).normalized;
+                proj.flyDirection = context.didCrosshairHit ?
+                    (context.crosshairHit.point - context.visualPosition).normalized :
+                    context.headRotation * Vector3.forward;
             }
             else
             {
