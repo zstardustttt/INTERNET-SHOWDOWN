@@ -33,7 +33,7 @@ namespace Game.Items
             else
             {
                 // Get wish position
-                var projBounds = proj.collision.Bounds;
+                var projBounds = proj.collision.Collider.bounds;
                 var didBoxHit = Physics.BoxCast
                 (
                     context.headPosition,
@@ -45,15 +45,8 @@ namespace Game.Items
                     LayerMask.GetMask("Enviroment")
                 );
 
-                // I dont fucking know okay
-                var hitWishPos = boxHitInfo.point + new Vector3(
-                    projBounds.extents.x * boxHitInfo.normal.x,
-                    projBounds.extents.y * boxHitInfo.normal.y,
-                    projBounds.extents.z * boxHitInfo.normal.z
-                );
-
                 var wishPosDist = didBoxHit ?
-                    Mathf.Min(Vector3.Distance(context.headPosition, hitWishPos), proj.maxWishPositionDistance) :
+                    Mathf.Min(boxHitInfo.distance, proj.maxWishPositionDistance) :
                     proj.maxWishPositionDistance;
 
                 proj.wishPositionDistance = wishPosDist;

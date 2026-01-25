@@ -22,6 +22,8 @@ namespace Game.Projectiles
         public float explosionDamage;
         public int damageMultiplyCap;
         public RadialDamage explosionPrefab;
+        public Transform visualToRotate;
+        public float visualRotationSpeed;
 
         [HideInInspector] public bool secondary;
         [HideInInspector] public Vector3 flyDirection;
@@ -71,7 +73,11 @@ namespace Game.Projectiles
 
         protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
-            if (!secondary && _lifetime <= LoopDuration + 0.05f) return;
+            if (!secondary)
+            {
+                if (_lifetime <= LoopDuration / 2f + 0.025f) return;
+                if (_lifetime >= LoopDuration && _lifetime <= LoopDuration + 0.035f) return;
+            }
 
             var explosion = Instantiate(explosionPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
             {
@@ -106,6 +112,8 @@ namespace Game.Projectiles
 
         protected override void OnUpdate()
         {
+            visualToRotate.Rotate(transform.up, visualRotationSpeed * Time.deltaTime, Space.World);
+
             if (!NetworkServer.active) return;
             if (secondary) return;
 

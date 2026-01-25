@@ -8,7 +8,7 @@ namespace Game.Projectiles.Collisions
     {
         public BoxCollider coll;
 
-        public override Bounds Bounds => coll.bounds;
+        public override Collider Collider => coll;
 
         protected override void OnValidate()
         {
@@ -16,7 +16,7 @@ namespace Game.Projectiles.Collisions
             coll = GetComponent<BoxCollider>();
         }
 
-        public override void CheckCollisionBetweenTwoPoints(Vector3 p1, Vector3 p2)
+        protected override void CheckCollisionBetweenTwoPointsInside(Vector3 p1, Vector3 p2)
         {
             var delta = p2 - p1;
             var hits = Physics.BoxCastAll(p1, coll.size / 2f, delta.normalized, transform.rotation, delta.magnitude, collisionLayerMask);
