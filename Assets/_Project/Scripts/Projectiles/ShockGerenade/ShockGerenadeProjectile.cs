@@ -12,6 +12,7 @@ namespace Game.Projectiles.ShockGerenade
     public class ShockGerenadeProjectile : PredictableProjectile
     {
         public float speed;
+        public float secondarySpeed;
         public float gravityAcceleration;
         public float activateGravityAfter;
         public float explodeAfter;
@@ -39,6 +40,8 @@ namespace Game.Projectiles.ShockGerenade
 
         private ShakeGenerator _shakeGenerator;
         private bool _exploded;
+
+        [HideInInspector] public float flySpeed;
 
         private void Awake()
         {
@@ -211,7 +214,7 @@ namespace Game.Projectiles.ShockGerenade
         {
             var timePassedSinceStartedAccelerating = Mathf.Max(timePassed - activateGravityAfter, 0f);
 
-            var flyingVelocity = speed * transform.forward;
+            var flyingVelocity = flySpeed * transform.forward;
             var gravityVelocity = gravityAcceleration * timePassedSinceStartedAccelerating * Vector3.down;
             var velocity = flyingVelocity + gravityVelocity;
 

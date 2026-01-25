@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 418f73291c68b2e49a3036283a475a59, type: 3}
   m_Name: ShockGerenade
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Items.ItemConfig
-  include: 0
+  include: 1
   prefab: {fileID: 8049393378143318546, guid: ff16171862d73a54aa5f5339994d6235, type: 3}
-  rarity: {fileID: 11400000, guid: 1f239e83ff0eba746b4a230de4ee726d, type: 2}
+  rarity: {fileID: 11400000, guid: 728896c93a1299e468e7f7c259067434, type: 2}

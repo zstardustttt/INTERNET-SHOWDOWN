@@ -36,6 +36,7 @@ namespace Game.Items
         {
             var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHit.point - context.visualPosition) : context.visualRotation;
             var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, finalRotation);
+            proj.flySpeed = context.secondary ? proj.secondarySpeed : proj.speed;
             proj.SetupPrediction(context.useTime, 8);
         }
     }

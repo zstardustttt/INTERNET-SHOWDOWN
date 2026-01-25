@@ -87,6 +87,7 @@ MonoBehaviour:
   predictionDebugIterations: 5
   predictionDebugTimePassed: 1
   speed: 50
+  secondarySpeed: 100
   gravityAcceleration: 25
   activateGravityAfter: 0.15
   explodeAfter: 5
@@ -101,6 +102,7 @@ MonoBehaviour:
   visualShakeFrequency: 10
   visualShakeIncreaseRate: 0.005
   damageReceiver: {fileID: 4050009569507431300}
+  flySpeed: 0
 --- !u!54 &8422152388811641674
 Rigidbody:
   m_ObjectHideFlags: 0
