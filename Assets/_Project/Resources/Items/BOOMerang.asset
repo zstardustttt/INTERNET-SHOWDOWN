@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 418f73291c68b2e49a3036283a475a59, type: 3}
   m_Name: BOOMerang
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Items.ItemConfig
-  include: 0
+  include: 1
   prefab: {fileID: 8730809908688905300, guid: 89592cd9ff3cbab4cb8d9e95686f2819, type: 3}
   rarity: {fileID: 11400000, guid: 728896c93a1299e468e7f7c259067434, type: 2}
+  displayName: BOOMerang
+  description: Flies forward, hitting other players. Then returns to its owner. Explodes
+    upon hitting the map. Hitting another player multiplies both direct damage and
+    explosion damage.

@@ -15,3 +15,6 @@ MonoBehaviour:
   include: 0
   prefab: {fileID: 4842537934591459920, guid: d0ef9a2b655ace647badd60919e717dd, type: 3}
   rarity: {fileID: 11400000, guid: 8e1dbfb413df3c64f8d873040f92b762, type: 2}
+  displayName: Tesla Cocktail
+  description: An item similar to a Molotov cocktail. Creates a hazardous field after
+    hitting the map. Hitting a player causes them to catch fire.
