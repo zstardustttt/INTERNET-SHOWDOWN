@@ -89,7 +89,7 @@ Shader "Custom/Dither"
 
             half3 GetSkyboxColor(half2 uv)
             {
-                half2 pixeluv = floor(uv * _skybox_resolution) / _skybox_resolution;
+                half2 pixeluv = round(uv * _skybox_resolution) / _skybox_resolution;
                 if (SampleRawDepth(pixeluv) != 0)
                 {
                     pixeluv = uv;
