@@ -60,10 +60,10 @@ MonoBehaviour:
     probeSamplingDebugTexture: {fileID: 2800000, guid: 24ec0e140fb444a44ab96ee80844e18e, type: 3}
     probeVolumeBlendStatesCS: {fileID: 7200000, guid: b9a23f869c4fd45f19c5ada54dd82176, type: 3}
   m_RendererFeatures:
-  - {fileID: 8623111402142229734}
+  - {fileID: 4772964828174011577}
   - {fileID: -3805008779101506429}
   - {fileID: 4106938239991161458}
-  m_RendererFeatureMap: e6e44e0f2272ab77837469daace431cb722224dd91c6fe38
+  m_RendererFeatureMap: b9ccbe1439fa3c42837469daace431cb722224dd91c6fe38
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -128,7 +128,7 @@ MonoBehaviour:
     colorFarThreshold: 1
   shader: {fileID: 4800000, guid: 8b5766d62e247e846b16a0459904bd52, type: 3}
   injectionPoint: 550
---- !u!114 &8623111402142229734
+--- !u!114 &4772964828174011577
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -137,14 +137,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b00045f12942b46c698459096c89274e, type: 3}
-  m_Name: FullScreenPassRendererFeature
-  m_EditorClassIdentifier: 
+  m_Script: {fileID: 11500000, guid: 914ec1997202bdd43b8a09efcd8a6fa6, type: 3}
+  m_Name: DitherRendererFeature
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Graphics.Dither.DitherRendererFeature
   m_Active: 1
+  properties:
+    checkerboardSize: 40
+    checherboardScrollSpeed: 0.005
+    checkerboardIntensity: 0.05
+    skyboxQuantization: 24
+    skyboxPixelization: 101
+    skyboxDitherScale: 1
+    skyboxDitherIntensity: 0.25
+    skyboxContrast: 0.5
+    skyboxBrightness: 0.3
+  shader: {fileID: 4800000, guid: a1b39b9eb4657b448b280c200d1f444f, type: 3}
   injectionPoint: 550
-  fetchColorBuffer: 1
-  requirements: 0
-  passMaterial: {fileID: 2100000, guid: c19c9b9a81dfe0f44b220e030f7a19b0, type: 2}
-  passIndex: 0
-  bindDepthStencilAttachment: 0
-  m_Version: 1

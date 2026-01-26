@@ -3,7 +3,7 @@ Shader "Custom/SSOutlines"
     Properties
     {
         _Color("Color", Color) = (0, 0, 0, 1)
-        _Thickness("Thickness", Float) = 0
+        _Thickness("Thickness", Vector, 2) = (0, 0, 0, 0)
 
         _EnableDepth("EnableDepth", Float) = 0
         _DepthStrength("DepthStrength", Float) = 0
@@ -33,7 +33,7 @@ Shader "Custom/SSOutlines"
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
-        #include "Assets/_Project/Shaders/SSOutlines/SSOutlinesInclude.hlsl"
+        #include "Assets/_Project/Shaders/Fullscreen/SSOutlinesInclude.hlsl"
         ENDHLSL
 
         Tags { "RenderType"="Opaque" }
@@ -55,7 +55,7 @@ Shader "Custom/SSOutlines"
             #define REQUIRE_NORMAL_TEXTURE
 
             CBUFFER_START(UnityPerMaterial)
-            half _Thickness;
+            half2 _Thickness;
             half _DepthStrength;
             half _ColorStrength;
             half _DepthThickness;
@@ -102,13 +102,12 @@ Shader "Custom/SSOutlines"
             half GetOutlinesBlendOpacity(half2 uv)
             {
                 half uvRawDepth = SampleRawDepth(uv);
-                half2 thickness = half2(_Thickness, mul(_Thickness, _ScreenParams.x / _ScreenParams.y)) / 100; 
                 half depthAdjust = smoothstep(_AdjustNearDepth, _AdjustFarDepth, SampleEyeDepth(uv));
                 
                 half depthEdge;
                 if (_EnableDepth)
                 {
-                    half depthSobel = DepthSobel_half(uv, thickness);
+                    half depthSobel = DepthSobel_half(uv, _Thickness);
                     half3 vsnorm = GetViewSpaceNormals_half(uv);
                     half3 viewdir = ViewDirectionFromScreenUV_half(uv);
                     half depthThreshold = mul(uvRawDepth, lerp(_DepthThreshold, _AcuteDepthThreshold, smoothstep(_AcuteAngleStartDot, 1, 1 - dot(vsnorm, viewdir))));
@@ -122,7 +121,7 @@ Shader "Custom/SSOutlines"
                 half colorEdge;
                 if (_EnableColor)
                 {
-                    half colorSobel = ColorSobel_half(uv, thickness);
+                    half colorSobel = ColorSobel_half(uv, _Thickness);
                     half colorThreshold = lerp(_ColorThreshold, _ColorFarThreshold, depthAdjust);
                     if (uvRawDepth == 0)
                     {
@@ -141,7 +140,7 @@ Shader "Custom/SSOutlines"
                 half normalsEdge;
                 if (_EnableNormals)
                 {
-                    half normalsSobel = NormalsSobel_half(uv, thickness);
+                    half normalsSobel = NormalsSobel_half(uv, _Thickness);
                     half normalsThreshold = lerp(_NormalsThreshold, _NormalsFarThreshold, depthAdjust);
                     normalsEdge = FineTuneEdgeDetection(normalsSobel, _NormalsStrength, _NormalsThickness, normalsThreshold);
                 }
@@ -151,7 +150,7 @@ Shader "Custom/SSOutlines"
                 }
                 
                 half outline = max(depthEdge, max(colorEdge, normalsEdge));
-                return mul(_Color.a, outline);
+                return _Color.a * outline;
             }
 
             float4 Frag (Varyings input) : SV_Target

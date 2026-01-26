@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 1959433415532568738}
   - component: {fileID: 8062769874565697311}
   - component: {fileID: 2253322943813229088}
+  - component: {fileID: 7645316495944252636}
   m_Layer: 9
   m_Name: BOOMerangExplosion
   m_TagString: Untagged
@@ -215,3 +216,18 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &7645316495944252636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3101699681814522868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc606dc11acb7694ca9c69c3f9d9bcd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Player.CameraShaker
+  amplitude: 2
+  minDistance: 5
+  maxDistance: 100

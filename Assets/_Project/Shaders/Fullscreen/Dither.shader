@@ -6,7 +6,7 @@ Shader "Custom/Dither"
         _checkerboard_scroll_speed("Checkerboard Scroll Speed", Float) = 0.2
         _checkerboard_intensity("Checkerboard Intensity", Range(0, 1)) = 0
         _skybox_quantization("Skybox Quantization", Float) = 0
-        _skybox_pixelization("Skybox Pixelization", Float) = 0
+        _skybox_resolution("Skybox Resolution", Vector, 2) = (0, 0, 0, 0)
         _skybox_dither_scale("Skybox Dither Scale", Float) = 0
         _skybox_dither_intensity("Skybox Dither Intensity", Float) = 0
         _skybox_contrast("Skybox Contrast", Float) = 0
@@ -25,6 +25,10 @@ Shader "Custom/Dither"
             4.0 / 17.0, 12.0 / 17.0,  2.0 / 17.0, 10.0 / 17.0,
             16.0 / 17.0,  8.0 / 17.0, 14.0 / 17.0,  6.0 / 17.0
         };
+
+        static half4 RGB_HSV_K = half4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+        static half RGB_HSV_E = 1e-10;
+        static half4 HSV_RGB_K = half4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
         ENDHLSL
 
         Tags { "RenderType"="Opaque" }
@@ -46,7 +50,7 @@ Shader "Custom/Dither"
 
             CBUFFER_START(UnityPerMaterial)
             half _skybox_quantization;
-            half _skybox_pixelization;
+            half2 _skybox_resolution;
             half _skybox_dither_scale;
             half _skybox_dither_intensity;
             half _skybox_contrast;
@@ -63,20 +67,17 @@ Shader "Custom/Dither"
 
             half3 RGB_HSV(half3 In)
             {
-                half4 K = half4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-                half4 P = lerp(half4(In.bg, K.wz), half4(In.gb, K.xy), step(In.b, In.g));
+                half4 P = lerp(half4(In.bg, RGB_HSV_K.wz), half4(In.gb, RGB_HSV_K.xy), step(In.b, In.g));
                 half4 Q = lerp(half4(P.xyw, In.r), half4(In.r, P.yzx), step(P.x, In.r));
                 half D = Q.x - min(Q.w, Q.y);
-                half  E = 1e-10;
-                half V = (D == 0) ? Q.x : (Q.x + E);
-                return half3(abs(Q.z + (Q.w - Q.y)/(6.0 * D + E)), D / (Q.x + E), V);
+                half V = (D == 0) ? Q.x : (Q.x + RGB_HSV_E);
+                return half3(abs(Q.z + (Q.w - Q.y)/(6.0 * D + RGB_HSV_E)), D / (Q.x + RGB_HSV_E), V);
             }
 
             half3 HSV_RGB(half3 In)
             {
-                half4 K = half4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-                half3 P = abs(frac(In.xxx + K.xyz) * 6.0 - K.www);
-                return In.z * lerp(K.xxx, saturate(P - K.xxx), In.y);
+                half3 P = abs(frac(In.xxx + HSV_RGB_K.xyz) * 6.0 - HSV_RGB_K.www);
+                return In.z * lerp(HSV_RGB_K.xxx, saturate(P - HSV_RGB_K.xxx), In.y);
             }
 
             half Dither(half In, half2 uv)
@@ -88,8 +89,7 @@ Shader "Custom/Dither"
 
             half3 GetSkyboxColor(half2 uv)
             {
-                half2 resolution = half2(mul(_skybox_pixelization, _ScreenParams.x / _ScreenParams.y), _skybox_pixelization);
-                half2 pixeluv = round(uv * resolution) / resolution;
+                half2 pixeluv = round(uv * _skybox_resolution) / _skybox_resolution;
                 if (SampleRawDepth(pixeluv) != 0)
                 {
                     pixeluv = uv;

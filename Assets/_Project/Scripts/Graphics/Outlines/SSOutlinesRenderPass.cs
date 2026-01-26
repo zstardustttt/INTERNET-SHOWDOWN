@@ -1,8 +1,10 @@
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.RenderGraphModule.Util;
 using UnityEngine.Rendering.Universal;
+using Vector2 = UnityEngine.Vector2;
 
 namespace Game.Graphics.Outlines
 {
@@ -70,7 +72,9 @@ namespace Game.Graphics.Outlines
             if (_material == null) return;
 
             _material.SetColor(_colorID, _properties.color);
-            _material.SetFloat(_thicknessID, _properties.thickness);
+
+            var thickness = new Vector2(_properties.thickness, _properties.thickness * (Screen.width / Screen.height)) / 100f;
+            _material.SetVector(_thicknessID, thickness);
 
             _material.SetFloat(_enableDepthID, _properties.enableDepth ? 1f : 0f);
             _material.SetFloat(_depthStrengthID, _properties.depthStrength);
