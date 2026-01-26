@@ -104,53 +104,34 @@ Shader "Custom/SSOutlines"
                 half uvRawDepth = SampleRawDepth(uv);
                 half depthAdjust = smoothstep(_AdjustNearDepth, _AdjustFarDepth, SampleEyeDepth(uv));
                 
-                half depthEdge;
+                half outline = 0;
                 if (_EnableDepth)
                 {
                     half depthSobel = DepthSobel_half(uv, _Thickness);
                     half3 vsnorm = GetViewSpaceNormals_half(uv);
                     half3 viewdir = ViewDirectionFromScreenUV_half(uv);
                     half depthThreshold = mul(uvRawDepth, lerp(_DepthThreshold, _AcuteDepthThreshold, smoothstep(_AcuteAngleStartDot, 1, 1 - dot(vsnorm, viewdir))));
-                    depthEdge = FineTuneEdgeDetection(depthSobel, _DepthStrength, _DepthThickness, depthThreshold);
-                }
-                else
-                {
-                    depthEdge = 0;
+                    outline += FineTuneEdgeDetection(depthSobel, _DepthStrength, _DepthThickness, depthThreshold);
                 }
 
-                half colorEdge;
                 if (_EnableColor)
                 {
                     half colorSobel = ColorSobel_half(uv, _Thickness);
                     half colorThreshold = lerp(_ColorThreshold, _ColorFarThreshold, depthAdjust);
-                    if (uvRawDepth == 0)
+                    if (uvRawDepth != 0)
                     {
-                        colorEdge = 0;
+                        outline += FineTuneEdgeDetection(colorSobel, _ColorStrength, _ColorThickness, colorThreshold);
                     }
-                    else
-                    {
-                        colorEdge = FineTuneEdgeDetection(colorSobel, _ColorStrength, _ColorThickness, colorThreshold);
-                    }
-                }
-                else
-                {
-                    colorEdge = 0;
                 }
                 
-                half normalsEdge;
                 if (_EnableNormals)
                 {
                     half normalsSobel = NormalsSobel_half(uv, _Thickness);
                     half normalsThreshold = lerp(_NormalsThreshold, _NormalsFarThreshold, depthAdjust);
-                    normalsEdge = FineTuneEdgeDetection(normalsSobel, _NormalsStrength, _NormalsThickness, normalsThreshold);
-                }
-                else 
-                {
-                    normalsEdge = 0;
+                    outline += FineTuneEdgeDetection(normalsSobel, _NormalsStrength, _NormalsThickness, normalsThreshold);
                 }
                 
-                half outline = max(depthEdge, max(colorEdge, normalsEdge));
-                return _Color.a * outline;
+                return _Color.a * saturate(outline);
             }
 
             float4 Frag (Varyings input) : SV_Target
