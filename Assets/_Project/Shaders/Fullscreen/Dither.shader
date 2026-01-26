@@ -2,9 +2,9 @@ Shader "Custom/Dither"
 {   
     Properties
     {
-        _checkerboard_size("Checkerboard Size", Float) = 75
+        _checkerboard_size("Checkerboard Size", Vector) = (0, 0, 0, 0)
         _checkerboard_scroll_speed("Checkerboard Scroll Speed", Float) = 0.2
-        _checkerboard_intensity("Checkerboard Intensity", Range(0, 1)) = 0
+        _checkerboard_intensity_inverted("Checkerboard Intensity Inverted", Range(0, 1)) = 0
         _skybox_quantization("Skybox Quantization", Float) = 0
         _skybox_resolution("Skybox Resolution", Vector, 2) = (0, 0, 0, 0)
         _skybox_dither_scale("Skybox Dither Scale", Float) = 0
@@ -19,16 +19,16 @@ Shader "Custom/Dither"
         #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
-        static half DITHER_THRESHOLDS[16] = {
+        static const half DITHER_THRESHOLDS[16] = {
             1.0 / 17.0,  9.0 / 17.0,  3.0 / 17.0, 11.0 / 17.0,
             13.0 / 17.0,  5.0 / 17.0, 15.0 / 17.0,  7.0 / 17.0,
             4.0 / 17.0, 12.0 / 17.0,  2.0 / 17.0, 10.0 / 17.0,
             16.0 / 17.0,  8.0 / 17.0, 14.0 / 17.0,  6.0 / 17.0
         };
 
-        static half4 RGB_HSV_K = half4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-        static half RGB_HSV_E = 1e-10;
-        static half4 HSV_RGB_K = half4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+        static const half4 RGB_HSV_K = half4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+        static const half RGB_HSV_E = 1e-10;
+        static const half4 HSV_RGB_K = half4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
         ENDHLSL
 
         Tags { "RenderType"="Opaque" }
@@ -55,12 +55,12 @@ Shader "Custom/Dither"
             half _skybox_dither_intensity;
             half _skybox_contrast;
             half _skybox_brightness;
-            half _checkerboard_size;
+            half2 _checkerboard_size;
             half _checkerboard_scroll_speed;
-            half _checkerboard_intensity;
+            half _checkerboard_intensity_inverted;
             CBUFFER_END
 
-            half SampleRawDepth(half2 uv)
+            inline half SampleRawDepth(half2 uv)
             {
                 return SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv);
             }
@@ -89,7 +89,7 @@ Shader "Custom/Dither"
 
             half3 GetSkyboxColor(half2 uv)
             {
-                half2 pixeluv = round(uv * _skybox_resolution) / _skybox_resolution;
+                half2 pixeluv = floor(uv * _skybox_resolution) / _skybox_resolution;
                 if (SampleRawDepth(pixeluv) != 0)
                 {
                     pixeluv = uv;
@@ -109,9 +109,8 @@ Shader "Custom/Dither"
             float3 GetEnviromentColor(half2 uv)
             {
                 half2 checkerboardUv = uv + _TimeParameters.x * _checkerboard_scroll_speed;
-                half2 checkerboardFrequency = half2(_ScreenParams.x / _ScreenParams.y, 1) * _checkerboard_size;
-                int2 checker = frac(checkerboardFrequency * checkerboardUv) > 0.5;
-                half checkerboard = checker.x ^ checker.y ? 1 - _checkerboard_intensity : 1;
+                int2 checker = frac(_checkerboard_size * checkerboardUv) > 0.5;
+                half checkerboard = checker.x ^ checker.y ? _checkerboard_intensity_inverted : 1;
                 return SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, uv) * checkerboard;
             }
 

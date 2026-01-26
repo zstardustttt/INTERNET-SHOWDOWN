@@ -11,7 +11,7 @@ namespace Game.Graphics.Dither
     {
         private static readonly int _checkerboardSizeID = Shader.PropertyToID("_checkerboard_size");
         private static readonly int _checkerboardScrollSpeedID = Shader.PropertyToID("_checkerboard_scroll_speed");
-        private static readonly int _checkerboardIntensityID = Shader.PropertyToID("_checkerboard_intensity");
+        private static readonly int _checkerboardIntensityInvertedID = Shader.PropertyToID("_checkerboard_intensity_inverted");
 
         private static readonly int _skyboxQuantizationID = Shader.PropertyToID("_skybox_quantization");
         private static readonly int _skyboxResolutionID = Shader.PropertyToID("_skybox_resolution");
@@ -55,9 +55,10 @@ namespace Game.Graphics.Dither
         {
             if (_material == null) return;
 
-            _material.SetFloat(_checkerboardSizeID, _properties.checkerboardSize);
+            var checkerboardSize = new Vector2(Screen.width / Screen.height, 1f) * _properties.checkerboardSize;
+            _material.SetVector(_checkerboardSizeID, checkerboardSize);
             _material.SetFloat(_checkerboardScrollSpeedID, _properties.checherboardScrollSpeed);
-            _material.SetFloat(_checkerboardIntensityID, _properties.checkerboardIntensity);
+            _material.SetFloat(_checkerboardIntensityInvertedID, 1f - _properties.checkerboardIntensity);
 
             _material.SetFloat(_skyboxQuantizationID, _properties.skyboxQuantization);
             var resolution = new Vector2(_properties.skyboxPixelization * (Screen.width / Screen.height), _properties.skyboxPixelization);

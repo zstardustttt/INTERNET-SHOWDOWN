@@ -81,28 +81,16 @@ Shader "Custom/SSOutlines"
             {
                 return mul(pow(smoothstep(0, threshold, sobel), thickness), strength);
             }
-
-            half SampleRawDepth(half2 uv)
+            
+            inline half SampleRawDepth(half2 uv)
             {
                 return SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv);
-            }
-
-            half SampleEyeDepth(half2 uv)
-            {
-                if (unity_OrthoParams.w == 1.0)
-                {
-                    return LinearEyeDepth(ComputeWorldSpacePosition(uv, SampleRawDepth(uv), UNITY_MATRIX_I_VP), UNITY_MATRIX_V);
-                }
-                else
-                {
-                    return LinearEyeDepth(SampleRawDepth(uv), _ZBufferParams);
-                }
             }
 
             half GetOutlinesBlendOpacity(half2 uv)
             {
                 half uvRawDepth = SampleRawDepth(uv);
-                half depthAdjust = smoothstep(_AdjustNearDepth, _AdjustFarDepth, SampleEyeDepth(uv));
+                half depthAdjust = smoothstep(_AdjustNearDepth, _AdjustFarDepth, LinearEyeDepth(SampleRawDepth(uv), _ZBufferParams));
                 
                 half outline = 0;
                 if (_EnableDepth)

@@ -5,19 +5,19 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareNormalsTexture.hlsl"
 
-static half2 sobelSamplePointsHalf[8] = {
+static const half2 sobelSamplePointsHalf[8] = {
     half2(-0.71, 0.71), half2(0, 1), half2(0.71, 0.71),
     half2(-1, 0), half2(1, 0),
     half2(-0.71, -0.71), half2(0, -1), half2(0.71, -0.71),
 };
 
-static half sobelXMatrixHalf[8] = {
+static const half sobelXMatrixHalf[8] = {
     1, 0, -1,
     2, -2,
     1, 0, -1
 };
 
-static half sobelYMatrixHalf[8] = {
+static const half sobelYMatrixHalf[8] = {
     1, 2, 1,
     0, 0,
     -1, -2, -1
@@ -48,7 +48,14 @@ half ColorSobel_half(half2 UV, half2 Thickness) {
         sobelB += rgb.b * kernel;
     }
 
-    return max(length(sobelR), max(length(sobelG), length(sobelB)));
+    return sqrt(
+    max(
+        mul(sobelR.x, sobelR.x) + mul(sobelR.y, sobelR.y), 
+        max(
+            mul(sobelG.x, sobelG.x) + mul(sobelG.y, sobelG.y), 
+            mul(sobelB.x, sobelB.x) + mul(sobelB.y, sobelB.y)
+        )
+    ));
 }
 
 half3 GetViewSpaceNormals_half(half2 UV) {
@@ -70,7 +77,14 @@ half NormalsSobel_half(half2 UV, half2 Thickness) {
         sobelZ += viewNormal.z * kernel;
     }
 
-    return max(length(sobelX), max(length(sobelY), length(sobelZ)));
+    return sqrt(
+    max(
+        mul(sobelX.x, sobelX.x) + mul(sobelX.y, sobelX.y), 
+        max(
+            mul(sobelY.x, sobelY.x) + mul(sobelY.y, sobelY.y), 
+            mul(sobelZ.x, sobelZ.x) + mul(sobelZ.y, sobelZ.y)
+        )
+    ));
 }
 
 half3 ViewDirectionFromScreenUV_half(half2 In) {

@@ -1,10 +1,8 @@
-using System.Numerics;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.RenderGraphModule.Util;
 using UnityEngine.Rendering.Universal;
-using Vector2 = UnityEngine.Vector2;
 
 namespace Game.Graphics.Outlines
 {
