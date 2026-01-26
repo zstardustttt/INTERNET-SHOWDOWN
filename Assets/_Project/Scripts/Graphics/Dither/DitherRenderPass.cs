@@ -55,13 +55,13 @@ namespace Game.Graphics.Dither
         {
             if (_material == null) return;
 
-            var checkerboardSize = new Vector2(Screen.width / Screen.height, 1f) * _properties.checkerboardSize;
+            var checkerboardSize = new Vector2((float)Screen.width / Screen.height, 1f) * _properties.checkerboardSize;
             _material.SetVector(_checkerboardSizeID, checkerboardSize);
             _material.SetFloat(_checkerboardScrollSpeedID, _properties.checherboardScrollSpeed);
             _material.SetFloat(_checkerboardIntensityInvertedID, 1f - _properties.checkerboardIntensity);
 
             _material.SetFloat(_skyboxQuantizationID, _properties.skyboxQuantization);
-            var resolution = new Vector2(_properties.skyboxPixelization * (Screen.width / Screen.height), _properties.skyboxPixelization);
+            var resolution = new Vector2(_properties.skyboxPixelization * ((float)Screen.width / Screen.height), _properties.skyboxPixelization);
             _material.SetVector(_skyboxResolutionID, resolution);
             _material.SetFloat(_skyboxDitherScaleID, _properties.skyboxDitherScale);
             _material.SetFloat(_skyboxDitherIntensityID, _properties.skyboxDitherIntensity);

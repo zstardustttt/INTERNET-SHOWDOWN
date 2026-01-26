@@ -71,7 +71,7 @@ namespace Game.Graphics.Outlines
 
             _material.SetColor(_colorID, _properties.color);
 
-            var thickness = new Vector2(_properties.thickness, _properties.thickness * (Screen.width / Screen.height)) / 100f;
+            var thickness = new Vector2(_properties.thickness, _properties.thickness * ((float)Screen.width / Screen.height)) / 100f;
             _material.SetVector(_thicknessID, thickness);
 
             _material.SetFloat(_enableDepthID, _properties.enableDepth ? 1f : 0f);

@@ -66,10 +66,7 @@ namespace Game.Graphics.Outlines
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
             if (_renderPass == null) return;
-            if (renderingData.cameraData.cameraType == CameraType.Game)
-            {
-                renderer.EnqueuePass(_renderPass);
-            }
+            renderer.EnqueuePass(_renderPass);
         }
 
         protected override void Dispose(bool disposing)
