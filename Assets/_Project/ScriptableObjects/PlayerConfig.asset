@@ -211,3 +211,5 @@ MonoBehaviour:
   airAdditionalVelocityDrag: 1.8
   maxHealth: 100
   damageInvincibilityDuration: 0.35
+  deathInvincibilityDuration: 2
+  respawnDuration: 5

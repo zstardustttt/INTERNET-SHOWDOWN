@@ -29,6 +29,7 @@ namespace Game.Player
         public Transform verticalOrientation;
         public Transform itemHolder;
         public DamageReceiver damageReceiver;
+        public GameObject model;
 
         // movement
         private float _targetSpeed;
@@ -119,6 +120,8 @@ namespace Game.Player
         }
         [SyncVar(hook = nameof(OnHealthChange))] public float health;
         private Stack<DamageCapture> _damageHistory;
+        [SyncVar(hook = nameof(OnDeathOrRespawn))] public bool alive;
+        private float _respawnTimer;
 
         [SyncVar] public bool invincible;
         private float _invincibleTimer; // server only
@@ -366,18 +369,45 @@ namespace Game.Player
                     }
                 }
 
-                var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
-                ServerMovePlayer(position);
-                ResetPlayer();
-
                 onDeath.Invoke();
+                alive = false;
             }
 
             if (netIdentity.isLocalPlayer)
             {
                 EventBus<OnHealthUpdate>.Invoke(new() { maxHealth = config.maxHealth, health = health });
                 if (_new < old) EventBus<DamageIndicatorRequest>.Invoke(new());
-                if (_new <= 0f) _additionalVelocity = Vector3.zero;
+            }
+        }
+
+        private void OnDeathOrRespawn(bool old, bool _new)
+        {
+            if (MapLoader.loadedMap == null) return;
+
+            if (NetworkServer.active)
+            {
+                if (_new)
+                {
+                    var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
+                    ServerMovePlayer(position);
+                    ResetPlayer();
+                    ActivateInvincibility(config.deathInvincibilityDuration);
+                }
+                else
+                {
+                    _respawnTimer = config.respawnDuration;
+                    damageReceiver.active = false;
+                }
+            }
+
+            if (isLocalPlayer)
+            {
+                _additionalVelocity = Vector3.zero;
+                motor.enabled = _new;
+            }
+            else
+            {
+                model.SetActive(_new);
             }
         }
 
@@ -406,6 +436,7 @@ namespace Game.Player
         public void TryUseItem(bool secondary)
         {
             if (itemData.itemIndex == -1) return;
+            if (!alive) return;
 
             var crosshairHit = Physics.Raycast(verticalOrientation.position, verticalOrientation.forward, out var hitInfo, 1000f, LayerMask.GetMask("Player", "Enviroment"));
             var ctx = new ItemUseClientContext()
@@ -432,11 +463,14 @@ namespace Game.Player
             if (!NetworkServer.active) return;
 
             // Handle invincibility
-            _invincibleTimer -= Time.deltaTime;
-            if (_invincibleTimer <= 0f && invincible)
+            if (alive)
             {
-                invincible = false;
-                damageReceiver.active = true;
+                _invincibleTimer -= Time.deltaTime;
+                if (_invincibleTimer <= 0f && invincible)
+                {
+                    invincible = false;
+                    damageReceiver.active = true;
+                }
             }
 
             // Teleport back if clipped out of bounds
@@ -455,11 +489,19 @@ namespace Game.Player
                 EventBus<OnStatsChanged>.Invoke(new() { player = this });
             }
             _prevStats = stats;
+
+            // Handle respawning
+            if (!alive)
+            {
+                if (_respawnTimer <= 0f) alive = true;
+                else _respawnTimer -= Time.deltaTime;
+            }
         }
 
         [Command]
         private void CmdUseItem(ItemUseClientContext context)
         {
+            if (!alive) return;
             stats.activity++;
             // TODO: Validate context
             UseItem(context);

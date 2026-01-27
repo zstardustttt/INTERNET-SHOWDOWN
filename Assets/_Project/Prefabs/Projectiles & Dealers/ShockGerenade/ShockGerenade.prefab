@@ -54,6 +54,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45dfbf338ce88a646b475852cf5a6ba0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Projectiles.SphereProjectileCollision
+  active: 1
   projectile: {fileID: 2634283477714140036}
   collisionLayerMask:
     serializedVersion: 2
@@ -86,11 +87,12 @@ MonoBehaviour:
   - {fileID: 1595082852376827780}
   predictionDebugIterations: 5
   predictionDebugTimePassed: 1
-  speed: 50
-  secondarySpeed: 100
+  speed: 70
+  secondarySpeed: 140
   gravityAcceleration: 25
   activateGravityAfter: 0.15
-  explodeAfter: 5
+  explodeAfterPrimary: 5
+  explodeAfterSecondary: 8
   detachTotalDelta: 85
   explosion: {fileID: 871211422364439796, guid: f18910510fd7d844d9b701fa7ed10828, type: 3}
   collisionRadius: 0.35
@@ -103,6 +105,8 @@ MonoBehaviour:
   visualShakeIncreaseRate: 0.005
   damageReceiver: {fileID: 4050009569507431300}
   flySpeed: 0
+  explodeAfter: 5
+  sourceSpeedMultiplier: 0
 --- !u!54 &8422152388811641674
 Rigidbody:
   m_ObjectHideFlags: 0

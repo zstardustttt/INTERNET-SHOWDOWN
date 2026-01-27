@@ -37,6 +37,8 @@ namespace Game.Items
             var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHitPoint - context.visualPosition) : context.visualRotation;
             var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, finalRotation);
             proj.flySpeed = context.secondary ? proj.secondarySpeed : proj.speed;
+            proj.explodeAfter = context.secondary ? proj.explodeAfterSecondary : proj.explodeAfterPrimary;
+            proj.sourceSpeedMultiplier = context.secondary ? (proj.explodeAfterPrimary / proj.explodeAfterSecondary) : 1f;
             proj.SetupPrediction(context.useTime, 8);
         }
     }

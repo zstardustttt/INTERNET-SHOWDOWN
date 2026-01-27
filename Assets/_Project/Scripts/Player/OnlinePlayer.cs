@@ -16,7 +16,6 @@ namespace Game.Player
     public class OnlinePlayer : NetworkBehaviour, IPlayerController
     {
         public GameObject cameraPrefab;
-        public GameObject model;
         public PlayerBase player;
         public Transform cameraOrientation;
 
@@ -117,7 +116,7 @@ namespace Game.Player
 
             Cursor.lockState = CursorLockMode.Locked;
             _camera = Instantiate(cameraPrefab, cameraOrientation).GetComponent<PlayerCamera>();
-            model.SetActive(false);
+            player.model.SetActive(false);
 
             // TODO: ts
             _mouseSens = PlayerPrefs.GetFloat("sens");

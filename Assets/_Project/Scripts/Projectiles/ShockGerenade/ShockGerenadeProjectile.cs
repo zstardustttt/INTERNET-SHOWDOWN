@@ -15,7 +15,8 @@ namespace Game.Projectiles.ShockGerenade
         public float secondarySpeed;
         public float gravityAcceleration;
         public float activateGravityAfter;
-        public float explodeAfter;
+        public float explodeAfterPrimary;
+        public float explodeAfterSecondary;
         public float detachTotalDelta;
         public DamageDealer explosion;
         public float collisionRadius;
@@ -42,6 +43,8 @@ namespace Game.Projectiles.ShockGerenade
         private bool _exploded;
 
         [HideInInspector] public float flySpeed;
+        [HideInInspector] public float explodeAfter;
+        [HideInInspector, SyncVar] public float sourceSpeedMultiplier;
 
         private void Awake()
         {
@@ -125,7 +128,8 @@ namespace Game.Projectiles.ShockGerenade
 
         protected override void OnUpdate()
         {
-            _shakeGenerator.shakeAmplitude = _lifetime * _lifetime * visualShakeIncreaseRate;
+            tickAudioSource.pitch = sourceSpeedMultiplier;
+            _shakeGenerator.shakeAmplitude = _lifetime * _lifetime * visualShakeIncreaseRate * sourceSpeedMultiplier;
             var shake = _shakeGenerator.GetShake();
             shakee.localPosition = shake;
             if (_localGerenadeVisual)

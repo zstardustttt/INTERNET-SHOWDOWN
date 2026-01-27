@@ -316,7 +316,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   cameraPrefab: {fileID: 293337341705726784, guid: 4cdd146b491d11a4692a32238c4fd696, type: 3}
-  model: {fileID: 7050680160326592069}
   player: {fileID: 6754057132338759635}
   cameraOrientation: {fileID: 9199459176827721078}
   speedRecordSize: 8
@@ -486,6 +485,7 @@ MonoBehaviour:
   verticalOrientation: {fileID: 9199459176827721078}
   itemHolder: {fileID: 4582289290584614918}
   damageReceiver: {fileID: 351218294003561760}
+  model: {fileID: 7050680160326592069}
   onGroundSlamLanded:
     m_PersistentCalls:
       m_Calls: []
@@ -523,6 +523,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   health: 0
+  alive: 0
   invincible: 0
   playerGuid: 
   playerName: 
