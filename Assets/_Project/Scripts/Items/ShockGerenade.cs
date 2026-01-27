@@ -34,7 +34,7 @@ namespace Game.Items
 
         public override void Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] _)
         {
-            var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHit.point - context.visualPosition) : context.visualRotation;
+            var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHitPoint - context.visualPosition) : context.visualRotation;
             var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, finalRotation);
             proj.flySpeed = context.secondary ? proj.secondarySpeed : proj.speed;
             proj.SetupPrediction(context.useTime, 8);

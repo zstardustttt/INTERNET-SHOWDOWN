@@ -415,7 +415,9 @@ namespace Game.Player
                 headPosition = verticalOrientation.position,
                 headRotation = verticalOrientation.rotation,
                 didCrosshairHit = crosshairHit,
-                crosshairHit = hitInfo,
+                crosshairHitPoint = hitInfo.point,
+                crosshairHitNormal = hitInfo.normal,
+                crosshairHitDistance = hitInfo.distance,
                 useTime = NetworkTime.time,
                 velocity = _transientVelocity,
                 secondary = secondary
