@@ -170,4 +170,4 @@ MonoBehaviour:
   offset: {x: 0, y: 0, z: -0.1}
   projectilePrefab: {fileID: 467756603654952479, guid: 943cb9da5caf905429507add91ee3256, type: 3}
   managerPrefab: {fileID: 6429577698095104541, guid: 1d80bce56ecef1d41b2f615fa66ab1f6, type: 3}
-  maxUses: 3
+  maxUses: 5

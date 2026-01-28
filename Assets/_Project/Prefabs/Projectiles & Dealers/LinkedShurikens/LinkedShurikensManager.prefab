@@ -52,6 +52,7 @@ MonoBehaviour:
   syncInterval: 0
   shurikenLinkPrefab: {fileID: 8668921467422308858, guid: de452677ff4b8a846a7186b90ebb24ad, type: 3}
   hitDealer: {fileID: 5554592539488508494}
+  maxLinksCount: 5
   activeLinksCount: 0
 --- !u!114 &5550771384461221273
 MonoBehaviour:
@@ -149,4 +150,4 @@ MonoBehaviour:
   onHit:
     m_PersistentCalls:
       m_Calls: []
-  baseDamage: 20
+  baseDamage: 25

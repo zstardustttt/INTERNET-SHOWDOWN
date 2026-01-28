@@ -36,6 +36,7 @@ namespace Game.Projectiles.LinkedShurikens
             );
             transform.position = point + offset;
             rb.linearVelocity = Vector3.zero;
+            rb.constraints = RigidbodyConstraints.FreezeAll;
         }
 
         protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage) { }

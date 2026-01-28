@@ -11,6 +11,7 @@ namespace Game.Projectiles.LinkedShurikens
     {
         public LineRenderer shurikenLinkPrefab;
         public DamageDealer hitDealer;
+        public int maxLinksCount;
         private List<LinkedShurikenProjectile> _projectiles;
         private List<LineRenderer> _shurikenLinks;
 
@@ -27,7 +28,7 @@ namespace Game.Projectiles.LinkedShurikens
         private void Awake()
         {
             _shurikenLinks = new();
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < maxLinksCount; i++)
             {
                 var link = Instantiate(shurikenLinkPrefab.gameObject, transform).GetComponent<LineRenderer>();
                 _shurikenLinks.Add(link);
