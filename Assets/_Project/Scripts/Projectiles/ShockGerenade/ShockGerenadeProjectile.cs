@@ -107,7 +107,8 @@ namespace Game.Projectiles.ShockGerenade
         {
             var player = NetworkClient.localPlayer.GetComponent<PlayerBase>();
             _localGerenadeVisual = Instantiate(localGerenadeVisualPrefab, player.horizontalOrientation).GetComponent<ShockGerenadeLocalVisual>();
-            _localGerenadeVisual.transform.localPosition = player.motor.Capsule.center + Vector3.forward * (player.motor.Capsule.radius + collisionRadius);
+            var yOffset = player.motor.Capsule.center.y * 1.1f * Vector3.up;
+            _localGerenadeVisual.transform.localPosition = yOffset + Vector3.forward * (player.motor.Capsule.radius + collisionRadius);
             visual.SetActive(false);
             tickAudioSource.spatialBlend = 0f;
         }
@@ -156,7 +157,8 @@ namespace Game.Projectiles.ShockGerenade
                 if (_attached.transform.position != Vector3.zero)
                 {
                     var capsule = _attached.motor.Capsule;
-                    rb.position = _attached.transform.position + capsule.center + _attached.transform.forward * (capsule.radius + collisionRadius);
+                    var yOffset = capsule.center.y * 1.1f * Vector3.up;
+                    rb.position = _attached.transform.position + yOffset + _attached.transform.forward * (capsule.radius + collisionRadius);
 
                     var attachedDelta = _attached.transform.position - _previousAttachedPosition;
                     _collectedAttachedDelta += attachedDelta.magnitude;

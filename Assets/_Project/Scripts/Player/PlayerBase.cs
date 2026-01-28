@@ -8,6 +8,7 @@ using Game.Core.Maps;
 using Game.Events.Player;
 using Game.Events.UI;
 using Game.Maps;
+using Game.Network;
 using KinematicCharacterController;
 using Mirror;
 using UnityEngine;
@@ -120,7 +121,7 @@ namespace Game.Player
         }
         [SyncVar(hook = nameof(OnHealthChange))] public float health;
         private Stack<DamageCapture> _damageHistory;
-        [SyncVar(hook = nameof(OnDeathOrRespawn))] public bool alive;
+        [SyncVar(hook = nameof(OnDeathOrRespawn))] public bool dead;
         private float _respawnTimer;
 
         [SyncVar] public bool invincible;
@@ -326,7 +327,14 @@ namespace Game.Player
 
         private void OnHealthChange(float old, float _new)
         {
-            if (NetworkServer.active && _new <= 0f)
+            if (netIdentity.isLocalPlayer)
+            {
+                EventBus<OnHealthUpdate>.Invoke(new() { maxHealth = config.maxHealth, health = health });
+                if (_new < old) EventBus<DamageIndicatorRequest>.Invoke(new());
+            }
+
+            if (!NetworkServer.active) return;
+            if (_new <= 0f)
             {
                 // Death logic
                 var killer = _damageHistory.Peek().author;
@@ -370,44 +378,40 @@ namespace Game.Player
                 }
 
                 onDeath.Invoke();
-                alive = false;
-            }
-
-            if (netIdentity.isLocalPlayer)
-            {
-                EventBus<OnHealthUpdate>.Invoke(new() { maxHealth = config.maxHealth, health = health });
-                if (_new < old) EventBus<DamageIndicatorRequest>.Invoke(new());
+                dead = true;
             }
         }
 
         private void OnDeathOrRespawn(bool old, bool _new)
         {
-            if (MapLoader.loadedMap == null) return;
-
             if (NetworkServer.active)
             {
+                // if dead
                 if (_new)
-                {
-                    var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
-                    ServerMovePlayer(position);
-                    ResetPlayer();
-                    ActivateInvincibility(config.deathInvincibilityDuration);
-                }
-                else
                 {
                     _respawnTimer = config.respawnDuration;
                     damageReceiver.active = false;
+                }
+                else
+                {
+                    var position = MapLoader.IsPlayerOnMap(this) ?
+                        MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position :
+                        Vector3.zero;
+
+                    ServerMovePlayer(position);
+                    ResetPlayer();
+                    ActivateInvincibility(config.deathInvincibilityDuration);
                 }
             }
 
             if (isLocalPlayer)
             {
                 _additionalVelocity = Vector3.zero;
-                motor.enabled = _new;
+                motor.enabled = !_new;
             }
             else
             {
-                model.SetActive(_new);
+                model.SetActive(!_new);
             }
         }
 
@@ -436,7 +440,7 @@ namespace Game.Player
         public void TryUseItem(bool secondary)
         {
             if (itemData.itemIndex == -1) return;
-            if (!alive) return;
+            if (dead) return;
 
             var crosshairHit = Physics.Raycast(verticalOrientation.position, verticalOrientation.forward, out var hitInfo, 1000f, LayerMask.GetMask("Player", "Enviroment"));
             var ctx = new ItemUseClientContext()
@@ -463,7 +467,7 @@ namespace Game.Player
             if (!NetworkServer.active) return;
 
             // Handle invincibility
-            if (alive)
+            if (!dead)
             {
                 _invincibleTimer -= Time.deltaTime;
                 if (_invincibleTimer <= 0f && invincible)
@@ -474,7 +478,7 @@ namespace Game.Player
             }
 
             // Teleport back if clipped out of bounds
-            if (MapLoader.loadedMap != null && transform.position.y < MapLoader.loadedMap.info.boundsMin.y)
+            if (MapLoader.IsPlayerOnMap(this) && transform.position.y < MapLoader.loadedMap.info.boundsMin.y)
             {
                 var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
                 ServerMovePlayer(position);
@@ -491,9 +495,9 @@ namespace Game.Player
             _prevStats = stats;
 
             // Handle respawning
-            if (!alive)
+            if (dead)
             {
-                if (_respawnTimer <= 0f) alive = true;
+                if (_respawnTimer <= 0f) dead = false;
                 else _respawnTimer -= Time.deltaTime;
             }
         }
@@ -501,7 +505,7 @@ namespace Game.Player
         [Command]
         private void CmdUseItem(ItemUseClientContext context)
         {
-            if (!alive) return;
+            if (dead) return;
             stats.activity++;
             // TODO: Validate context
             UseItem(context);

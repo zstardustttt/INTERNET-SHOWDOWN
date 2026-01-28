@@ -134,5 +134,12 @@ namespace Game.Core.Maps
             SceneManager.UnloadSceneAsync(loadedMap.scene);
             loadedMap = null;
         }
+
+        [Server]
+        public static bool IsPlayerOnMap(PlayerBase player)
+        {
+            if (loadedMap == null) return false;
+            return loadedMap.players.ContainsKey(player.playerGuid);
+        }
     }
 }

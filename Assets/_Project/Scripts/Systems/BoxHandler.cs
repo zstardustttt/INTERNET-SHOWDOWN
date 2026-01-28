@@ -49,7 +49,7 @@ namespace Game.Systems
 
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
-                if (!player) continue;
+                if (!player || player.dead) continue;
                 player.boxSpawnerObservedDelta = player.transform.position - player.boxSpawnerPreviousObservedPosition;
 
                 if (player.itemData.itemIndex == -1 && PlayerBoxCheck(player, out var box))

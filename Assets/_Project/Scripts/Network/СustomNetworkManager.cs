@@ -35,7 +35,7 @@ namespace Game.Network
             {
                 if (!MapLoader.TryMoveGameObjectToMap(conn.identity.gameObject))
                 {
-                    Debug.LogWarning($"Client {conn.connectionId} wanted to load into unloaded map");
+                    Debug.LogWarning($"Client {conn.connectionId} wanted to load into unloaded map or has already loaded that map");
                     return;
                 }
 
