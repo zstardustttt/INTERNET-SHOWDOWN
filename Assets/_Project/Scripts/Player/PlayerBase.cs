@@ -373,7 +373,7 @@ namespace Game.Player
                     {
                         supporter.stats.supportingKills++;
                         supporter.TargetOnKill(false);
-                        killer.Heal(damages[supporter] / 2f);
+                        supporter.Heal(damages[supporter] / 2f);
                     }
                 }
 

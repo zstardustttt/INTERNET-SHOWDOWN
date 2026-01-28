@@ -20,11 +20,13 @@ namespace Game.Items
             {
                 if (arg is not BOOMerangDamageMultiplier dmarg) continue;
                 proj.damageMultiply = dmarg.damageMultiplier;
+                proj.returns = dmarg.returns;
             }
             proj.damageHitBox.baseDamage = proj.directDamage * proj.DamageMultiply;
 
-            proj.secondary = context.secondary;
-            if (context.secondary)
+            var secondary = proj.returns > proj.maxReturns || context.secondary;
+            proj.secondary = secondary;
+            if (secondary)
             {
                 proj.flyDirection = context.didCrosshairHit ?
                     (context.crosshairHitPoint - context.visualPosition).normalized :
@@ -60,5 +62,6 @@ namespace Game.Items
     public class BOOMerangDamageMultiplier : ItemArgument
     {
         public int damageMultiplier;
+        public int returns;
     }
 }

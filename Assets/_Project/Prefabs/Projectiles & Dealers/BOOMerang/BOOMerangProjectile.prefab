@@ -5136,6 +5136,7 @@ MonoBehaviour:
   directDamage: 25
   explosionDamage: 12.5
   damageMultiplyCap: 8
+  maxReturns: 7
   explosionPrefab: {fileID: 1959433415532568738, guid: 48b20d2e7f9da204fa7188006818e37d, type: 3}
   visualToRotate: {fileID: 8005494515564343811}
   visualRotationSpeed: 1000
@@ -5143,6 +5144,7 @@ MonoBehaviour:
   flyDirection: {x: 0, y: 0, z: 0}
   wishPositionDistance: 0
   damageMultiply: 0
+  returns: 0
   wishPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &827340634276453444
 MonoBehaviour:

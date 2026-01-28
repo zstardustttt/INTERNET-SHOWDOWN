@@ -63,7 +63,7 @@ namespace Game.Projectiles.ShockGerenade
 
         private void OnDamageReceived(DamageDealer dealer, float _)
         {
-            if (dealer.damageType == DamageType.None) return;
+            if (dealer.damageType == DamageType.None || _attached) return;
             Explode();
         }
 

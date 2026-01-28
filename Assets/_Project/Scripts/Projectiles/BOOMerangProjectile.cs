@@ -21,6 +21,7 @@ namespace Game.Projectiles
         public float directDamage;
         public float explosionDamage;
         public int damageMultiplyCap;
+        public int maxReturns;
         public RadialDamage explosionPrefab;
         public Transform visualToRotate;
         public float visualRotationSpeed;
@@ -29,6 +30,7 @@ namespace Game.Projectiles
         [HideInInspector] public Vector3 flyDirection;
         [HideInInspector] public float wishPositionDistance;
         [HideInInspector] public int damageMultiply;
+        [HideInInspector] public int returns;
         [HideInInspector] public Vector3 wishPosition;
 
         public float DamageMultiply => Mathf.Min(damageMultiply, damageMultiplyCap);
@@ -105,7 +107,7 @@ namespace Game.Projectiles
             else if (dealer == grabHitBox)
             {
                 if (player != _owner || _lifetime < LoopDuration / 2f) return;
-                _owner.SetItem(boomerangItem, new BOOMerangDamageMultiplier() { damageMultiplier = damageMultiply });
+                _owner.SetItem(boomerangItem, new BOOMerangDamageMultiplier() { damageMultiplier = damageMultiply, returns = returns + 1 });
                 DestroyProjectile();
             }
         }
