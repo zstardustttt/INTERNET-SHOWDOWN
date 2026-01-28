@@ -1,5 +1,7 @@
 using Game.Core.Damage;
+using Game.Core.Maps;
 using Game.Core.Projectiles;
+using Game.Player;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
@@ -35,8 +37,21 @@ namespace Game.Projectiles.LinkedShurikens
                 normal.z * bounds.extents.z
             );
             transform.position = point + offset;
-            rb.linearVelocity = Vector3.zero;
-            rb.constraints = RigidbodyConstraints.FreezeAll;
+
+            var newVelocity = Vector3.zero;
+            var closestDistance = 2000f;
+            foreach (var (_, player) in MapLoader.loadedMap.players)
+            {
+                if (player.dead || player == _owner) continue;
+                var distance = Vector3.Distance(player.transform.position, transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    newVelocity = 0.25f * flySpeed * (player.transform.position - transform.position).normalized;
+                }
+            }
+
+            rb.linearVelocity = newVelocity;
         }
 
         protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage) { }

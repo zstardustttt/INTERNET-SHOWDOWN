@@ -367,7 +367,7 @@ MonoBehaviour:
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
-  maxLifetime: 10
+  maxLifetime: 15
 --- !u!114 &4261296137794067223
 MonoBehaviour:
   m_ObjectHideFlags: 0
