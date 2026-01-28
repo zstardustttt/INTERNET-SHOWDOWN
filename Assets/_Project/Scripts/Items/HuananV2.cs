@@ -10,11 +10,12 @@ namespace Game.Items
     {
         public HuananV2Projectile projectile;
 
-        public override void Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] _)
+        public override bool Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] _)
         {
             var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHitPoint - context.visualPosition) : context.visualRotation;
             var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, finalRotation);
             proj.SetupPrediction(context.useTime, 1);
+            return true;
         }
     }
 }

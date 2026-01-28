@@ -10,7 +10,7 @@ namespace Game.Items
     {
         public BOOMerangProjectle projectile;
 
-        public override void Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] args)
+        public override bool Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] args)
         {
             var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, context.visualRotation);
 
@@ -56,6 +56,7 @@ namespace Game.Items
             }
 
             proj.SetupPrediction(context.useTime, 2);
+            return true;
         }
     }
 

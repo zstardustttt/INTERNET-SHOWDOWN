@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Game.Player;
 using UnityEngine;
 
@@ -9,6 +8,6 @@ namespace Game.Core.Items
         public Vector3 offset;
 
         // Called on the server
-        public abstract void Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] args);
+        public abstract bool Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] args);
     }
 }

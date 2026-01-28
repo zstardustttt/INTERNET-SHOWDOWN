@@ -32,7 +32,7 @@ namespace Game.Items
             _textChangeTimer -= Time.deltaTime;
         }
 
-        public override void Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] _)
+        public override bool Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] _)
         {
             var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHitPoint - context.visualPosition) : context.visualRotation;
             var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, finalRotation);
@@ -40,6 +40,7 @@ namespace Game.Items
             proj.explodeAfter = context.secondary ? proj.explodeAfterSecondary : proj.explodeAfterPrimary;
             proj.sourceSpeedMultiplier = context.secondary ? (proj.explodeAfterPrimary / proj.explodeAfterSecondary) : 1f;
             proj.SetupPrediction(context.useTime, 8);
+            return true;
         }
     }
 }

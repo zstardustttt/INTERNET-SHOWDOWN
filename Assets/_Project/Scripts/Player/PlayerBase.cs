@@ -391,6 +391,9 @@ namespace Game.Player
                 {
                     _respawnTimer = config.respawnDuration;
                     damageReceiver.active = false;
+
+                    itemData = ItemData.Default();
+                    currentItemArgs = Array.Empty<ItemArgument>();
                 }
                 else
                 {
@@ -514,9 +517,13 @@ namespace Game.Player
         [Server]
         private void UseItem(ItemUseClientContext context)
         {
-            if (_item) _item.Use(this, context, currentItemArgs);
-            itemData = ItemData.Default();
-            currentItemArgs = Array.Empty<ItemArgument>();
+            if (!_item) return;
+
+            if (_item.Use(this, context, currentItemArgs))
+            {
+                itemData = ItemData.Default();
+                currentItemArgs = Array.Empty<ItemArgument>();
+            }
         }
 
         public void SetPosition(Vector3 position)

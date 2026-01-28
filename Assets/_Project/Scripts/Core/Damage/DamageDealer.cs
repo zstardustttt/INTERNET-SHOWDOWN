@@ -17,7 +17,7 @@ namespace Game.Core.Damage
     }
 
     [RequireComponent(typeof(Collider))]
-    public abstract class DamageDealer : NetworkBehaviour
+    public abstract class DamageDealer : MonoBehaviour
     {
         public Guid DealerGuid { get; private set; }
 
@@ -36,9 +36,8 @@ namespace Game.Core.Damage
         public UnityEvent<DamageReceiver, float> onHit = new();
         public abstract float EvaluateDamage(DamageReceiver receiver);
 
-        protected override void OnValidate()
+        private void OnValidate()
         {
-            base.OnValidate();
             coll = GetComponent<Collider>();
             coll.isTrigger = true;
         }

@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 418f73291c68b2e49a3036283a475a59, type: 3}
   m_Name: ShockGerenade
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Items.ItemConfig
-  include: 1
+  include: 0
   prefab: {fileID: 8049393378143318546, guid: ff16171862d73a54aa5f5339994d6235, type: 3}
   rarity: {fileID: 11400000, guid: 1f239e83ff0eba746b4a230de4ee726d, type: 2}
   displayName: Shock Gerenade
-  description: Explodes 5 seconds after being thrown or when damaged. Attaches itself
-    to another player after hitting them. Detaches after the attached player runs
-    85 meters.
+  description: Explodes some time after being thrown or when damaged. Attaches itself
+    to another player after hitting them. Can be detached if the attached player
+    moves fast.

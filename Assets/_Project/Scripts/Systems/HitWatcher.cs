@@ -43,7 +43,7 @@ namespace Game.Systems
                 layer = LayerMask.NameToLayer("ReceiverCheck")
             };
 
-            EventBus<RequestTwoPointsDealerCheck>.Listen((data) => TwoPointsDealerCheck(data.dealer, data.point1, data.point2));
+            EventBus<RequestTwoPointsDealerCheck>.Listen((data) => TwoPointsDealerCheck(data.dealer, data.point1, data.point2, data.ignoreInactive));
         }
 
         // Insanity
@@ -156,9 +156,10 @@ namespace Game.Systems
             }
         }
 
-        public void TwoPointsDealerCheck(DamageDealer dealer, Vector3 point1, Vector3 point2)
+        public void TwoPointsDealerCheck(DamageDealer dealer, Vector3 point1, Vector3 point2, bool ignoreInactive)
         {
-            if (!dealer.active) return;
+            if (!dealer) return;
+            if (!ignoreInactive && !dealer.active) return;
 
             foreach (var (_, receiver) in _receivers)
             {
@@ -208,7 +209,8 @@ namespace Game.Systems
             dealer.onHit.Invoke(receiver, damage);
 
             EventBus<OnRegisterHit>.Invoke(new() { dealer = dealer, receiver = receiver });
-            Debug.Log($"{dealer.damageType} hit! on: {receiver.gameObject.name} by: {dealer.owner.gameObject.name} at: {point} damage: {damage}");
+            var ownerName = dealer.owner ? dealer.owner.gameObject.name : "none";
+            Debug.Log($"{dealer.damageType} hit! on: {receiver.gameObject.name} by: {ownerName} at: {point} damage: {damage}");
         }
     }
 }

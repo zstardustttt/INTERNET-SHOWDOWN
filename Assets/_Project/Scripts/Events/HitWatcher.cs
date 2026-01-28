@@ -30,6 +30,7 @@ namespace Game.Events.HitWatcher
         public DamageDealer dealer;
         public Vector3 point1;
         public Vector3 point2;
+        public bool ignoreInactive;
     }
 
     public struct OnRegisterHit : IEvent
