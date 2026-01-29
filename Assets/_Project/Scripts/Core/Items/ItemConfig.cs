@@ -10,5 +10,6 @@ namespace Game.Core.Items
         public ItemRarity rarity;
         public string displayName;
         [TextArea] public string description;
+        public ItemTag[] tags;
     }
 }

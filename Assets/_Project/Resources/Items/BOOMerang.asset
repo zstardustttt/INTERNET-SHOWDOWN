@@ -19,3 +19,9 @@ MonoBehaviour:
   description: Flies forward, hitting other players. Then returns to its owner. Explodes
     upon hitting the map. Hitting another player multiplies both direct damage and
     explosion damage.
+  tags:
+  - {fileID: 11400000, guid: 4a1e23bc2fe73834ebc10eb448be04e2, type: 2}
+  - {fileID: 11400000, guid: 0004dbbcc1ec2e8408a30318689332c4, type: 2}
+  - {fileID: 11400000, guid: 4e2d36f10d8c6804ba2638085d5e8ea2, type: 2}
+  - {fileID: 11400000, guid: 9625dd7980435c442b816c1f683bc922, type: 2}
+  - {fileID: 11400000, guid: d078430698345bf42aa0b4dfa957497d, type: 2}

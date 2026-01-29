@@ -19,3 +19,9 @@ MonoBehaviour:
   description: Explodes some time after being thrown or when damaged. Attaches itself
     to another player after hitting them. Can be detached if the attached player
     moves fast.
+  tags:
+  - {fileID: 11400000, guid: 0004dbbcc1ec2e8408a30318689332c4, type: 2}
+  - {fileID: 11400000, guid: 350356467bce7e443b17c27c61f8940a, type: 2}
+  - {fileID: 11400000, guid: 9625dd7980435c442b816c1f683bc922, type: 2}
+  - {fileID: 11400000, guid: b6ff3cac8bb1b094e96be9a9d2cb65ac, type: 2}
+  - {fileID: 11400000, guid: d078430698345bf42aa0b4dfa957497d, type: 2}

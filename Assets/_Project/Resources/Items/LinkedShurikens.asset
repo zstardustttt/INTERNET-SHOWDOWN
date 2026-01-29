@@ -16,4 +16,10 @@ MonoBehaviour:
   prefab: {fileID: 8697607699108650305, guid: fc57f507e5d26ed498e81c33b559baa9, type: 3}
   rarity: {fileID: 11400000, guid: ef58f522f451a5b4fbeec67c68daf1c4, type: 2}
   displayName: Linked Shurikens
-  description: 
+  description: 'Each shuriken flies forward, hitting other players. Redirects itself
+    to the closest player upon hitting the map. Shurikens are connected by hazardous
+    electricity lines. '
+  tags:
+  - {fileID: 11400000, guid: 4a1e23bc2fe73834ebc10eb448be04e2, type: 2}
+  - {fileID: 11400000, guid: 4e2d36f10d8c6804ba2638085d5e8ea2, type: 2}
+  - {fileID: 11400000, guid: 9625dd7980435c442b816c1f683bc922, type: 2}

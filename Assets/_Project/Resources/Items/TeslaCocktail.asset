@@ -18,3 +18,7 @@ MonoBehaviour:
   displayName: Tesla Cocktail
   description: An item similar to a Molotov cocktail. Creates a hazardous field after
     hitting the map. Hitting a player causes them to catch fire.
+  tags:
+  - {fileID: 11400000, guid: 350356467bce7e443b17c27c61f8940a, type: 2}
+  - {fileID: 11400000, guid: 9625dd7980435c442b816c1f683bc922, type: 2}
+  - {fileID: 11400000, guid: b6ff3cac8bb1b094e96be9a9d2cb65ac, type: 2}
