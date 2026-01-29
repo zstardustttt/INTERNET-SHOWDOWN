@@ -8,7 +8,6 @@ using Game.Core.Maps;
 using Game.Events.Player;
 using Game.Events.UI;
 using Game.Maps;
-using Game.Network;
 using KinematicCharacterController;
 using Mirror;
 using UnityEngine;

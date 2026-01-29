@@ -2,7 +2,6 @@ using System;
 using Game.Core.Events;
 using Game.Events.HitWatcher;
 using Game.Player;
-using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 
