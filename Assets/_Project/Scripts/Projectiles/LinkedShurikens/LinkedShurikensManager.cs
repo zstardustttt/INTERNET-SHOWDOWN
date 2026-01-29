@@ -12,6 +12,7 @@ namespace Game.Projectiles.LinkedShurikens
         public LineRenderer shurikenLinkPrefab;
         public DamageDealer hitDealer;
         public int maxLinksCount;
+        public int linkSegmentsCount;
         private List<LinkedShurikenProjectile> _projectiles;
         private List<LineRenderer> _shurikenLinks;
 
@@ -31,6 +32,7 @@ namespace Game.Projectiles.LinkedShurikens
             for (int i = 0; i < maxLinksCount; i++)
             {
                 var link = Instantiate(shurikenLinkPrefab.gameObject, transform).GetComponent<LineRenderer>();
+                link.positionCount = linkSegmentsCount + 2;
                 _shurikenLinks.Add(link);
                 link.gameObject.SetActive(false);
             }
@@ -41,6 +43,21 @@ namespace Game.Projectiles.LinkedShurikens
 
         private void Update()
         {
+            // Electricity effect
+            foreach (var link in _shurikenLinks)
+            {
+                if (!link.gameObject.activeInHierarchy) continue;
+
+                var start = link.GetPosition(0);
+                var end = link.GetPosition(linkSegmentsCount + 1);
+                for (int i = 1; i <= linkSegmentsCount; i++)
+                {
+                    Vector3 pointOnLine = Vector3.Lerp(start, end, (float)i / (linkSegmentsCount + 1));
+                    Vector3 offset = Random.insideUnitSphere * 0.5f;
+                    link.SetPosition(i, pointOnLine + offset);
+                }
+            }
+
             if (!NetworkServer.active) return;
             if (_projectiles.Count == 0) return;
 
@@ -87,7 +104,7 @@ namespace Game.Projectiles.LinkedShurikens
             {
                 var link = _shurikenLinks[i];
                 link.SetPosition(0, starts[i]);
-                link.SetPosition(1, ends[i]);
+                link.SetPosition(linkSegmentsCount + 1, ends[i]);
             }
         }
 

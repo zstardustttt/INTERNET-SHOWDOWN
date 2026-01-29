@@ -53,6 +53,7 @@ MonoBehaviour:
   shurikenLinkPrefab: {fileID: 8668921467422308858, guid: de452677ff4b8a846a7186b90ebb24ad, type: 3}
   hitDealer: {fileID: 5554592539488508494}
   maxLinksCount: 5
+  linkSegmentsCount: 20
   activeLinksCount: 0
 --- !u!114 &5550771384461221273
 MonoBehaviour:
@@ -123,7 +124,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.25, y: 0.25, z: 0.25}
+  m_Size: {x: 0.4, y: 0.4, z: 0.4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5554592539488508494
 MonoBehaviour:
@@ -145,7 +146,7 @@ MonoBehaviour:
   active: 0
   damageType: 2
   singleHitScan: 0
-  canDamageOwner: 1
+  canDamageOwner: 0
   knockbackForce: 0
   onHit:
     m_PersistentCalls:

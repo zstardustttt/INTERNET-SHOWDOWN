@@ -12,6 +12,8 @@ namespace Game.Projectiles.LinkedShurikens
         public float flySpeed;
         public UnityEvent<LinkedShurikenProjectile> onDestroy = new();
         public float maxLifetime;
+        public Transform visualToRotate;
+        public float visualRotationFactor;
 
         public override ProjectilePredictionData Predict(float timePassed)
         {
@@ -51,12 +53,15 @@ namespace Game.Projectiles.LinkedShurikens
             }
 
             rb.linearVelocity = newVelocity;
+            if (newVelocity != Vector3.zero)
+                rb.rotation = Quaternion.LookRotation(newVelocity);
         }
 
         protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage) { }
 
         protected override void OnUpdate()
         {
+            visualToRotate.Rotate(Vector3.up, rb.linearVelocity.magnitude * visualRotationFactor * Time.deltaTime);
             if (!NetworkServer.active) return;
             if (_lifetime >= maxLifetime) DestroyProjectile();
         }

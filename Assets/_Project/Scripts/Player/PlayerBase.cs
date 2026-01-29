@@ -259,6 +259,7 @@ namespace Game.Player
             itemData = ItemData.Default();
             currentItemArgs = Array.Empty<ItemArgument>();
             health = config.maxHealth;
+            dead = false;
             onResetPlayer.Invoke();
         }
 
@@ -424,7 +425,6 @@ namespace Game.Player
             if (_new.itemIndex != -1)
             {
                 _item = Instantiate(ItemPool.items[_new.rarityIndex][_new.itemIndex].prefab, itemHolder).GetComponent<Item>();
-                _item.transform.localPosition = _item.offset;
                 if (isLocalPlayer)
                 {
                     var layer = LayerMask.NameToLayer("ItemVisual");
@@ -433,7 +433,10 @@ namespace Game.Player
                     {
                         child.gameObject.layer = layer;
                     }
+
+                    _item.transform.localPosition = new(_item.offset.x, _item.offset.y, -Mathf.Abs(verticalOrientation.position.z - itemHolder.position.z));
                 }
+                else _item.transform.localPosition = _item.offset;
 
                 onItemPickup.Invoke();
             }
@@ -466,6 +469,11 @@ namespace Game.Player
 
         private void Update()
         {
+            if (isLocalPlayer && _item)
+            {
+                _item.transform.localPosition = Vector3.Lerp(_item.transform.localPosition, _item.offset, Time.deltaTime * 15f);
+            }
+
             if (!NetworkServer.active) return;
 
             // Handle invincibility
@@ -523,6 +531,14 @@ namespace Game.Player
                 itemData = ItemData.Default();
                 currentItemArgs = Array.Empty<ItemArgument>();
             }
+            else TargetRestartItemAnimation();
+        }
+
+        [TargetRpc]
+        private void TargetRestartItemAnimation()
+        {
+            if (!_item) return;
+            _item.transform.localPosition = new(_item.offset.x, _item.offset.y, -Mathf.Abs(verticalOrientation.position.z - itemHolder.position.z));
         }
 
         public void SetPosition(Vector3 position)
