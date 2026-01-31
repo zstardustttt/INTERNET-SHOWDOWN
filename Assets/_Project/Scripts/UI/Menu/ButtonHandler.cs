@@ -1,14 +1,22 @@
-using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ButtonHandler : MonoBehaviour
 {
     public Vector2 shadowPos;
-    public AnimationCurve[] curve;
+    private MenuManager _menuManager;
+    private SectionManager _sectionManager;
     private Shadow _shadow;
-    private Coroutine _mouseEnter;
-    private Coroutine _mouseExit;
+    private Tween _mouseEnter;
+    private Tween _mouseExit;
+
+    private void Awake()
+    {
+        _menuManager = FindObjectsByType<MenuManager>(FindObjectsSortMode.None)[0];
+        _sectionManager = _menuManager.GetComponent<SectionManager>();
+    }
+
     private void Start()
     {
         _shadow = this.GetComponent<Shadow>();
@@ -16,43 +24,25 @@ public class ButtonHandler : MonoBehaviour
 
     public void MouseEnter()
     {
-        StopAllCoroutines();
-        _mouseEnter = StartCoroutine(AnimateShadow(_shadow, 0));
+        if (!_sectionManager.SectionChanging)
+        {
+
+        }
     }
 
     public void MouseExit()
     {
-        StopAllCoroutines();
-        _mouseExit = StartCoroutine(AnimateShadow(_shadow, 1));
+        if (!_sectionManager.SectionChanging)
+        {
+
+        }
     }
 
-    private IEnumerator AnimateShadow(
-        Shadow shadow,
-        int curveIndex = 0,
-        float duration = 0.3f
-        )
+    public void MouseClick(int section)
     {
-        AnimationCurve _curve = curve[curveIndex];
-
-        float _value;
-        float _timeNormalized;
-        float _endKeyValue = _curve.keys[^1].value;
-        float _elapsedTime = 0f;
-
-        while (_elapsedTime < duration)
+        if (!_sectionManager.SectionChanging)
         {
-            _elapsedTime += Time.deltaTime;
-            _timeNormalized = _elapsedTime / duration;
-            _value = _curve.Evaluate(_timeNormalized);
 
-            shadow.effectDistance = new Vector2(_value * shadowPos.x, _value * shadowPos.y);
-
-            if (_elapsedTime >= 2)
-                _elapsedTime = 0;
-
-            yield return null;
         }
-
-        shadow.effectDistance = new Vector2(_endKeyValue * shadowPos.x, _endKeyValue * shadowPos.y);
     }
 }
