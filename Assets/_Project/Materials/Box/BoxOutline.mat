@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: BoxOutline
-  m_Shader: {fileID: 4800000, guid: 650dd9526735d5b46b79224bc6e94025, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 70bbe82f0edc3664e8185515fbc8f242, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -30,8 +30,7 @@ Material:
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 1
   m_CustomRenderQueue: -1
-  stringTagMap:
-    RenderType: Opaque
+  stringTagMap: {}
   disabledShaderPasses:
   - MOTIONVECTORS
   m_LockedProperties: 
@@ -115,10 +114,15 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _HueChangeInterval: 1.5
+    - _InnerValue: 0
     - _Metallic: 0
     - _OcclusionStrength: 1
+    - _OuterValue: 0.5
     - _Parallax: 0.005
+    - _QueueControl: 0
     - _QueueOffset: 0
+    - _Radius: 2
     - _ReceiveShadows: 0
     - _SampleGI: 0
     - _Smoothness: 0.5
