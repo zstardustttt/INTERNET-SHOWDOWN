@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-1764106519426448392
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Editor::UnityEditor.Rendering.Universal.AssetVersion
+  version: 10
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -7,15 +20,15 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BoxOuterField
-  m_Shader: {fileID: -6465566751694194690, guid: 6da12917239acf441855379dd6295cf3, type: 3}
+  m_Name: BoxOutline
+  m_Shader: {fileID: -6465566751694194690, guid: 70bbe82f0edc3664e8185515fbc8f242, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
+  m_DoubleSidedGI: 1
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses:
@@ -56,28 +69,12 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _NoiseTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2DLOD_32be6b2cc2a44cd988fe43e6da3933e8_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 0460ad8fecbcef84094267f4c40056a9, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2DLOD_c559e7a50b954ddf9d63263020f1c8b1_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 0460ad8fecbcef84094267f4c40056a9, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2DLOD_faeb248a14774d48a5ed66c2146b4b2e_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 0460ad8fecbcef84094267f4c40056a9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -103,74 +100,44 @@ Material:
     - _AlphaToMask: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
+    - _BlendOp: 0
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _Contrast: 1
-    - _Cull: 2
+    - _Cull: 1
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
-    - _FieldColorChangeSpeed: 1
-    - _FieldContrast: 2
-    - _FieldFrequency: 10
-    - _FieldScrollSpeed: 0.1
-    - _Frequency: 10
-    - _FresnelPower: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _HueChangeInterval: 1.5
+    - _InnerValue: 0
     - _Metallic: 0
     - _OcclusionStrength: 1
+    - _OuterValue: 1
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _ReceiveShadows: 1
-    - _ScrollSpeed: 0.5
+    - _Radius: 2
+    - _ReceiveShadows: 0
+    - _SampleGI: 0
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
-    - _VertexNoiseAmplitude: 0.05
-    - _VertexNoiseFrequency: 1
-    - _VertexNoiseRandomness: 0.03
-    - _VertexNoiseScrollSpeed: 0.1
-    - _WireframeSpinSpeed: 1
-    - _WireframeThickness: 0.015
     - _WorkflowMode: 1
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorA: {r: 1, g: 1, b: 0, a: 1}
-    - _ColorA1: {r: 1, g: 1, b: 0, a: 1}
-    - _ColorA2: {r: 1, g: 0.5400758, b: 0, a: 1}
-    - _ColorB: {r: 0, g: 1, b: 1, a: 1}
-    - _ColorB1: {r: 0, g: 1, b: 1, a: 1}
-    - _ColorB2: {r: 0, g: 0.46605062, b: 1, a: 1}
-    - _ColorC: {r: 1, g: 0, b: 1, a: 1}
-    - _ColorC1: {r: 1, g: 0, b: 1, a: 1}
-    - _ColorC2: {r: 0.35230207, g: 0, b: 1, a: 1}
+    - _BaseColor: {r: 0.6132076, g: 0.35298327, b: 0, a: 1}
+    - _Color: {r: 0.6132076, g: 0.35298324, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &461461943932035597
-MonoBehaviour:
-  m_ObjectHideFlags: 11
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Editor::UnityEditor.Rendering.Universal.AssetVersion
-  version: 10

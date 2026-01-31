@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 3227425650777066247}
   - component: {fileID: 6504561149296644509}
   - component: {fileID: 8222996875898718387}
+  - component: {fileID: 5714547169537719582}
   m_Layer: 13
   m_Name: Box
   m_TagString: Untagged
@@ -162,6 +163,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2, y: 2, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5714547169537719582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4198238566599423486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52cf161b4bc25bf49975d0eeecfac34d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Other.BoxAnimation
+  moveFrequency: 1.5
+  moveAmplitude: 0.4
 --- !u!1 &7354700484325785103
 GameObject:
   m_ObjectHideFlags: 0
