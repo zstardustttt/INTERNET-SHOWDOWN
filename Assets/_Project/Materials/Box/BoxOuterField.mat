@@ -114,9 +114,11 @@ Material:
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
+    - _FieldBrightness: 0.8
     - _FieldColorChangeSpeed: 1
     - _FieldContrast: 2
     - _FieldFrequency: 10
+    - _FieldPower: 3
     - _FieldScrollSpeed: 0.1
     - _Frequency: 10
     - _FresnelPower: 1
@@ -130,6 +132,7 @@ Material:
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _Radius: 2
     - _ReceiveShadows: 1
     - _ScrollSpeed: 0.5
     - _Smoothness: 0.5
