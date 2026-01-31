@@ -1,5 +1,6 @@
 using System.Collections;
 using DG.Tweening;
+using Game.Network;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,6 +12,7 @@ public class MenuManager : MonoBehaviour
     [Header("Objects")]
     public GameObject mainPanel;
     public GameObject logo;
+    public GameObject logoStartText;
     public GameObject logoContainer;
     public GameObject logoOutline;
     public GameObject star;
@@ -29,6 +31,8 @@ public class MenuManager : MonoBehaviour
     private Tween logoMove;
 
     [Header("Utils")]
+    public TransitionManager transitionManager;
+    public CustomNetworkManager customNetworkManager;
     public SectionManager sectionManager;
     private void Awake()
     {
@@ -48,6 +52,29 @@ public class MenuManager : MonoBehaviour
 
         PlayerPrefs.SetFloat("sens", 1f);
     }
+
+    /*
+    !!!!!!!!!!! КОСТЫЛИ !!!!!!!!!!!
+    */
+    private void OnEnable()
+    {
+        TransitionManager.OnTransitionInComplete += customNetworkManager.StartHost;
+    }
+
+    private void OnDisable()
+    {
+        TransitionManager.OnTransitionInComplete -= customNetworkManager.StartHost;
+
+    }
+
+    public void ButtonHost()
+    {
+        transitionManager.TransitionIn();
+    }
+
+    /*
+    !!!!!!! конец костылей !!!!!!!
+    */
 
     public void SetSens(float value)
     {
@@ -84,31 +111,35 @@ public class MenuManager : MonoBehaviour
             InputSystem.onAnyButtonPress
                 .CallOnce(btn =>
                 {
-                    logoMove.Kill(false);
-                    logoScale.Kill(false);
-
-                    mainPanel.SetActive(true);
-
-                    _logoContainerTransform?.DORewind();
-                    _logoContainerTransform?.DOScale(0.85f, 0.7f)
-                        .SetEase(Ease.OutExpo);
-                    _logoContainerRawImage.color = new Color(0.75f, 0.75f, 0.75f, 1f);
-
-                    _logoContainerRawImage.DORewind();
-                    _logoContainerRawImage?.DOColor(new Color(0.11f, 0.11f, 0.11f, 0f), 0.8f)
-                        .SetEase(Ease.OutCirc)
-                        .OnComplete(() =>
-                        {
-                            logoContainer.SetActive(false);
-                        });
-
-                    _logoRawImage.DORewind();
-                    _logoRawImage.DOColor(new Color(1f, 1f, 1f, 0f), 0.8f)
-                        .SetEase(Ease.OutCirc);
-
-                    _init = true;
+                    MenuReveal();
                 });
             return;
         }
+    }
+    private void MenuReveal()
+    {
+        logoMove?.Kill(false);
+        logoScale?.Kill(false);
+
+        mainPanel.SetActive(true);
+
+        _logoContainerTransform?.DORewind();
+        _logoContainerTransform?.DOScale(0.85f, 0.7f)
+            .SetEase(Ease.OutExpo);
+        _logoContainerRawImage.color = new Color(0.75f, 0.75f, 0.75f, 1f);
+
+        _logoContainerRawImage.DORewind();
+        _logoContainerRawImage?.DOColor(new Color(0.11f, 0.11f, 0.11f, 0f), 0.8f)
+            .SetEase(Ease.OutCirc)
+            .OnComplete(() =>
+            {
+                logoContainer.SetActive(false);
+            });
+
+        _logoRawImage.DORewind();
+        _logoRawImage.DOColor(new Color(1f, 1f, 1f, 0f), 0.8f)
+            .SetEase(Ease.OutCirc);
+
+        _init = true;
     }
 }

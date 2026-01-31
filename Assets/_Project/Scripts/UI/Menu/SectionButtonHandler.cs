@@ -41,22 +41,19 @@ public class SectionButtonHandler : MonoBehaviour
 
     public void MouseExit()
     {
-        if (!_sectionManager.SectionChanging)
-        {
-            DOTween.Rewind(_mouseEnter);
-            DOTween.Rewind(_mouseExit);
-            _mouseEnter = DOTween.To(
-                () => _shadow.effectDistance,
-                x => _shadow.effectDistance = x,
-                Vector2.zero,
-                0.5f
-            );
-        }
+        DOTween.Rewind(_mouseEnter);
+        DOTween.Rewind(_mouseExit);
+        _mouseEnter = DOTween.To(
+            () => _shadow.effectDistance,
+            x => _shadow.effectDistance = x,
+            Vector2.zero,
+            0.5f
+        );
     }
 
     public void MouseClick(int section)
     {
-        if (!_sectionManager.SectionChanging)
+        if (!_sectionManager.SectionChanging || _sectionManager.CurrentSection != SectionManager.Section.MainScreen)
         {
             switch (section)
             {

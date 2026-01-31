@@ -20,6 +20,7 @@ namespace Game.Network
 {
     public class CustomNetworkManager : NetworkManager
     {
+        public TransitionManager transitionManager;
         public static CustomNetworkManager CustomSingleton => (CustomNetworkManager)singleton;
         private GameObject _portal;
 
@@ -113,6 +114,8 @@ namespace Game.Network
                     _disconnectedPlayersStats.Remove(data.player.playerGuid);
                 }
             });
+
+            transitionManager.TransitionOut();
         }
 
         public override void OnStopServer()
