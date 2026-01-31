@@ -16,7 +16,12 @@ namespace Game.Systems
         public float spawnRate;
         public float castMargin;
         public LayerMask layerMask;
+
+        [Header("Box spawning settings")]
         public int maxSpawnFails;
+        public float maxGroundAngle;
+        public float spawnMargin;
+        public float spawnYOffset;
 
         private bool _active;
         private float _timer;
@@ -93,13 +98,16 @@ namespace Game.Systems
             var possibleSpawnPoints = new List<Vector3>();
             while (Physics.Raycast(origin, Vector3.down, out var hit, 200f, layerMask))
             {
-                possibleSpawnPoints.Add(hit.point);
                 origin = hit.point + Vector3.down * 0.1f;
+
+                if (Vector3.Angle(Vector3.up, hit.normal) > maxGroundAngle) continue;
+                if (Physics.CheckSphere(hit.point + Vector3.up * spawnYOffset, spawnMargin, layerMask)) continue;
+                possibleSpawnPoints.Add(hit.point);
             }
 
             if (possibleSpawnPoints.Count == 0) return false;
             var point = possibleSpawnPoints[Random.Range(0, possibleSpawnPoints.Count)];
-            var box = Instantiate(boxPrefab, point, Quaternion.identity, new InstantiateParameters() { scene = MapLoader.loadedMap.scene });
+            var box = Instantiate(boxPrefab, point + Vector3.up * spawnYOffset, Quaternion.identity, new InstantiateParameters() { scene = MapLoader.loadedMap.scene });
             NetworkServer.Spawn(box);
 
             return true;

@@ -435,6 +435,7 @@ namespace Game.Player
                     }
 
                     _item.transform.localPosition = new(_item.offset.x, _item.offset.y, -Mathf.Abs(verticalOrientation.position.z - itemHolder.position.z));
+                    itemHolder.localScale = new(0.1f, 4f, 0.1f);
                 }
                 else _item.transform.localPosition = _item.offset;
 
@@ -472,6 +473,8 @@ namespace Game.Player
             if (isLocalPlayer && _item)
             {
                 _item.transform.localPosition = Vector3.Lerp(_item.transform.localPosition, _item.offset, Time.deltaTime * 15f);
+                itemHolder.localScale = Vector3.Lerp(itemHolder.localScale, Vector3.one, Time.deltaTime * 30f);
+                _item.Sway(itemHolder.rotation);
             }
 
             if (!NetworkServer.active) return;
@@ -539,6 +542,7 @@ namespace Game.Player
         {
             if (!_item) return;
             _item.transform.localPosition = new(_item.offset.x, _item.offset.y, -Mathf.Abs(verticalOrientation.position.z - itemHolder.position.z));
+            itemHolder.localScale = new(0.1f, 4f, 0.1f);
         }
 
         public void SetPosition(Vector3 position)

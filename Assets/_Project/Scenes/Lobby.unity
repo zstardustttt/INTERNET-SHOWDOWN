@@ -384,7 +384,10 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 2048
-  maxSpawnFails: 64
+  maxSpawnFails: 128
+  maxGroundAngle: 70
+  spawnMargin: 1.1
+  spawnYOffset: 2
 --- !u!4 &48328930
 Transform:
   m_ObjectHideFlags: 0
