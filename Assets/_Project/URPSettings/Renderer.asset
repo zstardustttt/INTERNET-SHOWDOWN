@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Active: 1
   properties:
     getNormalsMaterial: {fileID: 2100000, guid: 800f4880e3b584243aa8b9e43625d24d, type: 2}
-    color: {r: 0, g: 0, b: 0, a: 1}
+    color: {r: 0, g: 0, b: 0, a: 0.7490196}
     thickness: 0.1
     layerMask:
       serializedVersion: 2
