@@ -38,10 +38,6 @@ namespace Game.Graphics.Dither
             {
                 renderPassEvent = injectionPoint
             };
-
-            _renderPass.ConfigureInput(ScriptableRenderPassInput.Color);
-            _renderPass.ConfigureInput(ScriptableRenderPassInput.Depth);
-            _renderPass.ConfigureInput(ScriptableRenderPassInput.Normal);
         }
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)

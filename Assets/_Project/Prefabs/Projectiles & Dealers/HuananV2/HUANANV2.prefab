@@ -80,6 +80,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebdbb4139d77123448e44a01cf860329, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Projectiles.BoxProjectileCollision
+  active: 1
   projectile: {fileID: 4302098679855809131}
   collisionLayerMask:
     serializedVersion: 2
@@ -289,10 +290,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b6ac8510fb386459347986532adcad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncMethod: 0
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   hitScanCount: 0
@@ -303,7 +300,7 @@ MonoBehaviour:
   singleHitScan: 0
   canDamageOwner: 0
   knockbackForce: 0
-  OnHit:
+  onHit:
     m_PersistentCalls:
       m_Calls: []
   baseDamage: 40
@@ -316,7 +313,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8790266594367465333}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -399,9 +396,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -5907702752472415697, guid: f59b50f8d807037469e86be0347b1929, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -2075620604537399056, guid: f59b50f8d807037469e86be0347b1929, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -1281008254966965639, guid: f59b50f8d807037469e86be0347b1929, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f59b50f8d807037469e86be0347b1929, type: 3}
       propertyPath: m_Name
       value: HuananV2
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f59b50f8d807037469e86be0347b1929, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1828471694881314644, guid: f59b50f8d807037469e86be0347b1929, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6809363509681133152, guid: f59b50f8d807037469e86be0347b1929, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8208229975827745842, guid: f59b50f8d807037469e86be0347b1929, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

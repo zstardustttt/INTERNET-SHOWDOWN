@@ -2,7 +2,7 @@ using System;
 using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Events.GameLoop;
-using Game.Events.BoxSpawner;
+using Game.Events.Boxes;
 using Mirror;
 using UnityEngine;
 using Game.Player;

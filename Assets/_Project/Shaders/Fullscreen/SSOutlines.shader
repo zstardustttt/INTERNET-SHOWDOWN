@@ -31,9 +31,9 @@ Shader "Custom/SSOutlines"
     SubShader
     {
         HLSLINCLUDE
-        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-        #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
         #include "Assets/_Project/Shaders/Fullscreen/SSOutlinesInclude.hlsl"
+        #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
         ENDHLSL
 
         Tags { "RenderType"="Opaque" }
@@ -52,7 +52,6 @@ Shader "Custom/SSOutlines"
             #pragma fragment Frag
 
             #define REQUIRE_DEPTH_TEXTURE
-            #define REQUIRE_NORMAL_TEXTURE
 
             CBUFFER_START(UnityPerMaterial)
             half2 _Thickness;
@@ -75,6 +74,10 @@ Shader "Custom/SSOutlines"
             bool _EnableDepth;
             bool _EnableColor;
             bool _EnableNormals;
+
+            TEXTURE2D(_FilteredOpaqueTexture);
+            TEXTURE2D(_FilteredDepthTexture);
+            TEXTURE2D(_FilteredNormalsTexture);
             CBUFFER_END
 
             half FineTuneEdgeDetection(half sobel, half strength, half thickness, half threshold)
@@ -84,19 +87,18 @@ Shader "Custom/SSOutlines"
             
             inline half SampleRawDepth(half2 uv)
             {
-                return SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv);
+                return SAMPLE_TEXTURE2D(_FilteredDepthTexture, sampler_LinearClamp, uv);
             }
 
-            half GetOutlinesBlendOpacity(half2 uv)
+            half GetOutlinesBlendOpacity(half2 uv, half uvRawDepth, half sobelDepths[8])
             {
-                half uvRawDepth = SampleRawDepth(uv);
-                half depthAdjust = smoothstep(_AdjustNearDepth, _AdjustFarDepth, LinearEyeDepth(SampleRawDepth(uv), _ZBufferParams));
+                half depthAdjust = smoothstep(_AdjustNearDepth, _AdjustFarDepth, LinearEyeDepth(uvRawDepth, _ZBufferParams));
                 
                 half outline = 0;
                 if (_EnableDepth)
                 {
-                    half depthSobel = DepthSobel_half(uv, _Thickness);
-                    half3 vsnorm = GetViewSpaceNormals_half(uv);
+                    half depthSobel = DepthSobel_half(uv, _Thickness, sobelDepths);
+                    half3 vsnorm = GetViewSpaceNormals_half(uv, _FilteredNormalsTexture);
                     half3 viewdir = ViewDirectionFromScreenUV_half(uv);
                     half depthThreshold = mul(uvRawDepth, lerp(_DepthThreshold, _AcuteDepthThreshold, smoothstep(_AcuteAngleStartDot, 1, 1 - dot(vsnorm, viewdir))));
                     outline += FineTuneEdgeDetection(depthSobel, _DepthStrength, _DepthThickness, depthThreshold);
@@ -104,7 +106,7 @@ Shader "Custom/SSOutlines"
 
                 if (_EnableColor)
                 {
-                    half colorSobel = ColorSobel_half(uv, _Thickness);
+                    half colorSobel = ColorSobel_half(uv, _Thickness, _FilteredOpaqueTexture);
                     half colorThreshold = lerp(_ColorThreshold, _ColorFarThreshold, depthAdjust);
                     if (uvRawDepth != 0)
                     {
@@ -114,7 +116,7 @@ Shader "Custom/SSOutlines"
                 
                 if (_EnableNormals)
                 {
-                    half normalsSobel = NormalsSobel_half(uv, _Thickness);
+                    half normalsSobel = NormalsSobel_half(uv, _Thickness, _FilteredNormalsTexture);
                     half normalsThreshold = lerp(_NormalsThreshold, _NormalsFarThreshold, depthAdjust);
                     outline += FineTuneEdgeDetection(normalsSobel, _NormalsStrength, _NormalsThickness, normalsThreshold);
                 }
@@ -122,12 +124,27 @@ Shader "Custom/SSOutlines"
                 return _Color.a * saturate(outline);
             }
 
-            float4 Frag (Varyings input) : SV_Target
+            float3 Frag (Varyings input) : SV_Target
             {
-                float4 base = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, input.texcoord).rgba;
-                half opacity = GetOutlinesBlendOpacity(input.texcoord);
-                float4 color = lerp(base, _Color, opacity);
-                return color;
+                float3 base = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, input.texcoord).rgba;
+                half uvRawDepth = SampleRawDepth(input.texcoord);
+                half sobelDepths[8];
+
+                half maxDepth = 0;
+                [unroll] for (int i = 0; i < 8; i++) 
+                {
+                    half depth = SampleRawDepth(input.texcoord + sobelSamplePointsHalf[i] * _Thickness);
+                    sobelDepths[i] = depth;
+                    if (depth > maxDepth) maxDepth = depth;
+                }
+
+                if (maxDepth >= SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, input.texcoord))
+                {
+                    half opacity = GetOutlinesBlendOpacity(input.texcoord, uvRawDepth, sobelDepths);
+                    return lerp(base, _Color, opacity); 
+                }
+
+                return base; 
             }
             
             ENDHLSL

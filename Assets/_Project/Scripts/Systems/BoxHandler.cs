@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Game.Core.Events;
 using Game.Core.Maps;
-using Game.Events.BoxSpawner;
+using Game.Events.Boxes;
 using Game.Player;
 using Mirror;
 using UnityEngine;
@@ -112,19 +112,5 @@ namespace Game.Systems
 
             return true;
         }
-
-        /*
-        Legacy solution
-        private List<KinematicCharacterMotor> GetAllMotorsOnScene(Scene scene)
-        {
-            var output = new List<KinematicCharacterMotor>();
-            foreach (var obj in scene.GetRootGameObjects())
-            {
-                if (obj.TryGetComponent(out KinematicCharacterMotor motor)) output.Add(motor);
-            }
-
-            return output;
-        }
-        */
     }
 }

@@ -1,9 +1,7 @@
 #ifndef SOBELOUTLINES_INCLUDED
 #define SOBELOUTLINES_INCLUDED
 
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareOpaqueTexture.hlsl"
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareNormalsTexture.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
 static const half2 sobelSamplePointsHalf[8] = {
     half2(-0.71, 0.71), half2(0, 1), half2(0.71, 0.71),
@@ -23,24 +21,23 @@ static const half sobelYMatrixHalf[8] = {
     -1, -2, -1
 };
 
-half DepthSobel_half(half2 UV, half2 Thickness) {
+half DepthSobel_half(half2 UV, half2 Thickness, half sobelDepths[8]) {
     half2 sobel = 0;
 
     [unroll] for (int i = 0; i < 8; i++) {
-        half depth = SampleSceneDepth(UV + sobelSamplePointsHalf[i] * Thickness);
-        sobel += depth * half2(sobelXMatrixHalf[i], sobelYMatrixHalf[i]);
+        sobel += sobelDepths[i] * half2(sobelXMatrixHalf[i], sobelYMatrixHalf[i]);
     }
 
     return length(sobel);
 }
 
-half ColorSobel_half(half2 UV, half2 Thickness) {
+half ColorSobel_half(half2 UV, half2 Thickness, Texture2D opaqueTex) {
     half2 sobelR = 0;
     half2 sobelG = 0;
     half2 sobelB = 0;
 
     [unroll] for (int i = 0; i < 8; i++) {
-        half3 rgb = SampleSceneColor(UV + sobelSamplePointsHalf[i] * Thickness);
+        half3 rgb = SAMPLE_TEXTURE2D(opaqueTex, sampler_LinearClamp, UV + sobelSamplePointsHalf[i] * Thickness);
         half2 kernel = half2(sobelXMatrixHalf[i], sobelYMatrixHalf[i]);
 
         sobelR += rgb.r * kernel;
@@ -58,18 +55,18 @@ half ColorSobel_half(half2 UV, half2 Thickness) {
     ));
 }
 
-half3 GetViewSpaceNormals_half(half2 UV) {
-    half3 worldNormal = SampleSceneNormals(UV);
+half3 GetViewSpaceNormals_half(half2 UV, Texture2D normalsTex) {
+    half3 worldNormal = SAMPLE_TEXTURE2D(normalsTex, sampler_LinearClamp, UV);
     return mul((half3x3)UNITY_MATRIX_V, worldNormal);
 }
 
-half NormalsSobel_half(half2 UV, half2 Thickness) {
+half NormalsSobel_half(half2 UV, half2 Thickness, Texture2D normalsTex) {
     half2 sobelX = 0;
     half2 sobelY = 0;
     half2 sobelZ = 0;
 
     [unroll] for (int i = 0; i < 8; i++) {
-        half3 viewNormal = (GetViewSpaceNormals_half(UV + sobelSamplePointsHalf[i] * Thickness) + 1) / 2;
+        half3 viewNormal = (GetViewSpaceNormals_half(UV + sobelSamplePointsHalf[i] * Thickness, normalsTex) + 1) / 2;
         half2 kernel = half2(sobelXMatrixHalf[i], sobelYMatrixHalf[i]);
 
         sobelX += viewNormal.x * kernel;

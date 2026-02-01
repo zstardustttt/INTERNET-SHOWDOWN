@@ -430,10 +430,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b6ac8510fb386459347986532adcad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Projectiles.DirectDamage
-  syncMethod: 0
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   hitScanCount: 0
@@ -459,7 +455,7 @@ GameObject:
   - component: {fileID: 578386841671303509}
   - component: {fileID: 5102396979883343652}
   - component: {fileID: 4539259026036265003}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: OuterFIeld
   m_TagString: Untagged
   m_Icon: {fileID: 0}

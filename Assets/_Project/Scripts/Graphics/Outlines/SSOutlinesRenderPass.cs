@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.RenderGraphModule;
@@ -6,8 +7,20 @@ using UnityEngine.Rendering.Universal;
 
 namespace Game.Graphics.Outlines
 {
+    public class SSOutlinesRenderPassData
+    {
+        public RendererListHandle rendererList;
+    }
+
     public class SSOutlinesRenderPass : ScriptableRenderPass
     {
+        public static readonly List<ShaderTagId> shaderTags = new()
+        {
+            new("UniversalForward"),
+            new("UniversalForwardOnly"),
+            new("SRPDefaultUnlit")
+        };
+
         private static readonly int _colorID = Shader.PropertyToID("_Color");
         private static readonly int _thicknessID = Shader.PropertyToID("_Thickness");
 
@@ -34,8 +47,12 @@ namespace Game.Graphics.Outlines
         private static readonly int _normalsFarThresholdID = Shader.PropertyToID("_NormalsFarThreshold");
         private static readonly int _colorFarThresholdID = Shader.PropertyToID("_ColorFarThreshold");
 
+        private static readonly int _filteredOpaqueTextureID = Shader.PropertyToID("_FilteredOpaqueTexture");
+        private static readonly int _filteredDepthTextureID = Shader.PropertyToID("_FilteredDepthTexture");
+        private static readonly int _filteredNormalsTextureID = Shader.PropertyToID("_FilteredNormalsTexture");
+
         private SSOutlinesProperties _properties;
-        private Material _material;
+        private readonly Material _material;
 
         public SSOutlinesRenderPass(Material material, SSOutlinesProperties properties)
         {
@@ -47,22 +64,92 @@ namespace Game.Graphics.Outlines
         {
             if (_material == null) return;
 
-            var resData = frameData.Get<UniversalResourceData>();
-            if (resData.isActiveTargetBackBuffer)
+            var resourceData = frameData.Get<UniversalResourceData>();
+
+            if (resourceData.isActiveTargetBackBuffer)
                 return;
 
-            var srcColor = resData.activeColorTexture;
+            var srcColor = resourceData.activeColorTexture;
 
             var dstDesc = srcColor.GetDescriptor(renderGraph);
             dstDesc.name = "_SSOTexture";
             var dstColor = renderGraph.CreateTexture(dstDesc);
 
+            GetFilteredTextures(renderGraph, frameData);
             UpdateProperties();
 
             var param = new RenderGraphUtils.BlitMaterialParameters(srcColor, dstColor, _material, 0);
-            renderGraph.AddBlitPass(param, "ScreenSpaceOutlinesPass");
+            renderGraph.AddBlitPass(param, "Screen Space Outlines Pass");
 
-            resData.cameraColor = dstColor;
+            resourceData.cameraColor = dstColor;
+        }
+
+        private void GetFilteredTextures(RenderGraph renderGraph, ContextContainer frameData)
+        {
+            var renderingData = frameData.Get<UniversalRenderingData>();
+            var cameraData = frameData.Get<UniversalCameraData>();
+            var lightData = frameData.Get<UniversalLightData>();
+            var cameraTextureDescriptor = cameraData.cameraTargetDescriptor;
+            var renderTextureDescriptor = new RenderTextureDescriptor(cameraTextureDescriptor.width, cameraTextureDescriptor.height, cameraTextureDescriptor.colorFormat, 0, cameraTextureDescriptor.mipCount, RenderTextureReadWrite.Default);
+
+            GetOpaqueAndDepthTextures(renderGraph, renderingData, cameraData, lightData, renderTextureDescriptor, cameraTextureDescriptor);
+
+            if (_properties.enableNormals)
+                GetNormalsTexture(renderGraph, renderingData, cameraData, lightData, renderTextureDescriptor);
+        }
+
+        private void GetOpaqueAndDepthTextures(RenderGraph renderGraph, UniversalRenderingData renderingData, UniversalCameraData cameraData, UniversalLightData lightData, RenderTextureDescriptor renderTextureDescriptor, RenderTextureDescriptor cameraTextureDescriptor)
+        {
+            var drawSettings = RenderingUtils.CreateDrawingSettings(shaderTags, renderingData, cameraData, lightData, cameraData.defaultOpaqueSortFlags);
+            var filteringSettings = new FilteringSettings(RenderQueueRange.all, _properties.layerMask);
+            var rendererListParams = new RendererListParams(renderingData.cullResults, drawSettings, filteringSettings);
+
+            using var builder = renderGraph.AddRasterRenderPass<SSOutlinesRenderPassData>("Get Filtered Opaque And Depth Textures", out var passData);
+            var rendererListHandle = renderGraph.CreateRendererList(rendererListParams);
+
+            passData.rendererList = rendererListHandle;
+            var opaqueTexture = _properties.enableColor ?
+                UniversalRenderer.CreateRenderGraphTexture(renderGraph, renderTextureDescriptor, "_SSOOpaqueTexture", false) :
+                TextureHandle.nullHandle;
+
+            var depthTextureDescriptor = new RenderTextureDescriptor(cameraTextureDescriptor.width, cameraTextureDescriptor.height, RenderTextureFormat.Depth, cameraTextureDescriptor.depthBufferBits, cameraTextureDescriptor.mipCount, RenderTextureReadWrite.Default);
+            var depthTexture = UniversalRenderer.CreateRenderGraphTexture(renderGraph, depthTextureDescriptor, "_SSODepthTexture", false);
+
+            builder.UseRendererList(passData.rendererList);
+            if (_properties.enableColor) builder.SetRenderAttachment(opaqueTexture, 0, AccessFlags.Write);
+            builder.SetRenderAttachmentDepth(depthTexture, AccessFlags.Write);
+            builder.AllowPassCulling(false);
+            builder.SetRenderFunc((SSOutlinesRenderPassData data, RasterGraphContext context) =>
+            {
+                context.cmd.DrawRendererList(data.rendererList);
+                if (_properties.enableColor) _material.SetTexture(_filteredOpaqueTextureID, opaqueTexture);
+                _material.SetTexture(_filteredDepthTextureID, depthTexture);
+            });
+        }
+
+        private void GetNormalsTexture(RenderGraph renderGraph, UniversalRenderingData renderingData, UniversalCameraData cameraData, UniversalLightData lightData, RenderTextureDescriptor renderTextureDescriptor)
+        {
+            if (!_properties.getNormalsMaterial) return;
+
+            var drawSettings = RenderingUtils.CreateDrawingSettings(shaderTags, renderingData, cameraData, lightData, cameraData.defaultOpaqueSortFlags);
+            drawSettings.overrideMaterial = _properties.getNormalsMaterial;
+            var filteringSettings = new FilteringSettings(RenderQueueRange.all, _properties.layerMask);
+            var rendererListParams = new RendererListParams(renderingData.cullResults, drawSettings, filteringSettings);
+
+            using var builder = renderGraph.AddRasterRenderPass<SSOutlinesRenderPassData>("Get Filtered Normals Texture", out var passData);
+            var rendererListHandle = renderGraph.CreateRendererList(rendererListParams);
+
+            passData.rendererList = rendererListHandle;
+            var normalsTexture = UniversalRenderer.CreateRenderGraphTexture(renderGraph, renderTextureDescriptor, "_SSONormalsTexture", false);
+
+            builder.UseRendererList(passData.rendererList);
+            builder.SetRenderAttachment(normalsTexture, 0, AccessFlags.Write);
+            builder.AllowPassCulling(false);
+            builder.SetRenderFunc((SSOutlinesRenderPassData data, RasterGraphContext context) =>
+            {
+                context.cmd.DrawRendererList(data.rendererList);
+                _material.SetTexture(_filteredNormalsTextureID, normalsTexture);
+            });
         }
 
         private void UpdateProperties()

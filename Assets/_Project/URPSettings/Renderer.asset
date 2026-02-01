@@ -35,6 +35,46 @@ MonoBehaviour:
   passIndex: 0
   bindDepthStencilAttachment: 0
   m_Version: 1
+--- !u!114 &-822168341375895447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c3f510a71b2a364eab0ddd6bd873c7e, type: 3}
+  m_Name: SSOutlinesRendererFeature
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Graphics.Outlines.SSOutlinesRendererFeature
+  m_Active: 1
+  properties:
+    getNormalsMaterial: {fileID: 2100000, guid: 800f4880e3b584243aa8b9e43625d24d, type: 2}
+    color: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 1}
+    thickness: 0.1
+    layerMask:
+      serializedVersion: 2
+      m_Bits: 9280
+    enableDepth: 1
+    depthStrength: 1
+    depthThickness: 50
+    depthThreshold: 50
+    enableColor: 0
+    colorStrength: 0
+    colorThickness: 0
+    colorThreshold: 0
+    enableNormals: 0
+    normalsStrength: 0
+    normalsThickness: 0
+    normalsThreshold: 0
+    acuteAngleStartDot: 0
+    acuteDepthThreshold: 200
+    adjustNearDepth: 0
+    adjustFarDepth: 0
+    normalsFarThreshold: 0
+    colorFarThreshold: 0
+  shader: {fileID: 4800000, guid: 8b5766d62e247e846b16a0459904bd52, type: 3}
+  injectionPoint: 550
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63,7 +103,8 @@ MonoBehaviour:
   - {fileID: 4772964828174011577}
   - {fileID: -3805008779101506429}
   - {fileID: 4106938239991161458}
-  m_RendererFeatureMap: b9ccbe1439fa3c42837469daace431cb722224dd91c6fe38
+  - {fileID: -822168341375895447}
+  m_RendererFeatureMap: b9ccbe1439fa3c42837469daace431cb722224dd91c6fe3869b8b7e23f1297f4
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -106,8 +147,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   properties:
+    getNormalsMaterial: {fileID: 2100000, guid: 800f4880e3b584243aa8b9e43625d24d, type: 2}
     color: {r: 0, g: 0, b: 0, a: 1}
     thickness: 0.1
+    layerMask:
+      serializedVersion: 2
+      m_Bits: 2048
     enableDepth: 1
     depthStrength: 1
     depthThickness: 50
