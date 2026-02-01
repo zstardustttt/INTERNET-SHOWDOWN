@@ -16,15 +16,13 @@ public class TransitionManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public void TransitionIn()
+    public Sequence TransitionIn()
     {
+        var sequence = DOTween.Sequence();
         _material.DOKill(false);
         star.SetActive(true);
-        _material.DOFloat(2.5f, "_Size", 0.8f)
-            .OnComplete(() =>
-            {
-                OnTransitionInComplete?.Invoke();
-            });
+        sequence.Append(_material.DOFloat(2.5f, "_Size", 0.8f));
+        return sequence;
     }
 
     public void TransitionOut()

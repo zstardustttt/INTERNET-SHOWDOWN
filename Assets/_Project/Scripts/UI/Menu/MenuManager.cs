@@ -56,20 +56,9 @@ public class MenuManager : MonoBehaviour
     /*
     !!!!!!!!!!! КОСТЫЛИ !!!!!!!!!!!
     */
-    private void OnEnable()
-    {
-        TransitionManager.OnTransitionInComplete += customNetworkManager.StartHost;
-    }
-
-    private void OnDisable()
-    {
-        TransitionManager.OnTransitionInComplete -= customNetworkManager.StartHost;
-
-    }
-
     public void ButtonHost()
     {
-        transitionManager.TransitionIn();
+        transitionManager.TransitionIn().OnComplete(customNetworkManager.StartHost);
     }
 
     /*
