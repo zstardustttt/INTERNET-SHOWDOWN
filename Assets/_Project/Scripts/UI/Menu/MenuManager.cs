@@ -34,6 +34,7 @@ public class MenuManager : MonoBehaviour
     public TransitionManager transitionManager;
     public CustomNetworkManager customNetworkManager;
     public SectionManager sectionManager;
+    private bool isGameWindowFocused = true;
     private void Awake()
     {
         logoContainer.SetActive(true);
@@ -56,22 +57,23 @@ public class MenuManager : MonoBehaviour
     /*
     !!!!!!!!!!! КОСТЫЛИ !!!!!!!!!!!
     */
-    private void OnEnable()
+    public void ButtonPlayHost()
     {
-        TransitionManager.OnTransitionInComplete += customNetworkManager.StartHost;
+        if (sectionManager.CurrentSubSection == 0)
+            transitionManager.TransitionIn().OnComplete(customNetworkManager.StartHost);
     }
 
-    private void OnDisable()
+    public void ButtonPlayJoin()
     {
-        TransitionManager.OnTransitionInComplete -= customNetworkManager.StartHost;
-
+        if (sectionManager.CurrentSubSection == 0)
+            sectionManager.SubsectionChange(1);
     }
 
-    public void ButtonHost()
+    public void ButtonPlayBack()
     {
-        transitionManager.TransitionIn();
+        if (sectionManager.CurrentSubSection == 0)
+            sectionManager.Transition(0);
     }
-
     /*
     !!!!!!! конец костылей !!!!!!!
     */
@@ -83,6 +85,7 @@ public class MenuManager : MonoBehaviour
     }
     private void Start()
     {
+        transitionManager.TransitionOut();
         mainPanel.SetActive(false);
         _logoContainerTransform.localScale = new Vector3(0.7f, 0.7f, 1f);
 
@@ -90,6 +93,7 @@ public class MenuManager : MonoBehaviour
         logoMove = _logoContainerTransform?.DOLocalMoveX(3f, 1f)
             .SetLoops(-1, LoopType.Yoyo)
             .SetEase(Ease.InOutCubic);
+
     }
 
     private void Update()
@@ -106,40 +110,74 @@ public class MenuManager : MonoBehaviour
             _starTransform.localEulerAngles.z + 10f * Time.deltaTime
         );
 
-        if (_init == false)
+
+        if (_init == false & isGameWindowFocused)
         {
             InputSystem.onAnyButtonPress
                 .CallOnce(btn =>
                 {
+                    _logoContainerRawImage.DOKill();
+                    _logoContainerTransform.DOKill();
+                    _logoRawImage.DOKill();
                     MenuReveal();
                 });
             return;
         }
+
+        if (!isGameWindowFocused)
+        {
+            MenuUnreveal();
+        }
     }
+
+    private void OnDestroy()
+    {
+        DOTween.KillAll();
+    }
+
+    private void OnApplicationFocus(bool focus)
+    {
+        isGameWindowFocused = focus;
+    }
+
     private void MenuReveal()
     {
-        logoMove?.Kill(false);
-        logoScale?.Kill(false);
-
         mainPanel.SetActive(true);
 
-        _logoContainerTransform?.DORewind();
         _logoContainerTransform?.DOScale(0.85f, 0.7f)
             .SetEase(Ease.OutExpo);
         _logoContainerRawImage.color = new Color(0.75f, 0.75f, 0.75f, 1f);
 
-        _logoContainerRawImage.DORewind();
-        _logoContainerRawImage?.DOColor(new Color(0.11f, 0.11f, 0.11f, 0f), 0.8f)
-            .SetEase(Ease.OutCirc)
+        _logoContainerRawImage?.DOColor(new Color(0.11f, 0.11f, 0.11f, 0f), 0.7f)
+            .SetEase(Ease.OutExpo)
             .OnComplete(() =>
             {
                 logoContainer.SetActive(false);
             });
 
-        _logoRawImage.DORewind();
-        _logoRawImage.DOColor(new Color(1f, 1f, 1f, 0f), 0.8f)
-            .SetEase(Ease.OutCirc);
+        _logoRawImage.DOColor(new Color(1f, 1f, 1f, 0f), 0.7f)
+            .SetEase(Ease.OutExpo);
 
         _init = true;
+    }
+
+    private void MenuUnreveal()
+    {
+        logoContainer.SetActive(true);
+
+        _logoContainerTransform?.DOScale(1f, 0.7f)
+            .SetEase(Ease.OutExpo);
+
+        _logoContainerRawImage?.DOColor(new Color(0.11f, 0.11f, 0.11f, 1f), 0.7f)
+            .SetEase(Ease.OutExpo);
+
+        _logoRawImage.DOColor(new Color(1f, 1f, 1f, 1f), 0.7f)
+            .SetEase(Ease.OutExpo)
+            .OnComplete(() =>
+            {
+                mainPanel.SetActive(false);
+            });
+
+        _init = false;
     }
 }

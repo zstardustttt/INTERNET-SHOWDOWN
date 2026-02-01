@@ -4,7 +4,8 @@ using UnityEngine.UI;
 
 public class ButtonContainerHandler : MonoBehaviour
 {
-    public GameObject[] buttons;
+    public ButtonHandler[] buttonHandlers;
+    public RectTransform icon;
     private MenuManager _menuManager;
     private SectionManager _sectionManager;
     private void Awake()
@@ -17,22 +18,23 @@ public class ButtonContainerHandler : MonoBehaviour
     {
         Sequence sequence = DOTween.Sequence();
         sequence.Append(
-            buttons[2].transform.DOLocalRotate(new Vector3(0, 0, -75f), 0.6f)
+            buttonHandlers[2].transform.DOLocalRotate(new Vector3(0, 0, -75f), 0.6f)
         );
 
         sequence.Insert(0.1f,
-            buttons[1].transform.DOLocalRotate(new Vector3(0, 0, -60f), 0.6f)
+            buttonHandlers[1].transform.DOLocalRotate(new Vector3(0, 0, -60f), 0.6f)
         );
 
         sequence.Insert(0.2f,
-            buttons[0].transform.DOLocalRotate(new Vector3(0, 0, -45f), 0.6f)
+            buttonHandlers[0].transform.DOLocalRotate(new Vector3(0, 0, -45f), 0.6f)
         );
 
         sequence.OnComplete(() =>
         {
-            buttons[0].transform.DOKill(false);
-            buttons[1].transform.DOKill(false);
-            buttons[2].transform.DOKill(false);
+            foreach (ButtonHandler btn in buttonHandlers)
+            {
+                btn.transform.DOKill(false);
+            }
         });
     }
 
@@ -40,20 +42,20 @@ public class ButtonContainerHandler : MonoBehaviour
     {
         Sequence sequence = DOTween.Sequence();
         sequence.Append(
-            buttons[2].transform.DOLocalRotate(new Vector3(0, 0, 210f), 0.5f, RotateMode.FastBeyond360).SetEase(Ease.InOutSine)
+            buttonHandlers[2].transform.DOLocalRotate(new Vector3(0, 0, 210f), 0.5f, RotateMode.FastBeyond360).SetEase(Ease.InOutSine)
         );
 
         sequence.Insert(0.1f,
-            buttons[1].transform.DOLocalRotate(new Vector3(0, 0, 195f), 0.5f, RotateMode.FastBeyond360).SetEase(Ease.InOutSine)
+            buttonHandlers[1].transform.DOLocalRotate(new Vector3(0, 0, 195f), 0.5f, RotateMode.FastBeyond360).SetEase(Ease.InOutSine)
         );
 
         sequence.Insert(0.2f,
-            buttons[0].transform.DOLocalRotate(new Vector3(0, 0, 180f), 0.5f, RotateMode.FastBeyond360).SetEase(Ease.InOutSine)
+            buttonHandlers[0].transform.DOLocalRotate(new Vector3(0, 0, 180f), 0.5f, RotateMode.FastBeyond360).SetEase(Ease.InOutSine)
         );
 
         sequence.OnComplete(() =>
         {
-            foreach (GameObject btn in buttons)
+            foreach (ButtonHandler btn in buttonHandlers)
             {
                 btn.transform.DOKill(false);
                 btn.transform.localEulerAngles = new Vector3(0, 0, 0);

@@ -114,8 +114,6 @@ namespace Game.Network
                     _disconnectedPlayersStats.Remove(data.player.playerGuid);
                 }
             });
-
-            transitionManager.TransitionOut();
         }
 
         public override void OnStopServer()
@@ -156,6 +154,12 @@ namespace Game.Network
                     };
                 }).ToArray()
             });
+        }
+
+        public override void OnClientConnect()
+        {
+            base.OnClientConnect();
+            transitionManager.TransitionOut();
         }
 
         public override void OnClientDisconnect()

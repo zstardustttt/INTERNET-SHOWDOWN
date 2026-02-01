@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class TransitionManager : MonoBehaviour
 {
-    public static event Action OnTransitionInComplete;
     public GameObject star;
+    private bool quit = false;
     private Material _material;
 
     private void Awake()
@@ -16,28 +16,58 @@ public class TransitionManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public void TransitionIn()
+    private void OnEnable()
     {
-        _material.DOKill(false);
-        star.SetActive(true);
-        _material.DOFloat(2.5f, "_Size", 0.8f)
+        Application.wantsToQuit += OnWantsToQuit;
+    }
+
+    private void OnDisable()
+    {
+        Application.wantsToQuit -= OnWantsToQuit;
+    }
+
+    bool OnWantsToQuit()
+    {
+        if (quit)
+            return true;
+
+        TransitionIn()
             .OnComplete(() =>
             {
-                OnTransitionInComplete?.Invoke();
+                quit = true;
+                Application.Quit();
+            })
+            .OnKill(() =>
+            {
+                quit = true;
+                Application.Quit();
             });
+
+        return false;
+    }
+    public Sequence TransitionIn()
+    {
+        star.SetActive(true);
+        var sequence = DOTween.Sequence();
+        sequence.Append(_material.DOFloat(2.5f, "_Size", 1.0f).OnComplete(() =>
+        {
+            DOTween.Kill(this);
+        }));
+
+        return sequence;
     }
 
     public void TransitionOut()
     {
-        _material.DOKill(false);
-        _material.DOFloat(2.5f, "_InsetRadius", 0.8f)
+        _material.DOFloat(2.5f, "_InsetRadius", 1.0f)
             .SetDelay(1f)
             .OnComplete(() =>
             {
                 star.SetActive(false);
                 _material.SetFloat("_Size", 0);
                 _material.SetFloat("_InsetRadius", 0);
+                DOTween.Kill(this);
             });
-
     }
+
 }
