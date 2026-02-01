@@ -109,7 +109,7 @@ namespace Game.Player
         }
 
         [SyncVar(hook = nameof(OnItemChange))] public ItemData itemData;
-        private Item _item;
+        public Item item;
 
         public ItemArgument[] currentItemArgs;
 
@@ -420,24 +420,24 @@ namespace Game.Player
 
         private void OnItemChange(ItemData old, ItemData _new)
         {
-            if (_item) Destroy(_item.gameObject);
+            if (item) Destroy(item.gameObject);
 
             if (_new.itemIndex != -1)
             {
-                _item = Instantiate(ItemPool.items[_new.rarityIndex][_new.itemIndex].prefab, itemHolder).GetComponent<Item>();
+                item = Instantiate(ItemPool.items[_new.rarityIndex][_new.itemIndex].prefab, itemHolder).GetComponent<Item>();
                 if (isLocalPlayer)
                 {
                     var layer = LayerMask.NameToLayer("ItemVisual");
-                    var children = _item.GetComponentsInChildren<Transform>(includeInactive: true);
+                    var children = item.GetComponentsInChildren<Transform>(includeInactive: true);
                     foreach (var child in children)
                     {
                         child.gameObject.layer = layer;
                     }
 
-                    _item.transform.localPosition = new(_item.offset.x, _item.offset.y, -Mathf.Abs(verticalOrientation.position.z - itemHolder.position.z));
+                    item.transform.localPosition = new(item.offset.x, item.offset.y, -Mathf.Abs(verticalOrientation.position.z - itemHolder.position.z));
                     itemHolder.localScale = new(0.1f, 4f, 0.1f);
                 }
-                else _item.transform.localPosition = _item.offset;
+                else item.transform.localPosition = item.offset;
 
                 onItemPickup.Invoke();
             }
@@ -451,8 +451,8 @@ namespace Game.Player
             var crosshairHit = Physics.Raycast(verticalOrientation.position, verticalOrientation.forward, out var hitInfo, 1000f, LayerMask.GetMask("Player", "Enviroment"));
             var ctx = new ItemUseClientContext()
             {
-                visualPosition = _item.transform.position,
-                visualRotation = _item.transform.rotation,
+                visualPosition = item.transform.position,
+                visualRotation = item.transform.rotation,
                 headPosition = verticalOrientation.position,
                 headRotation = verticalOrientation.rotation,
                 didCrosshairHit = crosshairHit,
@@ -470,11 +470,10 @@ namespace Game.Player
 
         private void Update()
         {
-            if (isLocalPlayer && _item)
+            if (isLocalPlayer && item)
             {
-                _item.transform.localPosition = Vector3.Lerp(_item.transform.localPosition, _item.offset, Time.deltaTime * 15f);
+                item.transform.localPosition = Vector3.Lerp(item.transform.localPosition, item.offset, Time.deltaTime * 15f);
                 itemHolder.localScale = Vector3.Lerp(itemHolder.localScale, Vector3.one, Time.deltaTime * 30f);
-                _item.Sway(itemHolder.rotation);
             }
 
             if (!NetworkServer.active) return;
@@ -527,9 +526,9 @@ namespace Game.Player
         [Server]
         private void UseItem(ItemUseClientContext context)
         {
-            if (!_item) return;
+            if (!item) return;
 
-            if (_item.Use(this, context, currentItemArgs))
+            if (item.Use(this, context, currentItemArgs))
             {
                 itemData = ItemData.Default();
                 currentItemArgs = Array.Empty<ItemArgument>();
@@ -540,8 +539,8 @@ namespace Game.Player
         [TargetRpc]
         private void TargetRestartItemAnimation()
         {
-            if (!_item) return;
-            _item.transform.localPosition = new(_item.offset.x, _item.offset.y, -Mathf.Abs(verticalOrientation.position.z - itemHolder.position.z));
+            if (!item) return;
+            item.transform.localPosition = new(item.offset.x, item.offset.y, -Mathf.Abs(verticalOrientation.position.z - itemHolder.position.z));
             itemHolder.localScale = new(0.1f, 4f, 0.1f);
         }
 
