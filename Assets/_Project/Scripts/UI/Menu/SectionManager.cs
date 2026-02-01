@@ -28,6 +28,37 @@ public class SectionManager : MonoBehaviour
         _mainPanel = _menuManager.mainPanel.GetComponent<RectTransform>();
     }
 
+    public void SubsectionChange(int subsect)
+    {
+        int index = (int)_currentSection - 1;
+        Debug.Log(index);
+        Debug.Log(buttonContainerHandler[index]);
+        foreach (ButtonHandler b in buttonContainerHandler[index].buttonHandlers)
+        {
+            b.SubsectionChange(subsect);
+        }
+
+        var sequence = DOTween.Sequence();
+
+        if (subsect != 0)
+        {
+            sequence
+                .Append(_mainPanel.DOLocalRotate(
+                    rotations[index] + (rotations[index] / (5 - subsect)), 1f)
+                    .SetEase(Ease.OutExpo));
+
+        }
+        else
+        {
+            sequence
+                .Append(_mainPanel.DOLocalRotate(
+                    rotations[index], 1f)
+                    .SetEase(Ease.OutExpo));
+        }
+
+        _currentSubSection = 1;
+    }
+
     public void Transition(int i)
     {
         Transition((Section)i);
@@ -39,8 +70,6 @@ public class SectionManager : MonoBehaviour
 
         _sectionChanging = true;
         _currentSection = section;
-
-        _mainPanel?.DOKill(false);
 
         float targetScale = section == Section.MainScreen ? 1f : 2.75f;
 
@@ -72,7 +101,11 @@ public class SectionManager : MonoBehaviour
                 .SetEase(b)
         );
 
-        sequence.OnComplete(() => _sectionChanging = false);
+        sequence.OnComplete(() =>
+        {
+            _sectionChanging = false;
+            DOTween.Kill(this);
+        });
     }
     public enum Section
     {

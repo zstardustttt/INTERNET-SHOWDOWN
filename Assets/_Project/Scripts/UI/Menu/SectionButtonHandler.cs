@@ -17,19 +17,13 @@ public class SectionButtonHandler : MonoBehaviour
     {
         _menuManager = FindObjectsByType<MenuManager>(FindObjectsSortMode.None)[0];
         _sectionManager = _menuManager.GetComponent<SectionManager>();
-    }
-
-    private void Start()
-    {
-        _shadow = this.GetComponent<Shadow>();
+        _shadow = GetComponent<Shadow>();
     }
 
     public void MouseEnter()
     {
-        if (!_sectionManager.SectionChanging)
+        if (_shadow != null)
         {
-            DOTween.Rewind(_mouseEnter);
-            DOTween.Rewind(_mouseExit);
             _mouseEnter = DOTween.To(
                 () => _shadow.effectDistance,
                 x => _shadow.effectDistance = x,
@@ -41,19 +35,20 @@ public class SectionButtonHandler : MonoBehaviour
 
     public void MouseExit()
     {
-        DOTween.Rewind(_mouseEnter);
-        DOTween.Rewind(_mouseExit);
-        _mouseEnter = DOTween.To(
-            () => _shadow.effectDistance,
-            x => _shadow.effectDistance = x,
-            Vector2.zero,
-            0.5f
-        );
+        if (_shadow != null)
+        {
+            _mouseEnter = DOTween.To(
+                () => _shadow.effectDistance,
+                x => _shadow.effectDistance = x,
+                Vector2.zero,
+                0.5f
+            );
+        }
     }
 
     public void MouseClick(int section)
     {
-        if (!_sectionManager.SectionChanging || _sectionManager.CurrentSection != SectionManager.Section.MainScreen)
+        if (!_sectionManager.SectionChanging & _sectionManager.CurrentSection == SectionManager.Section.MainScreen)
         {
             switch (section)
             {
