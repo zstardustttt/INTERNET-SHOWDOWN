@@ -34,6 +34,7 @@ public class MenuManager : MonoBehaviour
     public TransitionManager transitionManager;
     public CustomNetworkManager customNetworkManager;
     public SectionManager sectionManager;
+    private bool isGameWindowFocused = true;
     private void Awake()
     {
         logoContainer.SetActive(true);
@@ -92,6 +93,7 @@ public class MenuManager : MonoBehaviour
         logoMove = _logoContainerTransform?.DOLocalMoveX(3f, 1f)
             .SetLoops(-1, LoopType.Yoyo)
             .SetEase(Ease.InOutCubic);
+
     }
 
     private void Update()
@@ -107,6 +109,25 @@ public class MenuManager : MonoBehaviour
             35 + math.sin(Time.time / 2) * 10,
             _starTransform.localEulerAngles.z + 10f * Time.deltaTime
         );
+
+
+        if (_init == false & isGameWindowFocused)
+        {
+            InputSystem.onAnyButtonPress
+                .CallOnce(btn =>
+                {
+                    _logoContainerRawImage.DOKill();
+                    _logoContainerTransform.DOKill();
+                    _logoRawImage.DOKill();
+                    MenuReveal();
+                });
+            return;
+        }
+
+        if (!isGameWindowFocused)
+        {
+            MenuUnreveal();
+        }
     }
 
     private void OnDestroy()
@@ -116,22 +137,7 @@ public class MenuManager : MonoBehaviour
 
     private void OnApplicationFocus(bool focus)
     {
-        if (!focus)
-            MenuUnreveal();
-        else
-            if (_init == false)
-            {
-                InputSystem.onAnyButtonPress
-                    .CallOnce(btn =>
-                    {
-                        _logoContainerRawImage.DOKill();
-                        _logoContainerTransform.DOKill();
-                        _logoRawImage.DOKill();
-                        MenuReveal();
-                    });
-                return;
-            }
-
+        isGameWindowFocused = focus;
     }
 
     private void MenuReveal()
