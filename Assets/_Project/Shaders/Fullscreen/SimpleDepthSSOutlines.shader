@@ -44,9 +44,8 @@ Shader "Custom/SimpleDepthSSOutlines"
 
             float3 Frag (Varyings input) : SV_Target
             {
-                float3 base = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, input.texcoord);
-                half depth = ceil(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, input.texcoord));
-                if (depth != 0)
+                float3 base = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, input.texcoord).rgb;
+                if (SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, input.texcoord) != 0)
                 {
                     return base;
                 }
@@ -55,10 +54,10 @@ Shader "Custom/SimpleDepthSSOutlines"
                 [unroll] for (int i = 0; i < 8; i++) 
                 {
                     half2 uv = input.texcoord + sobelSamplePointsHalf[i] * _Thickness;
-                    opacity += ceil(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv));
+                    opacity = max(opacity, SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv));
                 }
 
-                return lerp(base, _Color, saturate(opacity) * _Color.a);
+                return lerp(base, _Color.rgb, ceil(opacity) * _Color.a);
             }
             
             ENDHLSL

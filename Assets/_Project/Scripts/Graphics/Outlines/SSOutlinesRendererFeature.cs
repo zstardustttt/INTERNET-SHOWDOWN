@@ -7,7 +7,6 @@ namespace Game.Graphics.Outlines
     [Serializable]
     public struct SSOutlinesProperties
     {
-        public Material getNormalsMaterial;
         public Color color;
         public float thickness;
         public LayerMask layerMask;
@@ -60,7 +59,7 @@ namespace Game.Graphics.Outlines
                 renderPassEvent = injectionPoint
             };
 
-            _renderPass.ConfigureInput(ScriptableRenderPassInput.Depth);
+            _renderPass.ConfigureInput(ScriptableRenderPassInput.Normal);
         }
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)

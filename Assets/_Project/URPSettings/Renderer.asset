@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Active: 1
   properties:
     getNormalsMaterial: {fileID: 2100000, guid: 6714db76d9dbcbd4ca01e42530557c6f, type: 2}
-    color: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 1}
+    color: {r: 0.7, g: 0.7, b: 0.7, a: 1}
     thickness: 0.1
     layerMask:
       serializedVersion: 2
@@ -60,19 +60,19 @@ MonoBehaviour:
     depthThickness: 50
     depthThreshold: 50
     enableColor: 0
-    colorStrength: 0
-    colorThickness: 0
-    colorThreshold: 0
+    colorStrength: 1
+    colorThickness: 10
+    colorThreshold: 0.5
     enableNormals: 0
-    normalsStrength: 0
-    normalsThickness: 0
-    normalsThreshold: 0
+    normalsStrength: 1
+    normalsThickness: 100
+    normalsThreshold: 0.3
     acuteAngleStartDot: 0
-    acuteDepthThreshold: 200
+    acuteDepthThreshold: 50
     adjustNearDepth: 0
-    adjustFarDepth: 0
-    normalsFarThreshold: 0
-    colorFarThreshold: 0
+    adjustFarDepth: 50
+    normalsFarThreshold: 1
+    colorFarThreshold: 1
   shader: {fileID: 4800000, guid: 8b5766d62e247e846b16a0459904bd52, type: 3}
   injectionPoint: 550
 --- !u!114 &11400000
@@ -101,10 +101,10 @@ MonoBehaviour:
     probeVolumeBlendStatesCS: {fileID: 7200000, guid: b9a23f869c4fd45f19c5ada54dd82176, type: 3}
   m_RendererFeatures:
   - {fileID: 4772964828174011577}
-  - {fileID: -3805008779101506429}
   - {fileID: 4106938239991161458}
   - {fileID: -822168341375895447}
-  m_RendererFeatureMap: b9ccbe1439fa3c42837469daace431cb722224dd91c6fe3869b8b7e23f1297f4
+  - {fileID: -3805008779101506429}
+  m_RendererFeatureMap: b9ccbe1439fa3c42722224dd91c6fe3869b8b7e23f1297f4837469daace431cb
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -155,8 +155,8 @@ MonoBehaviour:
       m_Bits: 2048
     enableDepth: 1
     depthStrength: 1
-    depthThickness: 50
-    depthThreshold: 0.05
+    depthThickness: 100
+    depthThreshold: 0.1
     enableColor: 1
     colorStrength: 1
     colorThickness: 10
@@ -165,12 +165,12 @@ MonoBehaviour:
     normalsStrength: 1
     normalsThickness: 100
     normalsThreshold: 0.3
-    acuteAngleStartDot: 0.2
+    acuteAngleStartDot: 0
     acuteDepthThreshold: 1
     adjustNearDepth: 0
     adjustFarDepth: 50
     normalsFarThreshold: 1
-    colorFarThreshold: 1
+    colorFarThreshold: 0.8
   shader: {fileID: 4800000, guid: 8b5766d62e247e846b16a0459904bd52, type: 3}
   injectionPoint: 550
 --- !u!114 &4772964828174011577
