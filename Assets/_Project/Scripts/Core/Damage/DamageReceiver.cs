@@ -20,6 +20,11 @@ namespace Game.Core.Damage
         [HideInInspector] public Vector3 previousObservedPosition;
         [HideInInspector] public Vector3 observedDelta;
 
+        private void Awake()
+        {
+            previousObservedPosition = transform.position;
+        }
+
         protected override void OnValidate()
         {
             base.OnValidate();

@@ -43,8 +43,8 @@ namespace Game.Core.Damage
 
         private void Awake()
         {
-            DealerGuid = Guid.NewGuid();
             previousObservedPosition = transform.position;
+            DealerGuid = Guid.NewGuid();
             EventBus<OnDamageDealerCreate>.Invoke(new() { dealer = this });
         }
 

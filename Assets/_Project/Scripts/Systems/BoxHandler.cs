@@ -78,6 +78,13 @@ namespace Game.Systems
             var velDir = player.boxSpawnerObservedDelta.normalized;
             var delta = player.boxSpawnerObservedDelta.magnitude + castMargin;
 
+            var overlaps = Physics.OverlapCapsule(p1, p2, radius, playerBoxCheckLayerMask, QueryTriggerInteraction.Collide);
+            foreach (var overlap in overlaps)
+            {
+                box = overlap.gameObject;
+                return true;
+            }
+
             if (!Physics.CapsuleCast(p1, p2, radius, velDir, out var hit, delta, playerBoxCheckLayerMask, QueryTriggerInteraction.Collide))
             {
                 box = null;
