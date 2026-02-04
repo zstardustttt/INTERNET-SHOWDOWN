@@ -8,6 +8,15 @@ using UnityEngine;
 
 namespace Game.Systems
 {
+    public enum SpawnBoxFailureReason
+    {
+        None,
+        NoValidTriangle,
+        NoValidPosition,
+        GroundTooSteep,
+        MarginCrossed
+    }
+
     // This object is only active on the server
     public class BoxHandler : MonoBehaviour
     {
@@ -49,6 +58,7 @@ namespace Game.Systems
                 for (int i = 0; i < maxSpawnFails; i++)
                 {
                     if (TrySpawnBox()) break;
+                    Debug.Log($"Failed to spawn box. Fail iteration: {i}");
                 }
             }
 
@@ -98,10 +108,39 @@ namespace Game.Systems
         private bool TrySpawnBox()
         {
             var info = MapLoader.loadedMap.info;
-            var x = Random.Range(info.boxSpawnPlane.x, info.boxSpawnPlane.z);
-            var z = Random.Range(info.boxSpawnPlane.y, info.boxSpawnPlane.w);
 
-            var origin = info.transform.position + new Vector3(x, info.boundsMax.y, z);
+            var probabilityOffset = 0f;
+            var selectedTriangleIdx = -1;
+            var triangleSelectionRandom = Random.value;
+            for (int i = 0; i < info.boxSpawnShapeTriangulationData.triangles.Length; i++)
+            {
+                var triangle = info.boxSpawnShapeTriangulationData.triangles[i];
+                var areaRatio = triangle.area / info.boxSpawnShapeTriangulationData.totalArea;
+                if (triangleSelectionRandom >= probabilityOffset && triangleSelectionRandom < probabilityOffset + areaRatio)
+                {
+                    selectedTriangleIdx = i;
+                    break;
+                }
+                probabilityOffset += areaRatio;
+            }
+
+            if (selectedTriangleIdx == -1) return false;
+            var selectedTriangle = info.boxSpawnShapeTriangulationData.triangles[selectedTriangleIdx];
+
+            var triangleOrigin = Vector2.Min(selectedTriangle.a, Vector2.Min(selectedTriangle.b, selectedTriangle.c));
+            var relativeA = selectedTriangle.a - triangleOrigin;
+            var relativeB = selectedTriangle.b - triangleOrigin;
+            var relativeC = selectedTriangle.c - triangleOrigin;
+
+            var trianglePointRandom1 = Random.value;
+            var trianglePointRandom2 = Random.value;
+            var triangleU = 1f - Mathf.Sqrt(trianglePointRandom1);
+            var triangleV = Mathf.Sqrt(trianglePointRandom1) * (1f - trianglePointRandom2);
+            var triangleW = 1f - triangleU - triangleV;
+            var relativeRandomPoint = triangleU * relativeA + triangleV * relativeB + triangleW * relativeC;
+            var randomPoint = relativeRandomPoint + triangleOrigin;
+
+            var origin = info.transform.position + new Vector3(randomPoint.x, info.boundsMax.y, randomPoint.y);
             var possibleSpawnPoints = new List<Vector3>();
             while (Physics.Raycast(origin, Vector3.down, out var hit, 200f, layerMask))
             {
@@ -109,10 +148,12 @@ namespace Game.Systems
 
                 if (Vector3.Angle(Vector3.up, hit.normal) > maxGroundAngle) continue;
                 if (Physics.CheckSphere(hit.point + Vector3.up * spawnYOffset, spawnMargin, layerMask)) continue;
+
                 possibleSpawnPoints.Add(hit.point);
             }
 
             if (possibleSpawnPoints.Count == 0) return false;
+
             var point = possibleSpawnPoints[Random.Range(0, possibleSpawnPoints.Count)];
             var box = Instantiate(boxPrefab, point + Vector3.up * spawnYOffset, Quaternion.identity, new InstantiateParameters() { scene = MapLoader.loadedMap.scene });
             NetworkServer.Spawn(box);
