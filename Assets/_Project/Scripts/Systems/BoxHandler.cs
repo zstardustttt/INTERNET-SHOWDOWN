@@ -8,15 +8,6 @@ using UnityEngine;
 
 namespace Game.Systems
 {
-    public enum SpawnBoxFailureReason
-    {
-        None,
-        NoValidTriangle,
-        NoValidPosition,
-        GroundTooSteep,
-        MarginCrossed
-    }
-
     // This object is only active on the server
     public class BoxHandler : MonoBehaviour
     {
