@@ -42,16 +42,16 @@ namespace Game.Systems
                 return;
             }
 
-            _timer += Time.deltaTime;
-            if (_timer >= 1f / (spawnRate * MapLoader.loadedMap.players.Count))
+            if (_timer <= 0f)
             {
-                _timer = 0f;
+                _timer = 1f / (spawnRate * MapLoader.loadedMap.players.Count);
                 for (int i = 0; i < maxSpawnFails; i++)
                 {
                     if (TrySpawnBox()) break;
                     Debug.Log($"Failed to spawn box. Fail iteration: {i}");
                 }
             }
+            else _timer -= Time.deltaTime;
 
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {

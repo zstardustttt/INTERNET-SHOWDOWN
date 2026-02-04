@@ -29,6 +29,9 @@ namespace Game.Projectiles.ShockGerenade
         public float visualShakeIncreaseRate;
         public DamageReceiver damageReceiver;
 
+        public AudioSource attachAudioSource;
+        public AudioSource detachAudioSource;
+
         // client
         private ShockGerenadeLocalVisual _localGerenadeVisual;
 
@@ -100,6 +103,13 @@ namespace Game.Projectiles.ShockGerenade
             _previousAttachedPosition = player.transform.position;
 
             TargetSpawnVisual(_attached.netIdentity.connectionToClient);
+            RpcPlayAttachAudio();
+        }
+
+        [ClientRpc]
+        private void RpcPlayAttachAudio()
+        {
+            attachAudioSource.Play();
         }
 
         [TargetRpc]
@@ -111,6 +121,7 @@ namespace Game.Projectiles.ShockGerenade
             _localGerenadeVisual.transform.localPosition = yOffset + Vector3.forward * (player.motor.Capsule.radius + collisionRadius);
             visual.SetActive(false);
             tickAudioSource.spatialBlend = 0f;
+            attachAudioSource.spatialBlend = 0f;
         }
 
         [TargetRpc]
@@ -190,6 +201,13 @@ namespace Game.Projectiles.ShockGerenade
             _attached.onDeath.RemoveListener(Detach);
             _attached.onReceiveDamage.RemoveListener(Explode);
             _attached = null;
+            RpcPlayDetachAudio();
+        }
+
+        [ClientRpc]
+        private void RpcPlayDetachAudio()
+        {
+            detachAudioSource.Play();
         }
 
         private void Explode()

@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1233149941 &-6471657365014102497
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BOOMerangExplosionMelody8_{-6471657365014102497}
+  m_AudioClip: {fileID: 8300000, guid: 59aa8fa5626d79642852298a72a26496, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &-6324237517013759846
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BOOMerangExplosionMelody1_{-6324237517013759846}
+  m_AudioClip: {fileID: 8300000, guid: 4371d582aa0de7d4c8aeb63aa599f4f6, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &2146652301721011045
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BOOMerangExplosionMelody3_{2146652301721011045}
+  m_AudioClip: {fileID: 8300000, guid: ce638393c2ca4b04fa3ff8342b762d4e, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &4703644664884139015
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BOOMerangExplosionMelody6_{4703644664884139015}
+  m_AudioClip: {fileID: 8300000, guid: ea3d887af6b9177449bd205d428a0eb5, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &5574014750508142386
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BOOMerangExplosionMelody2_{5574014750508142386}
+  m_AudioClip: {fileID: 8300000, guid: d90f24c9aa0d3d944938df6d00032071, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &6020932685817615049
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BOOMerangExplosionMelody5_{6020932685817615049}
+  m_AudioClip: {fileID: 8300000, guid: 4ca720a6425fb3b468da31aaec0a5623, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &6273660091368067395
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BOOMerangExplosionMelody7_{6273660091368067395}
+  m_AudioClip: {fileID: 8300000, guid: fcea46ab9916a6d45a52b802cb238eaf, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1307931743 &6418180475301049370
+AudioRandomContainer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BOOMerangExplosionMelody
+  m_Volume: 0
+  m_Pitch: 0
+  m_AutomaticTriggerTime: 0
+  m_LoopCount: 1
+  m_VolumeRandomizationRange: {x: 0, y: 0}
+  m_PitchRandomizationRange: {x: 0, y: 0}
+  m_AutomaticTriggerTimeRandomizationRange: {x: 0, y: 0}
+  m_LoopCountRandomizationRange: {x: 0, y: 0}
+  m_Elements:
+  - {fileID: -6324237517013759846}
+  - {fileID: 5574014750508142386}
+  - {fileID: 2146652301721011045}
+  - {fileID: 8045839179694803687}
+  - {fileID: 6020932685817615049}
+  - {fileID: 4703644664884139015}
+  - {fileID: 6273660091368067395}
+  - {fileID: -6471657365014102497}
+  m_AvoidRepeatingLast: 1
+  m_PlaybackMode: 2
+  m_TriggerMode: 0
+  m_AutomaticTriggerMode: 1
+  m_LoopMode: 2
+  m_VolumeRandomizationEnabled: 0
+  m_PitchRandomizationEnabled: 0
+  m_AutomaticTriggerTimeRandomizationEnabled: 0
+  m_LoopCountRandomizationEnabled: 0
+--- !u!1233149941 &8045839179694803687
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BOOMerangExplosionMelody4_{8045839179694803687}
+  m_AudioClip: {fileID: 8300000, guid: c960b11247222544cb722b261dfc1a9b, type: 3}
+  m_Volume: 0
+  m_Enabled: 1

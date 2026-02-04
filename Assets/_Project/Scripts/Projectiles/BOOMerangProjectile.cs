@@ -85,6 +85,8 @@ namespace Game.Projectiles
             {
                 scene = MapLoader.loadedMap.scene
             });
+            explosion.transform.up = normal;
+
             var radialDamage = explosion.GetComponent<RadialDamage>();
             radialDamage.owner = _owner;
             radialDamage.outerDamage = explosionDamage * DamageMultiply;

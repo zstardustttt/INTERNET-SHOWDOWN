@@ -10,18 +10,15 @@ namespace Game.Core.Items
         // Called on the server
         public abstract bool Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] args);
 
-        private Vector3 _previousPosition;
-        private Vector3 _previousMoveDelta;
-
-        public void Sway(Vector2 cameraMoveDelta)
+        public void Sway(Vector2 cameraMoveDelta, Vector3 velocity, Transform orientation)
         {
-            var rawMoveDelta = transform.position - _previousPosition;
-            var moveDelta = rawMoveDelta.sqrMagnitude < 0.01f ? Vector3.zero : (transform.position - _previousPosition).normalized * 3.5f;
-            var smoothedMoveDelta = (moveDelta + _previousMoveDelta) / 2f;
-            _previousMoveDelta = moveDelta;
-            _previousPosition = transform.position;
-
-            var totalDelta = new Vector2(smoothedMoveDelta.x + smoothedMoveDelta.z, smoothedMoveDelta.y) + cameraMoveDelta;
+            var directions = orientation.right + orientation.up;
+            var moveDelta = Vector3.ClampMagnitude(new Vector3(
+                velocity.x * directions.x,
+                velocity.y * directions.y,
+                velocity.z * directions.z
+            ) * 0.5f, 10f);
+            var totalDelta = cameraMoveDelta - new Vector2(moveDelta.x + moveDelta.z, moveDelta.y);
 
             var rotationX = Quaternion.AngleAxis(-totalDelta.y * 1.5f, Vector3.right);
             var rotationY = Quaternion.AngleAxis(totalDelta.x * 1.5f, Vector3.up);

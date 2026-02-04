@@ -152,7 +152,7 @@ namespace Game.Player
         [HideInInspector] public Vector3 boxSpawnerPreviousObservedPosition;
         [HideInInspector] public Vector3 boxSpawnerObservedDelta;
 
-        private Vector3 _transientVelocity;
+        [HideInInspector] public Vector3 localTransientVelocity;
         private Vector3 _prevTransientPosition;
 
         [Server]
@@ -460,7 +460,7 @@ namespace Game.Player
                 crosshairHitNormal = hitInfo.normal,
                 crosshairHitDistance = hitInfo.distance,
                 useTime = NetworkTime.time,
-                velocity = _transientVelocity,
+                velocity = localTransientVelocity,
                 secondary = secondary
             };
 
@@ -589,7 +589,7 @@ namespace Game.Player
             if (new Vector2(_additionalVelocity.x, _additionalVelocity.z).magnitude <= 0.5f)
                 _additionalVelocity = Vector3.up * _additionalVelocity.y;
 
-            _transientVelocity = (motor.TransientPosition - _prevTransientPosition) / deltaTime;
+            localTransientVelocity = (motor.TransientPosition - _prevTransientPosition) / deltaTime;
             _prevTransientPosition = motor.TransientPosition;
         }
 

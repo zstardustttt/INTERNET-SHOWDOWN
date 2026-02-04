@@ -281,7 +281,7 @@ namespace Game.Player
 
             // CAMERA ROTATION
             var delta = _actions.Camera.Look.ReadValue<Vector2>() * _mouseSens;
-            if (player.item) player.item.Sway(delta);
+            if (player.item) player.item.Sway(delta, player.localTransientVelocity, player.verticalOrientation);
 
             player.horizontalOrientation.localEulerAngles += new Vector3(0f, delta.x, 0f);
             _cameraRotX -= delta.y;
