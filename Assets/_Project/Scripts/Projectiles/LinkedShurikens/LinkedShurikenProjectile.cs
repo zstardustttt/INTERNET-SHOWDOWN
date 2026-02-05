@@ -13,7 +13,12 @@ namespace Game.Projectiles.LinkedShurikens
         public UnityEvent<LinkedShurikenProjectile> onDestroy = new();
         public float maxLifetime;
         public Transform visualToRotate;
+        public AudioSource flyAudioSource;
+        public AudioSource collideAudioSource;
+        public float flyAudioCenterPitch;
         public float visualRotationFactor;
+
+        [HideInInspector, SyncVar] public float collideAudioPitch;
 
         public override ProjectilePredictionData Predict(float timePassed)
         {
@@ -53,8 +58,24 @@ namespace Game.Projectiles.LinkedShurikens
             }
 
             rb.linearVelocity = newVelocity;
-            if (newVelocity != Vector3.zero)
-                rb.rotation = Quaternion.LookRotation(newVelocity);
+            if (newVelocity == Vector3.zero)
+            {
+                var dot = Vector3.Dot(transform.forward, normal);
+                if (dot > -0.5f && dot < 0.5f)
+                {
+                    transform.forward = (transform.forward - normal) / 2f;
+                }
+            }
+            else rb.rotation = Quaternion.LookRotation(newVelocity);
+
+            RpcPlayCollisionAudio();
+        }
+
+        [ClientRpc]
+        public void RpcPlayCollisionAudio()
+        {
+            collideAudioSource.pitch = collideAudioPitch;
+            collideAudioSource.Play();
         }
 
         protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage) { }
@@ -62,6 +83,7 @@ namespace Game.Projectiles.LinkedShurikens
         protected override void OnUpdate()
         {
             visualToRotate.Rotate(Vector3.up, rb.linearVelocity.magnitude * visualRotationFactor * Time.deltaTime);
+            flyAudioSource.pitch = rb.linearVelocity.magnitude / flySpeed * flyAudioCenterPitch;
             if (!NetworkServer.active) return;
             if (_lifetime >= maxLifetime) DestroyProjectile();
         }

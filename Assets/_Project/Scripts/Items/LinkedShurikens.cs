@@ -12,6 +12,8 @@ namespace Game.Items
     {
         public LinkedShurikenProjectile projectilePrefab;
         public LinkedShurikensManager managerPrefab;
+        public float initialPitch;
+        public float pitchIncrease;
         public int maxUses;
         private int _uses;
 
@@ -22,6 +24,7 @@ namespace Game.Items
             var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHitPoint - context.visualPosition) : context.visualRotation;
             var proj = Projectile.Spawn(projectilePrefab, user, context.headPosition, context.visualPosition, finalRotation);
             proj.SetupPrediction(context.useTime, 1);
+            proj.collideAudioPitch = initialPitch + _uses * pitchIncrease;
 
             if (!_manager)
             {

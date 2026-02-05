@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Game.Core.Damage;
 using Game.Core.Events;
 using Game.Events.HitWatcher;
@@ -9,12 +10,12 @@ namespace Game.Projectiles.LinkedShurikens
 {
     public class LinkedShurikensManager : NetworkBehaviour
     {
-        public LineRenderer shurikenLinkPrefab;
+        public ShurikenLink shurikenLinkPrefab;
         public DamageDealer hitDealer;
         public int maxLinksCount;
         public int linkSegmentsCount;
         private List<LinkedShurikenProjectile> _projectiles;
-        private List<LineRenderer> _shurikenLinks;
+        private List<ShurikenLink> _shurikenLinks;
 
         [SyncVar(hook = nameof(OnActiveLinksCountChanged))] public int activeLinksCount;
 
@@ -31,8 +32,8 @@ namespace Game.Projectiles.LinkedShurikens
             _shurikenLinks = new();
             for (int i = 0; i < maxLinksCount; i++)
             {
-                var link = Instantiate(shurikenLinkPrefab.gameObject, transform).GetComponent<LineRenderer>();
-                link.positionCount = linkSegmentsCount + 2;
+                var link = Instantiate(shurikenLinkPrefab.gameObject, transform).GetComponent<ShurikenLink>();
+                link.lineRenderer.positionCount = linkSegmentsCount + 2;
                 _shurikenLinks.Add(link);
                 link.gameObject.SetActive(false);
             }
@@ -43,19 +44,28 @@ namespace Game.Projectiles.LinkedShurikens
 
         private void Update()
         {
-            // Electricity effect
+            var localPlayerTransform = NetworkClient.localPlayer.transform;
             foreach (var link in _shurikenLinks)
             {
+                if (!localPlayerTransform) break;
                 if (!link.gameObject.activeInHierarchy) continue;
 
-                var start = link.GetPosition(0);
-                var end = link.GetPosition(linkSegmentsCount + 1);
+                // Electricity effect
+                var start = link.lineRenderer.GetPosition(0);
+                var end = link.lineRenderer.GetPosition(linkSegmentsCount + 1);
                 for (int i = 1; i <= linkSegmentsCount; i++)
                 {
                     Vector3 pointOnLine = Vector3.Lerp(start, end, (float)i / (linkSegmentsCount + 1));
                     Vector3 offset = Random.insideUnitSphere * 0.5f;
-                    link.SetPosition(i, pointOnLine + offset);
+                    link.lineRenderer.SetPosition(i, pointOnLine + offset);
                 }
+
+                // Move audio source
+                var middlePoint = (end + start) / 2f;
+                var lineDirection = (end - start).normalized;
+                var targetDirection = localPlayerTransform.position - middlePoint;
+                var projection = Vector3.ClampMagnitude(Vector3.Project(targetDirection, lineDirection), (end - start).magnitude / 2f);
+                link.audioSource.transform.position = middlePoint + projection;
             }
 
             if (!NetworkServer.active) return;
@@ -103,8 +113,8 @@ namespace Game.Projectiles.LinkedShurikens
             for (int i = 0; i < starts.Length; i++)
             {
                 var link = _shurikenLinks[i];
-                link.SetPosition(0, starts[i]);
-                link.SetPosition(linkSegmentsCount + 1, ends[i]);
+                link.lineRenderer.SetPosition(0, starts[i]);
+                link.lineRenderer.SetPosition(linkSegmentsCount + 1, ends[i]);
             }
         }
 
@@ -112,14 +122,17 @@ namespace Game.Projectiles.LinkedShurikens
         {
             projectile.onDestroy.AddListener(OnProjectileDestroy);
             _projectiles.Add(projectile);
-            activeLinksCount++;
+            activeLinksCount = GetTargetLinksCount();
         }
 
         private void OnProjectileDestroy(LinkedShurikenProjectile projectile)
         {
             _projectiles.Remove(projectile);
-            activeLinksCount--;
+            activeLinksCount = GetTargetLinksCount();
             if (_projectiles.Count == 0) NetworkServer.Destroy(gameObject);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetTargetLinksCount() => _projectiles.Count < 3 ? _projectiles.Count - 1 : _projectiles.Count;
     }
 }

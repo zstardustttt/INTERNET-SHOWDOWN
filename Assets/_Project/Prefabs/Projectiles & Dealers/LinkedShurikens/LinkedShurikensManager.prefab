@@ -50,7 +50,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  shurikenLinkPrefab: {fileID: 8668921467422308858, guid: de452677ff4b8a846a7186b90ebb24ad, type: 3}
+  shurikenLinkPrefab: {fileID: 1065079299924172763, guid: de452677ff4b8a846a7186b90ebb24ad, type: 3}
   hitDealer: {fileID: 5554592539488508494}
   maxLinksCount: 5
   linkSegmentsCount: 20

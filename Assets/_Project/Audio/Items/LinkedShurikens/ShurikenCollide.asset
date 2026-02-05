@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1233149941 &-7592602325524468220
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ShurikenCollide2_{-7592602325524468220}
+  m_AudioClip: {fileID: 8300000, guid: 43172a7e2422c9d49a49803893084de5, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &-5110343769421777000
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ShurikenCollide3_{-5110343769421777000}
+  m_AudioClip: {fileID: 8300000, guid: d8366dfe64689694b8786a0e576214c8, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &-3450633915040790596
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ShurikenCollide1_{-3450633915040790596}
+  m_AudioClip: {fileID: 8300000, guid: 22d7977766beeb0498d14e530fab1f66, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &4188017699324725861
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ShurikenCollide4_{4188017699324725861}
+  m_AudioClip: {fileID: 8300000, guid: 34ab0661d1c6e7c4a9bf2a3b0c26c5a1, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &6412072832902020539
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ShurikenCollide5_{6412072832902020539}
+  m_AudioClip: {fileID: 8300000, guid: 20be60151a9ac8649a9b0bfa04f3768f, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1307931743 &6418180475301049370
+AudioRandomContainer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ShurikenCollide
+  m_Volume: 0
+  m_Pitch: 0
+  m_AutomaticTriggerTime: 0
+  m_LoopCount: 1
+  m_VolumeRandomizationRange: {x: 0, y: 0}
+  m_PitchRandomizationRange: {x: -50, y: 50}
+  m_AutomaticTriggerTimeRandomizationRange: {x: 0, y: 0}
+  m_LoopCountRandomizationRange: {x: 0, y: 0}
+  m_Elements:
+  - {fileID: -3450633915040790596}
+  - {fileID: -7592602325524468220}
+  - {fileID: -5110343769421777000}
+  - {fileID: 4188017699324725861}
+  - {fileID: 6412072832902020539}
+  m_AvoidRepeatingLast: 1
+  m_PlaybackMode: 1
+  m_TriggerMode: 0
+  m_AutomaticTriggerMode: 1
+  m_LoopMode: 2
+  m_VolumeRandomizationEnabled: 0
+  m_PitchRandomizationEnabled: 1
+  m_AutomaticTriggerTimeRandomizationEnabled: 0
+  m_LoopCountRandomizationEnabled: 0
