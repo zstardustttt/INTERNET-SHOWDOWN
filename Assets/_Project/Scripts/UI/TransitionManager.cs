@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TransitionManager : MonoBehaviour
@@ -19,14 +20,16 @@ public class TransitionManager : MonoBehaviour
     private void OnEnable()
     {
         Application.wantsToQuit += OnWantsToQuit;
+        SceneManager.activeSceneChanged += OnSceneChanged;
     }
 
     private void OnDisable()
     {
         Application.wantsToQuit -= OnWantsToQuit;
+        SceneManager.activeSceneChanged -= OnSceneChanged;
     }
 
-    bool OnWantsToQuit()
+    private bool OnWantsToQuit()
     {
         if (quit)
             return true;
@@ -44,6 +47,11 @@ public class TransitionManager : MonoBehaviour
             });
 
         return false;
+    }
+
+    private void OnSceneChanged(Scene current, Scene next)
+    {
+        TransitionOut();
     }
     public Sequence TransitionIn()
     {
