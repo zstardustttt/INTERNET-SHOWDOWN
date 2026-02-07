@@ -15,5 +15,6 @@ MonoBehaviour:
   sceneName: Assets/_Project/Scenes/TestMap.unity
   displayName: Test Map
   soundtracks:
-  - {fileID: 11400000, guid: c5bce79d09a78894a9d1587e19ea8805, type: 2}
+  - {fileID: 11400000, guid: eabe8fb7627378249b2c11fce0b2d515, type: 2}
   - {fileID: 11400000, guid: d38e7b9ea68ccce4c917fb3f037778d2, type: 2}
+  - {fileID: 11400000, guid: 34265aa1a6f5f5049a5b8a8bf4087b69, type: 2}
