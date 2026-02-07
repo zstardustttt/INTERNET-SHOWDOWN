@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 457242585e88bb84abaa2da77c81c2ba, type: 3}
   m_Name: DREAMCAST
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Maps.Soundtrack
-  clip: {fileID: 0}
-  title: 
-  author: 
+  clip: {fileID: 8300000, guid: ad6df486ad69247488fc00c842f9677e, type: 3}
+  title: DREAMCAST
+  author: dx9scope
   volume: 1
