@@ -156,12 +156,6 @@ namespace Game.Network
             });
         }
 
-        public override void OnClientConnect()
-        {
-            base.OnClientConnect();
-            transitionManager.TransitionOut();
-        }
-
         public override void OnClientDisconnect()
         {
             Cursor.lockState = CursorLockMode.None;

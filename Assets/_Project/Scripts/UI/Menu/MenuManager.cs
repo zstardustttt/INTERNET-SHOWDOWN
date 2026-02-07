@@ -83,6 +83,7 @@ public class MenuManager : MonoBehaviour
         PlayerPrefs.SetFloat("sens", value);
         PlayerPrefs.Save();
     }
+
     private void Start()
     {
         transitionManager.TransitionOut();
@@ -142,6 +143,9 @@ public class MenuManager : MonoBehaviour
 
     private void MenuReveal()
     {
+        if (!mainPanel)
+            return;
+
         mainPanel.SetActive(true);
 
         _logoContainerTransform?.DOScale(0.85f, 0.7f)
@@ -163,6 +167,9 @@ public class MenuManager : MonoBehaviour
 
     private void MenuUnreveal()
     {
+        if (!logoContainer)
+            return;
+
         logoContainer.SetActive(true);
 
         _logoContainerTransform?.DOScale(1f, 0.7f)
