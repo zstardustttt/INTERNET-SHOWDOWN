@@ -129,6 +129,11 @@ namespace Game.Systems
             state = new(GamePhase.Match, matchDuration + preparationDuration, state.mapIndex, state.soundtrackIndex, state.timerBeginTime);
             _lastMatchState = state;
 
+            foreach (var (_, player) in MapLoader.loadedMap.players)
+            {
+                player.PickRandomItem();
+            }
+
             EventBus<SetBoxSpawnerActive>.Invoke(new() { active = true });
         }
     }

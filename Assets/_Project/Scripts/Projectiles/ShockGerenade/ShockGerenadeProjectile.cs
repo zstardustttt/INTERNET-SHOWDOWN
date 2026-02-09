@@ -67,6 +67,7 @@ namespace Game.Projectiles.ShockGerenade
         private void OnDamageReceived(DamageDealer dealer, float _)
         {
             if (dealer.damageType == DamageType.None || _attached) return;
+            if (dealer.owner) _owner = dealer.owner;
             Explode();
         }
 
@@ -97,13 +98,19 @@ namespace Game.Projectiles.ShockGerenade
             dealer.active = false;
 
             _attached = player;
-            _attached.onReceiveDamage.AddListener(Explode);
+            _attached.onReceiveDamage.AddListener(OnAttachedReceiveDamage);
             _attached.onDeath.AddListener(Detach);
             _damageInterval = _attached.config.damageInvincibilityDuration;
             _previousAttachedPosition = player.transform.position;
 
             TargetSpawnVisual(_attached.netIdentity.connectionToClient);
             RpcPlayAttachAudio();
+        }
+
+        private void OnAttachedReceiveDamage(DamageDealer dealer)
+        {
+            if (dealer.owner) _owner = dealer.owner;
+            Explode();
         }
 
         [ClientRpc]
@@ -199,7 +206,7 @@ namespace Game.Projectiles.ShockGerenade
         {
             TargetDestroyVisual(_attached.netIdentity.connectionToClient);
             _attached.onDeath.RemoveListener(Detach);
-            _attached.onReceiveDamage.RemoveListener(Explode);
+            _attached.onReceiveDamage.RemoveListener(OnAttachedReceiveDamage);
             _attached = null;
             RpcPlayDetachAudio();
         }
@@ -220,7 +227,7 @@ namespace Game.Projectiles.ShockGerenade
             {
                 _attached.ForceRemoveInvincibility();
                 _attached.onDeath.RemoveListener(Detach);
-                _attached.onReceiveDamage.RemoveListener(Explode);
+                _attached.onReceiveDamage.RemoveListener(OnAttachedReceiveDamage);
                 pos = _attached.transform.position;
             }
             else pos = transform.position;

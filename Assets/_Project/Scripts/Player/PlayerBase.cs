@@ -89,7 +89,7 @@ namespace Game.Player
         [HideInInspector] public UnityEvent<Collider> onCollide = new();
         [HideInInspector] public UnityEvent onItemPickup = new();
         [HideInInspector] public UnityEvent onResetPlayer = new();
-        [HideInInspector] public UnityEvent onReceiveDamage = new();
+        [HideInInspector] public UnityEvent<DamageDealer> onReceiveDamage = new();
         [HideInInspector] public UnityEvent onDamage = new();
         [HideInInspector] public UnityEvent onDeath = new();
 
@@ -293,7 +293,7 @@ namespace Game.Player
             if (dealer.owner && dealer.owner != this)
                 dealer.owner.RegisterHit(dealer.damageType);
 
-            onReceiveDamage.Invoke();
+            onReceiveDamage.Invoke(dealer);
         }
 
         [Server]
