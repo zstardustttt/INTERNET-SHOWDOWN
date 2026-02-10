@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 418f73291c68b2e49a3036283a475a59, type: 3}
+  m_Name: LinkedShurikens
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Items.ItemConfig
+  include: 0
+  prefab: {fileID: 8697607699108650305, guid: fc57f507e5d26ed498e81c33b559baa9, type: 3}
+  rarity: {fileID: 11400000, guid: ef58f522f451a5b4fbeec67c68daf1c4, type: 2}
+  displayName: Linked Shurikens
+  series: {fileID: 11400000, guid: a336a78b29b80e74b80768ed8bf26799, type: 2}
+  description: 'Each shuriken flies forward, hitting other players. Redirects itself
+    to the closest player upon hitting the map. Shurikens are connected by hazardous
+    electricity lines. '
+  tags:
+  - {fileID: 11400000, guid: 4a1e23bc2fe73834ebc10eb448be04e2, type: 2}
+  - {fileID: 11400000, guid: 4e2d36f10d8c6804ba2638085d5e8ea2, type: 2}
+  - {fileID: 11400000, guid: 9625dd7980435c442b816c1f683bc922, type: 2}

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 418f73291c68b2e49a3036283a475a59, type: 3}
+  m_Name: TeslaCocktail
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Items.ItemConfig
+  include: 0
+  prefab: {fileID: 4842537934591459920, guid: d0ef9a2b655ace647badd60919e717dd, type: 3}
+  rarity: {fileID: 11400000, guid: 8e1dbfb413df3c64f8d873040f92b762, type: 2}
+  displayName: Tesla Cocktail
+  series: {fileID: 11400000, guid: a336a78b29b80e74b80768ed8bf26799, type: 2}
+  description: An item similar to a Molotov cocktail. Creates a hazardous field after
+    hitting the map. Hitting a player causes them to catch fire.
+  tags:
+  - {fileID: 11400000, guid: 350356467bce7e443b17c27c61f8940a, type: 2}
+  - {fileID: 11400000, guid: 9625dd7980435c442b816c1f683bc922, type: 2}
+  - {fileID: 11400000, guid: b6ff3cac8bb1b094e96be9a9d2cb65ac, type: 2}
+  - {fileID: 11400000, guid: 3dbed0bcabcd03a48884b9b46303f70f, type: 2}

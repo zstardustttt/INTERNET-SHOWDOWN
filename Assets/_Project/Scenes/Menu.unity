@@ -2961,18 +2961,24 @@ MonoBehaviour:
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs:
+  - {fileID: 2132040386777057985, guid: 27f6c048ee75b4a45b10e3e3f9a4f2b6, type: 3}
+  - {fileID: 2132040386777057985, guid: 7d63421fd271fc04fabc8c5ee766e551, type: 3}
+  - {fileID: 2132040386777057985, guid: 6170d2b8994d3a4489b5e738a553336a, type: 3}
+  - {fileID: 6716480039818249771, guid: 57727dfc728a8714f8a48d76aa456197, type: 3}
+  - {fileID: 3101699681814522868, guid: 48b20d2e7f9da204fa7188006818e37d, type: 3}
+  - {fileID: 5372928923940141114, guid: 06c25a05a737a3341a02d005be699124, type: 3}
   - {fileID: 4198238566599423486, guid: 2beec17498cc07a43b8285f504979ce2, type: 3}
+  - {fileID: 3195584578793426231, guid: 228d14c7c8f7da74d89bbff44ca9d222, type: 3}
   - {fileID: 4171245465208120515, guid: aefa9c28b7e29014fb3f5cc90e7037e5, type: 3}
   - {fileID: 8596668877135600386, guid: d18396bccccba4c4abcc7971c45bb3ba, type: 3}
+  - {fileID: 7874815376088176383, guid: 943cb9da5caf905429507add91ee3256, type: 3}
+  - {fileID: 98410368076488078, guid: 1d80bce56ecef1d41b2f615fa66ab1f6, type: 3}
+  - {fileID: 1635209751978783220, guid: 77b182f4f069182488aeedcf1e314e52, type: 3}
+  - {fileID: 1459376448108328031, guid: bd5f83fb0876eaa4b928e03afa8a5850, type: 3}
+  - {fileID: 1228057851501706029, guid: f18910510fd7d844d9b701fa7ed10828, type: 3}
   - {fileID: 6565942098022493468, guid: 5728a65227a0f9e4396ad02dd0a20558, type: 3}
   - {fileID: 489991236996220354, guid: b457d7bf7fab32245b3320e698f2afa9, type: 3}
   - {fileID: 4751247832063731759, guid: c55ce7a8bacd74a4ba6f290443a40e5c, type: 3}
-  - {fileID: 1459376448108328031, guid: bd5f83fb0876eaa4b928e03afa8a5850, type: 3}
-  - {fileID: 1228057851501706029, guid: f18910510fd7d844d9b701fa7ed10828, type: 3}
-  - {fileID: 5372928923940141114, guid: 06c25a05a737a3341a02d005be699124, type: 3}
-  - {fileID: 3101699681814522868, guid: 48b20d2e7f9da204fa7188006818e37d, type: 3}
-  - {fileID: 7874815376088176383, guid: 943cb9da5caf905429507add91ee3256, type: 3}
-  - {fileID: 98410368076488078, guid: 1d80bce56ecef1d41b2f615fa66ab1f6, type: 3}
   snapshotSettings:
     bufferTimeMultiplier: 2
     bufferLimit: 32

@@ -9,6 +9,7 @@ namespace Game.Core.Items
         public GameObject prefab;
         public ItemRarity rarity;
         public string displayName;
+        public ItemSeries series;
         [TextArea] public string description;
         public ItemTag[] tags;
     }

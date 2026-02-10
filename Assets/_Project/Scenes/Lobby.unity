@@ -380,6 +380,7 @@ MonoBehaviour:
     m_Bits: 8192
   boxPrefab: {fileID: 4198238566599423486, guid: 2beec17498cc07a43b8285f504979ce2, type: 3}
   spawnRate: 0.3
+  maxBoxesPerPlayer: 15
   castMargin: 0.01
   layerMask:
     serializedVersion: 2

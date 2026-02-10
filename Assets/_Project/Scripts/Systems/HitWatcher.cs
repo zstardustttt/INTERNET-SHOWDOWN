@@ -210,7 +210,7 @@ namespace Game.Systems
 
             EventBus<OnRegisterHit>.Invoke(new() { dealer = dealer, receiver = receiver });
             var ownerName = dealer.owner ? dealer.owner.gameObject.name : "none";
-            Debug.Log($"{dealer.damageType} hit! on: {receiver.gameObject.name} from: {dealer.gameObject.name} by: {ownerName} at: {point} damage: {damage}");
+            Debug.Log($"{dealer.damageType} hit! on: {receiver.gameObject.name} from: {dealer.transform.root.name} by: {ownerName} at: {point} damage: {damage}");
         }
     }
 }

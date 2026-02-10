@@ -14,6 +14,7 @@ namespace Game.Systems
         public LayerMask playerBoxCheckLayerMask;
         public GameObject boxPrefab;
         public float spawnRate;
+        public int maxBoxesPerPlayer;
         public float castMargin;
         public LayerMask layerMask;
 
@@ -25,6 +26,7 @@ namespace Game.Systems
 
         private bool _active;
         private float _timer;
+        private int _spawnedBoxesCount;
 
         private void Awake()
         {
@@ -42,17 +44,33 @@ namespace Game.Systems
                 return;
             }
 
+            HandleBoxSpawning();
+            HandleBoxPicking();
+        }
+
+        private void HandleBoxSpawning()
+        {
+            var playerCount = MapLoader.loadedMap.players.Count;
+            if (_spawnedBoxesCount >= maxBoxesPerPlayer * playerCount) return;
+
             if (_timer <= 0f)
             {
-                _timer = 1f / (spawnRate * MapLoader.loadedMap.players.Count);
+                _timer = 1f / (spawnRate * playerCount);
                 for (int i = 0; i < maxSpawnFails; i++)
                 {
-                    if (TrySpawnBox()) break;
+                    if (TrySpawnBox())
+                    {
+                        _spawnedBoxesCount++;
+                        break;
+                    }
                     Debug.Log($"Failed to spawn box. Fail iteration: {i}");
                 }
             }
             else _timer -= Time.deltaTime;
+        }
 
+        private void HandleBoxPicking()
+        {
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
                 if (!player || player.dead) continue;
@@ -62,6 +80,7 @@ namespace Game.Systems
                 {
                     player.PickRandomItem();
                     NetworkServer.Destroy(box);
+                    _spawnedBoxesCount--;
                 }
 
                 player.boxSpawnerPreviousObservedPosition = player.transform.position;
