@@ -75,5 +75,6 @@ namespace Game.Player
         public float damageInvincibilityDuration;
         public float deathInvincibilityDuration;
         public float respawnDuration;
+        public float respawnAscendSpeed;
     }
 }

@@ -213,3 +213,4 @@ MonoBehaviour:
   damageInvincibilityDuration: 0.35
   deathInvincibilityDuration: 2
   respawnDuration: 5
+  respawnAscendSpeed: 5

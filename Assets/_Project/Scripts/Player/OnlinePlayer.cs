@@ -116,7 +116,7 @@ namespace Game.Player
 
             Cursor.lockState = CursorLockMode.Locked;
             _camera = Instantiate(cameraPrefab, cameraOrientation).GetComponent<PlayerCamera>();
-            player.model.SetActive(false);
+            player.modelContainer.SetActive(false);
 
             // TODO: ts
             _mouseSens = PlayerPrefs.GetFloat("sens");

@@ -96,13 +96,13 @@ MonoBehaviour:
   - {fileID: 113712607117291513}
   predictionDebugIterations: 1
   predictionDebugTimePassed: 0
-  flySpeed: 100
+  flySpeed: 60
   beginMaxDot: -0.2
   continueMaxDot: 0.2
   beginMaxDotDuration: 1
   desroyOnBounceAfter: 10
   maxLifetime: 15
-  gravityAcceleration: 50
+  gravityAcceleration: 40
   activateGravityAfter: 0
   autoAimOnClosestFactor: 0.4
   projectileToSpawnOnHit: {fileID: 0}

@@ -20,6 +20,7 @@ namespace Game.Player
     [RequireComponent(typeof(KinematicCharacterMotor))]
     public class PlayerBase : NetworkBehaviour, ICharacterController
     {
+        private bool _handlingThisPlayer;
         public Bounds WorldHitbox => new(transform.position + config.hitbox.center, config.hitbox.size);
 
         public PlayerConfig config;
@@ -29,7 +30,11 @@ namespace Game.Player
         public Transform verticalOrientation;
         public Transform itemHolder;
         public DamageReceiver damageReceiver;
-        public GameObject model;
+
+        [Space(9)]
+        public GameObject modelContainer;
+        public GameObject mainModel;
+        public GameObject ghostModel;
 
         // movement
         private float _targetSpeed;
@@ -124,18 +129,25 @@ namespace Game.Player
         private float _respawnTimer;
 
         [SyncVar(hook = nameof(OnMotorLocksChanged))] public int motorLocks;
-        private bool _handlingThisPlayer;
+        [SyncVar(hook = nameof(OnInputLocksChanged))] public int inputLocks;
 
         private void OnMotorLocksChanged(int old, int _new)
         {
-            if (!_handlingThisPlayer) return;
-
             if (_new < 0)
             {
                 Debug.LogWarning($"Motor locks counter on player {gameObject.name} is less than zero ({_new})");
             }
 
+            if (!_handlingThisPlayer) return;
             motor.enabled = _new == 0;
+        }
+
+        private void OnInputLocksChanged(int old, int _new)
+        {
+            if (_new < 0)
+            {
+                Debug.LogWarning($"Input locks counter on player {gameObject.name} is less than zero ({_new})");
+            }
         }
 
         [SyncVar] public bool invincible;
@@ -275,7 +287,6 @@ namespace Game.Player
             currentItemArgs = Array.Empty<ItemArgument>();
             health = config.maxHealth;
             dead = false;
-            motorLocks = 0;
             onResetPlayer.Invoke();
         }
 
@@ -421,11 +432,14 @@ namespace Game.Player
                     ServerMovePlayer(position);
                     ResetPlayer();
                     ActivateInvincibility(config.deathInvincibilityDuration);
+                    motorLocks--;
                 }
             }
 
+            mainModel.SetActive(!_new);
+            ghostModel.SetActive(_new);
+
             if (_handlingThisPlayer) _additionalVelocity = Vector3.zero;
-            else model.SetActive(!_new);
         }
 
         private void OnItemChange(ItemData old, ItemData _new)
@@ -455,8 +469,7 @@ namespace Game.Player
 
         public void TryUseItem(bool secondary)
         {
-            if (itemData.itemIndex == -1) return;
-            if (dead) return;
+            if (itemData.itemIndex == -1 || inputLocks != 0 || dead) return;
 
             var crosshairHit = Physics.Raycast(verticalOrientation.position, verticalOrientation.forward, out var hitInfo, 1000f, LayerMask.GetMask("Player", "Enviroment"));
             var ctx = new ItemUseClientContext()
@@ -480,6 +493,14 @@ namespace Game.Player
 
         private void Update()
         {
+            // Ascend if dead
+            if (_handlingThisPlayer && dead)
+            {
+                var distance = config.respawnAscendSpeed * Time.deltaTime;
+                if (!Physics.Raycast(transform.position, Vector3.up, motor.Capsule.height + distance, LayerMask.GetMask("Enviroment")))
+                    transform.position += distance * Vector3.up;
+            }
+
             if (isLocalPlayer && item)
             {
                 item.transform.localPosition = Vector3.Lerp(item.transform.localPosition, item.offset, Time.deltaTime * 15f);
@@ -536,7 +557,7 @@ namespace Game.Player
         [Server]
         private void UseItem(ItemUseClientContext context)
         {
-            if (!item) return;
+            if (!item || inputLocks != 0) return;
 
             if (item.Use(this, context, currentItemArgs))
             {
@@ -652,7 +673,7 @@ namespace Game.Player
 
             _prevWishJumping = inputs.wishJumping;
             _prevWishDashing = inputs.wishDashing;
-            inputs = controller.GetInputs();
+            inputs = inputLocks == 0 ? controller.GetInputs() : default;
 
             if (!inputs.wishGroundSlam) _canGroundSlam = true;
             if (!motor.GroundingStatus.IsStableOnGround

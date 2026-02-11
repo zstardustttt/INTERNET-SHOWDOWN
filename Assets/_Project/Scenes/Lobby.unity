@@ -4713,16 +4713,30 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  breakDuration: 60
-  preparationDuration: 10
-  matchDuration: 260
-  finishDuration: 5
+  breakPhaseInfo:
+    duration: 60
+    saveStats: 0
+    loadStats: 1
+    activatePortal: 0
+  preparationPhaseInfo:
+    duration: 10
+    saveStats: 0
+    loadStats: 0
+    activatePortal: 1
+  matchPhaseInfo:
+    duration: 260
+    saveStats: 1
+    loadStats: 1
+    activatePortal: 1
+  finishPhaseInfo:
+    duration: 5
+    saveStats: 0
+    loadStats: 1
+    activatePortal: 0
   state:
-    phase: 0
-    phaseDuration: 0
-    timerBeginTime: 0
     mapIndex: 0
     soundtrackIndex: 0
+    soundtrackBeginTime: 0
 --- !u!1 &1328451669
 GameObject:
   m_ObjectHideFlags: 0

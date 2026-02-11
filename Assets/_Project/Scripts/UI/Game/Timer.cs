@@ -15,7 +15,6 @@ namespace Game.UI.Game
 
         private string _text;
         private string _previousText;
-        private int _previousCountdown;
 
         private void Awake()
         {
@@ -23,25 +22,32 @@ namespace Game.UI.Game
             EventBus<OnGameStateChange>.Listen((data) => _gameState = data.state);
         }
 
-        // TODO: finish timer could say "Time's up!"
         private void Update()
         {
-            var countdown = _gameState.phase == GamePhase.Finish ? 0 : Mathf.CeilToInt(_gameState.phaseDuration - _gameState.SecondsSinceTimerStarted);
-            if (countdown != _previousCountdown)
+            if (_gameState.phase.type == GamePhaseType.Finish)
             {
-                TimerUpdate(countdown);
+                TimerUpdate("Time's up!");
             }
-
-            _previousCountdown = countdown;
+            else
+            {
+                var countdown = Mathf.CeilToInt(_gameState.phase.info.duration - _gameState.phase.SecondsSinceEntered);
+                TimerUpdate(FormatCountdown(countdown));
+            }
         }
 
-        private void TimerUpdate(int countdown)
+        private string FormatCountdown(int countdown)
         {
             var minutes = countdown / 60;
             var seconds = countdown % 60;
+            return minutes == 0 ? seconds.ToString() : string.Format("{0}:{1:00}", minutes, seconds);
+        }
+
+        private void TimerUpdate(string newText)
+        {
+            if (_text == newText) return;
 
             _previousText = _text;
-            _text = minutes == 0 ? seconds.ToString() : string.Format("{0}:{1:00}", minutes, seconds);
+            _text = newText;
 
             var finalText = "";
             if (_previousText.Length == _text.Length)

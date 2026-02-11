@@ -26,10 +26,9 @@ namespace Game.UI.Game
             {
                 _gameState = data.state;
 
-                // TODO: I dont like this
-                if (_gameState.phase == GamePhase.Finish) return;
+                if (_gameState.phase.type == GamePhaseType.Finish) return;
 
-                if (_gameState.phase == GamePhase.Match && _uiSwitchRequested)
+                if (_gameState.phase.type == GamePhaseType.Match && _uiSwitchRequested)
                     SwitchUI(true);
                 else SwitchUI(false);
 
@@ -38,7 +37,7 @@ namespace Game.UI.Game
 
             EventBus<RequestGameplayUI>.Listen((_) =>
             {
-                if (_gameState.phase == GamePhase.Match) SwitchUI(true);
+                if (_gameState.phase.type == GamePhaseType.Match) SwitchUI(true);
                 else _uiSwitchRequested = true;
             });
 

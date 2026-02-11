@@ -49,7 +49,7 @@ namespace Game.Network
 
             EventBus<OnGameStateChange>.Listen((data) =>
             {
-                if (data.state.phase == GamePhase.Break)
+                if (data.state.phase.type == GamePhaseType.Preparation)
                     _disconnectedPlayersStats.Clear();
 
                 _gameState = data.state;
@@ -106,7 +106,7 @@ namespace Game.Network
 
             EventBus<OnServerOnlinePlayerInitialized>.Listen((data) =>
             {
-                if (_gameState.phase != GamePhase.Match) return;
+                if (!_gameState.phase.info.loadStats) return;
 
                 if (_disconnectedPlayersStats.TryGetValue(data.player.playerGuid, out var stats))
                 {
@@ -124,7 +124,7 @@ namespace Game.Network
         public override void OnServerDisconnect(NetworkConnectionToClient conn)
         {
             var player = conn.identity.GetComponent<PlayerBase>();
-            if (_gameState.phase == GamePhase.Match)
+            if (_gameState.phase.info.saveStats)
             {
                 _disconnectedPlayersStats.Add(player.playerGuid, player.stats);
             }
@@ -196,15 +196,12 @@ namespace Game.Network
 
             EventBus<OnGameStateChange>.Listen((data) =>
             {
-                if (data.state.phase == GamePhase.Break) EventBus<StopMatchMusic>.Invoke(new());
+                if (data.state.phase.type == GamePhaseType.Break) EventBus<StopMatchMusic>.Invoke(new());
 
                 if (!_portal) _portal = GameObject.FindGameObjectWithTag("Portal");
-
-                // TODO: I dont like this either
-                var shouldPortalBeActive = data.state.phase == GamePhase.Preparation || data.state.phase == GamePhase.Match;
-                _portal.SetActive(shouldPortalBeActive);
+                _portal.SetActive(data.state.phase.info.activatePortal);
                 // mirror for some reason automaticly disables mesh renderer
-                _portal.GetComponent<MeshRenderer>().enabled = shouldPortalBeActive;
+                _portal.GetComponent<MeshRenderer>().enabled = data.state.phase.info.activatePortal;
             });
 
             // only for pure clients
