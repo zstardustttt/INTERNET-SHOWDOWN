@@ -166,7 +166,7 @@ namespace Game.Systems
             state = new(GamePhase.Finish, finishDuration, state.mapIndex, state.soundtrackIndex, NetworkTime.time, state.soundtrackBeginTime);
             EventBus<SetBoxSpawnerActive>.Invoke(new() { active = false });
 
-            // Lock item usage on finish & activate invincibility?
+            // TODO: Lock item usage on finish & activate invincibility?
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
                 player.motorLocks++;

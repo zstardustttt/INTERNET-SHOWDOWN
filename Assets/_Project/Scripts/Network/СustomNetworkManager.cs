@@ -200,7 +200,7 @@ namespace Game.Network
 
                 if (!_portal) _portal = GameObject.FindGameObjectWithTag("Portal");
 
-                // I dont like this either
+                // TODO: I dont like this either
                 var shouldPortalBeActive = data.state.phase == GamePhase.Preparation || data.state.phase == GamePhase.Match;
                 _portal.SetActive(shouldPortalBeActive);
                 // mirror for some reason automaticly disables mesh renderer
