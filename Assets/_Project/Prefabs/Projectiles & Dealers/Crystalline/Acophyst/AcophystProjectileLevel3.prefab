@@ -96,14 +96,15 @@ MonoBehaviour:
   - {fileID: 113712607117291513}
   predictionDebugIterations: 20
   predictionDebugTimePassed: 3
-  flySpeed: 125
+  flySpeed: 100
   beginMaxDot: -0.2
   continueMaxDot: 0.2
   beginMaxDotDuration: 1
-  maxLifetime: 5
-  gravityAcceleration: 60
+  desroyOnBounceAfter: 5
+  maxLifetime: 10
+  gravityAcceleration: 50
   activateGravityAfter: 0.2
-  autoAimOnClosestFactor: 0
+  autoAimOnClosestFactor: 0.2
   projectileToSpawnOnHit: {fileID: 2592644571071647292, guid: 7d63421fd271fc04fabc8c5ee766e551, type: 3}
 --- !u!54 &1289744956753037696
 Rigidbody:
@@ -221,7 +222,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.5, y: 1.5, z: 1.5}
+  m_Size: {x: 1.25, y: 1.25, z: 1.25}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2762855302227303365
 MonoBehaviour:
@@ -290,7 +291,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4561008472793558394}
@@ -404,7 +405,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4, y: 4, z: 4}
+  m_Size: {x: 3.5, y: 3.5, z: 3.5}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &113712607117291513
 MonoBehaviour:

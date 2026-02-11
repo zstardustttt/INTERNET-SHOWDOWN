@@ -4716,7 +4716,7 @@ MonoBehaviour:
   breakDuration: 60
   preparationDuration: 10
   matchDuration: 260
-  matchEndDuration: 5
+  finishDuration: 5
   state:
     phase: 0
     phaseDuration: 0

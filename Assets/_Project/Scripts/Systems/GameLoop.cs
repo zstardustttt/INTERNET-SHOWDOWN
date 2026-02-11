@@ -12,11 +12,13 @@ using Random = UnityEngine.Random;
 
 namespace Game.Systems
 {
+    // TODO: refactor state switching
     public enum GamePhase
     {
         Break,
         Preparation,
-        Match
+        Match,
+        Finish
     }
 
     [Serializable]
@@ -25,19 +27,22 @@ namespace Game.Systems
         public GamePhase phase;
         public float phaseDuration;
         public double timerBeginTime;
+        public double soundtrackBeginTime;
         public int mapIndex;
         public int soundtrackIndex;
 
         // why tf are getters can be made readonly
         public readonly float SecondsSinceTimerStarted => (float)(NetworkTime.time - timerBeginTime);
+        public readonly float SecondsSinceSoundtrackStarted => (float)(NetworkTime.time - soundtrackBeginTime);
 
-        public GameState(GamePhase phase, float phaseDuration, int mapIndex, int soundtrackIndex, double timerBeginTime)
+        public GameState(GamePhase phase, float phaseDuration, int mapIndex, int soundtrackIndex, double timerBeginTime, double soundtrackBeginTime)
         {
             this.phase = phase;
             this.phaseDuration = phaseDuration;
             this.mapIndex = mapIndex;
             this.soundtrackIndex = soundtrackIndex;
             this.timerBeginTime = timerBeginTime;
+            this.soundtrackBeginTime = soundtrackBeginTime;
         }
 
         public readonly override string ToString()
@@ -51,7 +56,7 @@ namespace Game.Systems
         public float breakDuration;
         public float preparationDuration;
         public float matchDuration;
-        public float matchEndDuration;
+        public float finishDuration;
 
         [SyncVar(hook = nameof(OnStateChanged)), ReadOnly] public GameState state;
 
@@ -65,7 +70,7 @@ namespace Game.Systems
         private void Start()
         {
             if (!isServer) return;
-            state = new(GamePhase.Break, breakDuration, -1, -1, NetworkTime.time);
+            state = new(GamePhase.Break, breakDuration, -1, -1, NetworkTime.time, 0);
         }
 
         private void Update()
@@ -75,23 +80,41 @@ namespace Game.Systems
 #if DEBUG
             if (Input.GetKeyDown(KeyCode.Backspace))
             {
-                if (state.phase == GamePhase.Break) EnterPreparation();
-                else EnterBreak();
+                SwitchToNextState();
             }
 #endif
 
-            if (state.phase == GamePhase.Break && state.SecondsSinceTimerStarted >= breakDuration)
+            if (state.SecondsSinceTimerStarted >= state.phaseDuration)
+            {
+                SwitchToNextState();
+            }
+
+            /*if (state.phase == GamePhase.Break && state.SecondsSinceTimerStarted >= breakDuration)
                 EnterPreparation();
             else if (state.phase == GamePhase.Preparation && state.SecondsSinceTimerStarted >= preparationDuration)
                 EnterMatch();
-            else if (state.phase == GamePhase.Match && state.SecondsSinceTimerStarted >= preparationDuration + matchDuration + matchEndDuration)
+            else if (state.phase == GamePhase.Match && state.SecondsSinceTimerStarted >= preparationDuration + matchDuration)
+                EnterFinish();
+            else if (state.phase == GamePhase.Finish && state.SecondsSinceTimerStarted >= preparationDuration + matchDuration + finishDuration)
+                EnterBreak();*/
+        }
+
+        [Server]
+        private void SwitchToNextState()
+        {
+            if (state.phase == GamePhase.Break)
+                EnterPreparation();
+            else if (state.phase == GamePhase.Preparation)
+                EnterMatch();
+            else if (state.phase == GamePhase.Match)
+                EnterFinish();
+            else if (state.phase == GamePhase.Finish)
                 EnterBreak();
         }
 
         [Server]
         private void EnterBreak()
         {
-            EventBus<SetBoxSpawnerActive>.Invoke(new() { active = false });
             MapLoader.Unload();
 
             // Reset player & player stats
@@ -101,7 +124,7 @@ namespace Game.Systems
                 player.ResetStats();
             }
 
-            state = new(GamePhase.Break, breakDuration, -1, -1, NetworkTime.time);
+            state = new(GamePhase.Break, breakDuration, -1, -1, NetworkTime.time, 0);
         }
 
         [Server]
@@ -119,14 +142,14 @@ namespace Game.Systems
             }
             else soundtrackIdx = Random.Range(0, conf.soundtracks.Length);
 
-            state = new(GamePhase.Preparation, preparationDuration, mapIdx, soundtrackIdx, NetworkTime.time);
+            state = new(GamePhase.Preparation, preparationDuration, mapIdx, soundtrackIdx, NetworkTime.time, NetworkTime.time);
             _lastMatchState = state;
         }
 
         [Server]
         private void EnterMatch()
         {
-            state = new(GamePhase.Match, matchDuration + preparationDuration, state.mapIndex, state.soundtrackIndex, state.timerBeginTime);
+            state = new(GamePhase.Match, matchDuration, state.mapIndex, state.soundtrackIndex, NetworkTime.time, state.soundtrackBeginTime);
             _lastMatchState = state;
 
             foreach (var (_, player) in MapLoader.loadedMap.players)
@@ -134,7 +157,20 @@ namespace Game.Systems
                 player.PickRandomItem();
             }
 
-            EventBus<SetBoxSpawnerActive>.Invoke(new() { active = true });
+            EventBus<SetBoxSpawnerActive>.Invoke(new() { active = true, resetSpawnedBoxesCounter = true });
+        }
+
+        [Server]
+        private void EnterFinish()
+        {
+            state = new(GamePhase.Finish, finishDuration, state.mapIndex, state.soundtrackIndex, NetworkTime.time, state.soundtrackBeginTime);
+            EventBus<SetBoxSpawnerActive>.Invoke(new() { active = false });
+
+            // Lock item usage on finish & activate invincibility?
+            foreach (var (_, player) in MapLoader.loadedMap.players)
+            {
+                player.motorLocks++;
+            }
         }
     }
 }

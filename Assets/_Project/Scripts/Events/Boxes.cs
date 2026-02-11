@@ -6,6 +6,7 @@ namespace Game.Events.Boxes
     public struct SetBoxSpawnerActive : IEvent
     {
         public bool active;
+        public bool resetSpawnedBoxesCounter;
     }
 
     public struct OnBoxSpawn : IEvent

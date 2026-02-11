@@ -12,6 +12,7 @@ namespace Game.Projectiles.Crystalline
         public float beginMaxDot;
         public float continueMaxDot;
         public float beginMaxDotDuration;
+        public float desroyOnBounceAfter;
         public float maxLifetime;
         public float gravityAcceleration;
         public float activateGravityAfter;
@@ -22,10 +23,12 @@ namespace Game.Projectiles.Crystalline
         private Vector3 _previousNormal;
         private Vector3 _previousPoint;
         private float _gravityTimer;
+        private Vector3 _wishVelocity;
 
         private void Start()
         {
             _direction = transform.forward;
+            _wishVelocity = rb.linearVelocity;
         }
 
         public override ProjectilePredictionData Predict(float timePassed)
@@ -47,7 +50,7 @@ namespace Game.Projectiles.Crystalline
 
         protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
-            if (_lifetime > maxLifetime) DestroyProjectile();
+            if (_lifetime > desroyOnBounceAfter) DestroyProjectile();
             else
             {
                 Bounce(point, normal);
@@ -58,8 +61,10 @@ namespace Game.Projectiles.Crystalline
 
         private void Bounce(Vector3 point, Vector3 normal)
         {
+            var movementDirection = _wishVelocity.normalized;
+
             var maxDot = _lifetime <= beginMaxDotDuration ? beginMaxDot : continueMaxDot;
-            if (Vector3.Dot(normal, _direction) > maxDot) return;
+            if (Vector3.Dot(normal, movementDirection) > maxDot) return;
 
             if (normal == _previousNormal && Vector3.Distance(point, _previousPoint) < 0.1f) return;
 
@@ -76,7 +81,8 @@ namespace Game.Projectiles.Crystalline
                 }
             }
 
-            _direction = (Vector3.Reflect(_direction, normal) + directionToClosest * autoAimOnClosestFactor).normalized;
+            _direction = (Vector3.Reflect(movementDirection, normal) + directionToClosest * autoAimOnClosestFactor).normalized;
+            _wishVelocity = _direction * flySpeed;
             transform.forward = _direction;
             _gravityTimer = 0f;
         }
@@ -94,14 +100,18 @@ namespace Game.Projectiles.Crystalline
 
             var proj2 = Spawn(projectileToSpawnOnHit, _owner, transform.position, transform.position, rotation2);
             proj2.SetupPrediction(NetworkTime.time, 0);
+
+            DestroyProjectile();
         }
 
         protected override void OnUpdate()
         {
             if (!NetworkServer.active) return;
 
-            rb.linearVelocity = _direction * flySpeed - _gravityTimer * gravityAcceleration * Vector3.up;
+            _wishVelocity = _direction * flySpeed - _gravityTimer * gravityAcceleration * Vector3.up;
+            rb.linearVelocity = _wishVelocity;
             if (_lifetime > activateGravityAfter) _gravityTimer += Time.deltaTime;
+            if (_lifetime > maxLifetime) DestroyProjectile();
         }
     }
 }

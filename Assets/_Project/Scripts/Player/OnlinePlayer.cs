@@ -172,7 +172,7 @@ namespace Game.Player
             player.controller = this;
             _actions.Enable();
 
-            player.EnableMotor();
+            player.HandleThisPlayer();
 
             player.SetPlayerName(Environment.UserName);
             player.SetGUID(OnlinePlayerGuid.Guid);

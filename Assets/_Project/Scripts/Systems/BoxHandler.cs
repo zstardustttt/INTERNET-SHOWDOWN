@@ -26,11 +26,17 @@ namespace Game.Systems
 
         private bool _active;
         private float _timer;
-        private int _spawnedBoxesCount;
+        private int _spawnedBoxesCounter;
 
+        // TODO: consider making box handler a per map system
         private void Awake()
         {
-            EventBus<SetBoxSpawnerActive>.Listen((data) => _active = data.active);
+            EventBus<SetBoxSpawnerActive>.Listen((data) =>
+            {
+                _timer = 0f;
+                if (data.resetSpawnedBoxesCounter) _spawnedBoxesCounter = 0;
+                _active = data.active;
+            });
         }
 
         private void Update()
@@ -51,7 +57,7 @@ namespace Game.Systems
         private void HandleBoxSpawning()
         {
             var playerCount = MapLoader.loadedMap.players.Count;
-            if (_spawnedBoxesCount >= maxBoxesPerPlayer * playerCount) return;
+            if (_spawnedBoxesCounter >= maxBoxesPerPlayer * playerCount) return;
 
             if (_timer <= 0f)
             {
@@ -60,7 +66,7 @@ namespace Game.Systems
                 {
                     if (TrySpawnBox())
                     {
-                        _spawnedBoxesCount++;
+                        _spawnedBoxesCounter++;
                         break;
                     }
                     Debug.Log($"Failed to spawn box. Fail iteration: {i}");
@@ -80,7 +86,7 @@ namespace Game.Systems
                 {
                     player.PickRandomItem();
                     NetworkServer.Destroy(box);
-                    _spawnedBoxesCount--;
+                    _spawnedBoxesCounter--;
                 }
 
                 player.boxSpawnerPreviousObservedPosition = player.transform.position;

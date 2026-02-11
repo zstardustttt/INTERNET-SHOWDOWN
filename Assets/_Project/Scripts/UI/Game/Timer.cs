@@ -23,10 +23,11 @@ namespace Game.UI.Game
             EventBus<OnGameStateChange>.Listen((data) => _gameState = data.state);
         }
 
+        // TODO: finish timer could say "Time's up!"
         private void Update()
         {
-            var countdown = Mathf.CeilToInt(_gameState.phaseDuration - _gameState.SecondsSinceTimerStarted);
-            if (countdown != _previousCountdown && countdown >= 0)
+            var countdown = _gameState.phase == GamePhase.Finish ? 0 : Mathf.CeilToInt(_gameState.phaseDuration - _gameState.SecondsSinceTimerStarted);
+            if (countdown != _previousCountdown)
             {
                 TimerUpdate(countdown);
             }

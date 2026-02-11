@@ -123,6 +123,21 @@ namespace Game.Player
         [SyncVar(hook = nameof(OnDeathOrRespawn))] public bool dead;
         private float _respawnTimer;
 
+        [SyncVar(hook = nameof(OnMotorLocksChanged))] public int motorLocks;
+        private bool _handlingThisPlayer;
+
+        private void OnMotorLocksChanged(int old, int _new)
+        {
+            if (!_handlingThisPlayer) return;
+
+            if (_new < 0)
+            {
+                Debug.LogWarning($"Motor locks counter on player {gameObject.name} is less than zero ({_new})");
+            }
+
+            motor.enabled = _new == 0;
+        }
+
         [SyncVar] public bool invincible;
         private float _invincibleTimer; // server only
 
@@ -260,6 +275,7 @@ namespace Game.Player
             currentItemArgs = Array.Empty<ItemArgument>();
             health = config.maxHealth;
             dead = false;
+            motorLocks = 0;
             onResetPlayer.Invoke();
         }
 
@@ -394,6 +410,7 @@ namespace Game.Player
 
                     itemData = ItemData.Default();
                     currentItemArgs = Array.Empty<ItemArgument>();
+                    motorLocks++;
                 }
                 else
                 {
@@ -407,15 +424,8 @@ namespace Game.Player
                 }
             }
 
-            if (isLocalPlayer)
-            {
-                _additionalVelocity = Vector3.zero;
-                motor.enabled = !_new;
-            }
-            else
-            {
-                model.SetActive(!_new);
-            }
+            if (_handlingThisPlayer) _additionalVelocity = Vector3.zero;
+            else model.SetActive(!_new);
         }
 
         private void OnItemChange(ItemData old, ItemData _new)
@@ -569,10 +579,11 @@ namespace Game.Player
             EventBus<OnDestroyPlayer>.Invoke(new() { guid = playerGuid });
         }
 
-        public void EnableMotor()
+        public void HandleThisPlayer()
         {
             motor.enabled = true;
             motor.CharacterController = this;
+            _handlingThisPlayer = true;
         }
 
         protected override void OnValidate()

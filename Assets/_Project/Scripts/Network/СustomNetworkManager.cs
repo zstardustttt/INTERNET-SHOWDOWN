@@ -199,9 +199,12 @@ namespace Game.Network
                 if (data.state.phase == GamePhase.Break) EventBus<StopMatchMusic>.Invoke(new());
 
                 if (!_portal) _portal = GameObject.FindGameObjectWithTag("Portal");
-                _portal.SetActive(data.state.phase != GamePhase.Break);
+
+                // I dont like this either
+                var shouldPortalBeActive = data.state.phase == GamePhase.Preparation || data.state.phase == GamePhase.Match;
+                _portal.SetActive(shouldPortalBeActive);
                 // mirror for some reason automaticly disables mesh renderer
-                _portal.GetComponent<MeshRenderer>().enabled = data.state.phase != GamePhase.Break;
+                _portal.GetComponent<MeshRenderer>().enabled = shouldPortalBeActive;
             });
 
             // only for pure clients

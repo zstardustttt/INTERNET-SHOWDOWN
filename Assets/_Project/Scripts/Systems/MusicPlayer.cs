@@ -42,7 +42,7 @@ namespace Game.Systems
             source.clip = _soundtrack.clip;
             source.volume = _soundtrack.volume * volume;
             source.Play();
-            source.time = _state.SecondsSinceTimerStarted;
+            source.time = _state.SecondsSinceSoundtrackStarted;
 
             _musicRequested = false;
         }

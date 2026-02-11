@@ -25,6 +25,10 @@ namespace Game.UI.Game
             EventBus<OnGameStateChange>.Listen((data) =>
             {
                 _gameState = data.state;
+
+                // TODO: I dont like this
+                if (_gameState.phase == GamePhase.Finish) return;
+
                 if (_gameState.phase == GamePhase.Match && _uiSwitchRequested)
                     SwitchUI(true);
                 else SwitchUI(false);
