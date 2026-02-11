@@ -96,14 +96,14 @@ MonoBehaviour:
   - {fileID: 113712607117291513}
   predictionDebugIterations: 20
   predictionDebugTimePassed: 3
-  flySpeed: 150
+  flySpeed: 125
   beginMaxDot: -0.2
   continueMaxDot: 0.2
   beginMaxDotDuration: 1
   maxLifetime: 5
   gravityAcceleration: 60
   activateGravityAfter: 0.2
-  autoAimOnClosestFactor: 0.3
+  autoAimOnClosestFactor: 0
   projectileToSpawnOnHit: {fileID: 2592644571071647292, guid: 7d63421fd271fc04fabc8c5ee766e551, type: 3}
 --- !u!54 &1289744956753037696
 Rigidbody:
@@ -221,7 +221,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 2, z: 2}
+  m_Size: {x: 1.5, y: 1.5, z: 1.5}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2762855302227303365
 MonoBehaviour:

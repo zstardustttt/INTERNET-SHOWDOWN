@@ -47,9 +47,13 @@ namespace Game.Projectiles.Crystalline
 
         protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
-            Bounce(point, normal);
-            _previousNormal = normal;
-            _previousPoint = point;
+            if (_lifetime > maxLifetime) DestroyProjectile();
+            else
+            {
+                Bounce(point, normal);
+                _previousNormal = normal;
+                _previousPoint = point;
+            }
         }
 
         private void Bounce(Vector3 point, Vector3 normal)
@@ -98,8 +102,6 @@ namespace Game.Projectiles.Crystalline
 
             rb.linearVelocity = _direction * flySpeed - _gravityTimer * gravityAcceleration * Vector3.up;
             if (_lifetime > activateGravityAfter) _gravityTimer += Time.deltaTime;
-
-            if (_lifetime > maxLifetime) DestroyProjectile();
         }
     }
 }
