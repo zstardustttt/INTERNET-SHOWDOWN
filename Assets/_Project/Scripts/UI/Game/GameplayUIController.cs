@@ -4,6 +4,7 @@ using Game.Events.GameLoop;
 using Game.Events.UI;
 using Game.Systems;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game.UI.Game
 {
@@ -11,6 +12,8 @@ namespace Game.UI.Game
     {
         private GameState _gameState;
         public CanvasGroup canvasGroup;
+        public Image respawnEffect;
+        public float respawnEffectDuration;
 
         [Header("Indicators")]
         public CanvasGroup hitIndicator;
@@ -22,6 +25,8 @@ namespace Game.UI.Game
 
         private void Awake()
         {
+            respawnEffect.gameObject.SetActive(false);
+
             EventBus<OnGameStateChange>.Listen((data) =>
             {
                 _gameState = data.state;
@@ -45,6 +50,30 @@ namespace Game.UI.Game
             EventBus<DamageIndicatorRequest>.Listen((_) => DamageIndicatorAnimation());
             EventBus<PureKillIndicatorRequest>.Listen((_) => PureKillIndicatorAnimation());
             EventBus<UnpureKillIndicatorRequest>.Listen((_) => UnpureKillIndicatorAnimation());
+
+            EventBus<RespawnEffectRequest>.Listen((_) => TriggerRespawnEffect());
+        }
+
+        private Coroutine _respawnEffectCoroutine;
+        private void TriggerRespawnEffect()
+        {
+            if (_respawnEffectCoroutine != null) StopCoroutine(_respawnEffectCoroutine);
+            _respawnEffectCoroutine = StartCoroutine(nameof(CO_RespawnEffect));
+        }
+
+        private IEnumerator CO_RespawnEffect()
+        {
+            respawnEffect.gameObject.SetActive(true);
+
+            var timer = 0f;
+            while (timer < respawnEffectDuration)
+            {
+                respawnEffect.material.SetFloat("_BandHeight", timer / respawnEffectDuration * 3f - 1f);
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            respawnEffect.gameObject.SetActive(false);
         }
 
         private Coroutine _hitIndicatorCoroutine;
@@ -91,6 +120,11 @@ namespace Game.UI.Game
             canvasGroup.alpha = enable ? 1f : 0f;
             canvasGroup.blocksRaycasts = enable;
             canvasGroup.interactable = enable;
+        }
+
+        private void OnDestroy()
+        {
+            respawnEffect.material.SetFloat("_BandHeight", -1f);
         }
     }
 }

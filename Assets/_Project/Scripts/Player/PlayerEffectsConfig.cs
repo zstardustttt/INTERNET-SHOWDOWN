@@ -12,6 +12,7 @@ namespace Game.Player
         public GameObject landAudioSource;
         public GameObject wallSlideAudioSource;
         public GameObject skidAudioSource;
+        public GameObject respawnAudioSource;
 
         [Header("Wall Slide")]
         public float wallSlideVolume;

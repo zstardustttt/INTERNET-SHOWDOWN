@@ -155,7 +155,7 @@ MonoBehaviour:
     depthStrength: 1
     depthThickness: 100
     depthThreshold: 0.1
-    enableColor: 0
+    enableColor: 1
     colorStrength: 1
     colorThickness: 10
     colorThreshold: 0.5

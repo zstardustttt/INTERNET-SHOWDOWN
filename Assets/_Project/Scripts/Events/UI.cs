@@ -14,6 +14,7 @@ namespace Game.Events.UI
     public struct DamageIndicatorRequest : IEvent { }
     public struct PureKillIndicatorRequest : IEvent { }
     public struct UnpureKillIndicatorRequest : IEvent { }
+    public struct RespawnEffectRequest : IEvent { }
 
     public struct LeaderboardEventData
     {

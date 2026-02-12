@@ -4,6 +4,7 @@ using System.Linq;
 using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Events.Player;
+using Game.Events.UI;
 using Game.Inputs;
 using Game.Network.Messages;
 using Game.Other;
@@ -167,6 +168,11 @@ namespace Game.Player
                     player = player,
                     reset = reset,
                 });
+            });
+
+            player.onRespawn.AddListener(() =>
+            {
+                EventBus<RespawnEffectRequest>.Invoke(new());
             });
 
             player.controller = this;

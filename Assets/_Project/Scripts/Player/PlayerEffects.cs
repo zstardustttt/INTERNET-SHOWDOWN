@@ -11,7 +11,7 @@ namespace Game.Player
         public bool serverSide;
         public PlayerEffectsConfig config;
         public Transform audioSourcesContainer;
-        public PlayerBase movement;
+        public PlayerBase player;
 
         private bool _wasOnGround;
 
@@ -25,6 +25,7 @@ namespace Game.Player
         private AudioSource _landAudioSource;
         private AudioSource _wallSlideAudioSource;
         private AudioSource _skidAudioSource;
+        private AudioSource _respawnAudioSource;
 
         private bool Owned => serverSide ? isServer : isOwned;
         [SyncVar] private bool _walled;
@@ -33,7 +34,7 @@ namespace Game.Player
         protected override void OnValidate()
         {
             base.OnValidate();
-            movement = GetComponent<PlayerBase>();
+            player = GetComponent<PlayerBase>();
         }
 
         private void Awake()
@@ -44,6 +45,7 @@ namespace Game.Player
             _landAudioSource = Instantiate(config.landAudioSource, audioSourcesContainer).GetComponent<AudioSource>();
             _wallSlideAudioSource = Instantiate(config.wallSlideAudioSource, audioSourcesContainer).GetComponent<AudioSource>();
             _skidAudioSource = Instantiate(config.skidAudioSource, audioSourcesContainer).GetComponent<AudioSource>();
+            _respawnAudioSource = Instantiate(config.respawnAudioSource, audioSourcesContainer).GetComponent<AudioSource>();
 
             _wallSlideAudioSource.volume = 0f;
         }
@@ -53,12 +55,30 @@ namespace Game.Player
             if (!Owned) return;
             _velocityRecord = new(config.velocityRecordSize);
 
-            movement.onDash.AddListener(OnDash);
-            movement.onJump.AddListener(OnJump);
-            movement.onGroundSlamLanded.AddListener((_) => OnGroundSlamLand());
+            player.onDash.AddListener(OnDash);
+            player.onJump.AddListener(OnJump);
+            player.onGroundSlamLanded.AddListener((_) => OnGroundSlamLand());
 
-            movement.onWalled.AddListener(OnWalled);
-            movement.onUnwalled.AddListener(OnUnwalled);
+            player.onWalled.AddListener(OnWalled);
+            player.onUnwalled.AddListener(OnUnwalled);
+            player.onRespawn.AddListener(OnRespawn);
+
+            if (isOwned) _respawnAudioSource.spatialBlend = 0f;
+        }
+
+        private void OnRespawn()
+        {
+            _respawnAudioSource.Play();
+
+            if (serverSide && isServer) RpcOnRespawn();
+            else if (isOwned) CmdOnRespawn();
+        }
+        [Command]
+        private void CmdOnRespawn() => RpcOnRespawn();
+        [ClientRpc(includeOwner = false)]
+        private void RpcOnRespawn()
+        {
+            _respawnAudioSource.Play();
         }
 
         private void OnWalled(Vector3 normal)
@@ -94,10 +114,9 @@ namespace Game.Player
         }
         [Command]
         private void CmdOnDash() => RpcOnDash();
-        [ClientRpc]
+        [ClientRpc(includeOwner = false)]
         private void RpcOnDash()
         {
-            if (Owned) return;
             _dashAudioSource.Play();
         }
 
@@ -110,10 +129,9 @@ namespace Game.Player
         }
         [Command]
         private void CmdOnJump() => RpcOnJump();
-        [ClientRpc]
+        [ClientRpc(includeOwner = false)]
         private void RpcOnJump()
         {
-            if (Owned) return;
             _jumpPrimaryAudioSource.Play();
         }
 
@@ -126,10 +144,9 @@ namespace Game.Player
         }
         [Command]
         private void CmdOnGroundSlamLand() => RpcOnGroundSlamLand();
-        [ClientRpc]
+        [ClientRpc(includeOwner = false)]
         private void RpcOnGroundSlamLand()
         {
-            if (Owned) return;
             _groundSlamAudioSource.Play();
         }
 
@@ -149,7 +166,7 @@ namespace Game.Player
             // WALL SLIDE
             if (_walled)
             {
-                _wallSlideAudioSource.transform.localPosition = -_wallNormal * movement.motor.Capsule.radius + Vector3.up * movement.motor.Capsule.height / 2f;
+                _wallSlideAudioSource.transform.localPosition = -_wallNormal * player.motor.Capsule.radius + Vector3.up * player.motor.Capsule.height / 2f;
                 _wallSlideAudioSource.volume = Mathf.Min(_wallSlideAudioSource.volume + config.wallSlideVolumeIncreaseRate * Time.deltaTime, config.wallSlideVolume);
             }
             else
@@ -162,13 +179,13 @@ namespace Game.Player
             {
                 var oldVelocity = _velocityRecord.Peek();
                 var diff = new Vector2(_velocity.x, _velocity.z).magnitude - new Vector2(oldVelocity.x, oldVelocity.z).magnitude;
-                if (diff <= config.skidThreshold && movement.motor.GroundingStatus.IsStableOnGround && !_skidAudioSource.isPlaying)
+                if (diff <= config.skidThreshold && player.motor.GroundingStatus.IsStableOnGround && !_skidAudioSource.isPlaying)
                     OnSkid();
             }
 
             // LAND
-            if (movement.motor.GroundingStatus.IsStableOnGround && !_wasOnGround) OnLand();
-            _wasOnGround = movement.motor.GroundingStatus.IsStableOnGround;
+            if (player.motor.GroundingStatus.IsStableOnGround && !_wasOnGround) OnLand();
+            _wasOnGround = player.motor.GroundingStatus.IsStableOnGround;
         }
 
         private void OnSkid()
@@ -180,10 +197,9 @@ namespace Game.Player
         }
         [Command]
         private void CmdOnSkid() => RpcOnSkid();
-        [ClientRpc]
+        [ClientRpc(includeOwner = false)]
         private void RpcOnSkid()
         {
-            if (Owned) return;
             _skidAudioSource.Play();
         }
 
@@ -196,10 +212,9 @@ namespace Game.Player
         }
         [Command]
         private void CmdOnLand() => RpcOnLand();
-        [ClientRpc]
+        [ClientRpc(includeOwner = false)]
         private void RpcOnLand()
         {
-            if (Owned) return;
             _landAudioSource.Play();
         }
     }
