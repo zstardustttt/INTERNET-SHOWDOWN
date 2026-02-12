@@ -19,7 +19,7 @@ namespace Game.Items.Psycheshock
 
         private LinkedShurikensManager _manager;
 
-        public override bool Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] args)
+        public override bool Use(PlayerBase user, ItemUseClientContext context)
         {
             var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHitPoint - context.visualPosition) : context.visualRotation;
             var proj = Projectile.Spawn(projectilePrefab, user, context.headPosition, context.visualPosition, finalRotation);

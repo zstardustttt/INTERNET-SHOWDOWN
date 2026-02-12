@@ -5,10 +5,11 @@ namespace Game.Core.Items
 {
     public abstract class Item : MonoBehaviour
     {
+        public ItemArgument[] args;
         public Vector3 offset;
 
         // Called on the server
-        public abstract bool Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] args);
+        public abstract bool Use(PlayerBase user, ItemUseClientContext context);
 
         public void Sway(Vector2 cameraMoveDelta, Vector3 velocity, Transform orientation)
         {

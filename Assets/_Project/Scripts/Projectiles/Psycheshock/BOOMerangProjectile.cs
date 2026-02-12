@@ -77,15 +77,20 @@ namespace Game.Projectiles.Psycheshock
         {
             if (!secondary)
             {
-                if (_lifetime <= LoopDuration / 2f + 0.025f) return;
+                if (_lifetime <= LoopDuration / 2f + 0.05f) return;
                 if (_lifetime >= LoopDuration && _lifetime <= LoopDuration + 0.035f) return;
             }
 
+            Explode(point, normal);
+        }
+
+        private void Explode(Vector3 point, Vector3 explosionUp)
+        {
             var explosion = Instantiate(explosionPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
             {
                 scene = MapLoader.loadedMap.scene
             });
-            explosion.transform.up = normal;
+            explosion.transform.up = explosionUp;
 
             var radialDamage = explosion.GetComponent<RadialDamage>();
             radialDamage.owner = _owner;
@@ -120,6 +125,12 @@ namespace Game.Projectiles.Psycheshock
 
             if (!NetworkServer.active) return;
             if (secondary) return;
+
+            if (_lifetime >= LoopDuration * 2f)
+            {
+                Explode(transform.position, transform.up);
+                return;
+            }
 
             var t = _lifetime / LoopDuration;
             var position = GetBezierPosition(wishPosition, _owner.verticalOrientation.position, t);

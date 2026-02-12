@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 937fe95e35bb2794c981f33e2d8fd81d
+guid: 12bdfd89006fcde42bff3a521ffda690
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -8,47 +8,37 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Base
-    second: {fileID: 2100000, guid: d075b4536971abd4eb36f64dfac1b444, type: 2}
+    second: {fileID: 2100000, guid: 6f205c12af2bb074482373ac7508eb9a, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: CircutBase
-    second: {fileID: 2100000, guid: bb1f36c81a740524181f9c44bd93899f, type: 2}
+      name: Edge
+    second: {fileID: 2100000, guid: 4186c1f80da48a3418486429bf42da23, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Cyan
-    second: {fileID: 2100000, guid: ed42126614d1ad14b8e86c9684cb1b24, type: 2}
+      name: Holder
+    second: {fileID: 2100000, guid: 9f8266492e7e06a4f9a5bc546ef93812, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Display
-    second: {fileID: 2100000, guid: ab56b62865f2f814ab229552c6697279, type: 2}
+      name: MiddleGlow
+    second: {fileID: 2100000, guid: 555e5245a12c29044a8edaac20ec396a, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Handle
-    second: {fileID: 2100000, guid: ee07b46f1472d3f4cb58b7b2566538bf, type: 2}
+      name: Ring
+    second: {fileID: 2100000, guid: 029ca2ae2037ced41b6515a1fdc95992, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Magenta
-    second: {fileID: 2100000, guid: 06fcf1d46c561c547af21295da6ab7fb, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Metal
-    second: {fileID: 2100000, guid: 7d597b53bb1a3da419869fe6560985ad, type: 2}
+      name: SideGlow
+    second: {fileID: 2100000, guid: a9cfac970e6987445bbb750c0305f84a, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Wire
     second: {fileID: 2100000, guid: 92eace5a905693f49a11a5db7b837d47, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Yellow
-    second: {fileID: 2100000, guid: 63873b94bc73a1848b79b80e2f47be55, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

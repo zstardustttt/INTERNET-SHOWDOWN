@@ -10,7 +10,7 @@ namespace Game.Items.Crystalline
     {
         public AcophystProjectile projectile;
 
-        public override bool Use(PlayerBase user, ItemUseClientContext context, ItemArgument[] _)
+        public override bool Use(PlayerBase user, ItemUseClientContext context)
         {
             var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHitPoint - context.visualPosition) : context.visualRotation;
             var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, finalRotation);

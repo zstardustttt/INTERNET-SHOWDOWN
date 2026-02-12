@@ -185,14 +185,14 @@ namespace Game.Player
         [Server]
         public void SetItem(ItemConfig item, params ItemArgument[] args)
         {
+            currentItemArgs = args;
+
             var rarityIdx = Array.IndexOf(ItemPool.rarities, item.rarity);
             itemData = new()
             {
                 rarityIndex = rarityIdx,
                 itemIndex = ItemPool.items[rarityIdx].IndexOf(item)
             };
-
-            currentItemArgs = args;
         }
 
         [Server]
@@ -449,6 +449,8 @@ namespace Game.Player
             if (_new.itemIndex != -1)
             {
                 item = Instantiate(ItemPool.items[_new.rarityIndex][_new.itemIndex].prefab, itemHolder).GetComponent<Item>();
+                item.args = currentItemArgs;
+
                 if (isLocalPlayer)
                 {
                     var layer = LayerMask.NameToLayer("ItemVisual");
@@ -559,7 +561,7 @@ namespace Game.Player
         {
             if (!item || inputLocks != 0) return;
 
-            if (item.Use(this, context, currentItemArgs))
+            if (item.Use(this, context))
             {
                 itemData = ItemData.Default();
                 currentItemArgs = Array.Empty<ItemArgument>();
