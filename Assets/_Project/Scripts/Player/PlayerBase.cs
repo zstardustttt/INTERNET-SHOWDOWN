@@ -184,6 +184,12 @@ namespace Game.Player
         private Vector3 _prevTransientPosition;
 
         [Server]
+        public void OnAddedToMap()
+        {
+            damageReceiver.Register(new Guid(playerGuid));
+        }
+
+        [Server]
         public void SetItem(ItemConfig item, params ItemArgument[] args)
         {
             currentItemArgs = args;

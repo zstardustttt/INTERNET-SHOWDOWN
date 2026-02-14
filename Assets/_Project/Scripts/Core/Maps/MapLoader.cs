@@ -76,7 +76,7 @@ namespace Game.Core.Maps
             {
                 loadedMap.players.Add(player.playerGuid, player);
                 EventBus<OnAddPlayerOnMap>.Invoke(new() { player = player });
-                player.damageReceiver.Register(new Guid(player.playerGuid));
+                player.OnAddedToMap();
             }
             return true;
         }
