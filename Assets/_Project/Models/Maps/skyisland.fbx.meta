@@ -24,6 +24,16 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: props
     second: {fileID: 2100000, guid: 37a57c8928d2b4242be223be78993e06, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: water
+    second: {fileID: 2100000, guid: 32f7a655037368541a3bdaed7c98ccd4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: windows
+    second: {fileID: 2100000, guid: 0190490049fc08245aebf44ac3917422, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

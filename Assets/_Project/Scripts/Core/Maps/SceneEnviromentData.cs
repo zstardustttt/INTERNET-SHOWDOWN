@@ -24,6 +24,7 @@ namespace Game.Core.Maps
         [Space(9)]
         public DefaultReflectionMode defaultReflectionMode;
         public int defaultReflectionResolution;
+        public Texture customReflectionTexture;
         public float reflectionIntensity;
         public int reflectionBounces;
 
@@ -54,6 +55,7 @@ namespace Game.Core.Maps
 
             defaultReflectionMode = RenderSettings.defaultReflectionMode;
             defaultReflectionResolution = RenderSettings.defaultReflectionResolution;
+            customReflectionTexture = RenderSettings.customReflectionTexture;
             reflectionIntensity = RenderSettings.reflectionIntensity;
             reflectionBounces = RenderSettings.reflectionBounces;
 
@@ -81,6 +83,7 @@ namespace Game.Core.Maps
 
             RenderSettings.defaultReflectionMode = defaultReflectionMode;
             RenderSettings.defaultReflectionResolution = defaultReflectionResolution;
+            RenderSettings.customReflectionTexture = customReflectionTexture;
             RenderSettings.reflectionIntensity = reflectionIntensity;
             RenderSettings.reflectionBounces = reflectionBounces;
 
