@@ -67,7 +67,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         private void OnDamageReceived(DamageDealer dealer, float _)
         {
             if (dealer.damageType == DamageType.None || _attached) return;
-            if (dealer.owner) _owner = dealer.owner;
+            if (dealer.damageType == DamageType.Direct && dealer.owner) _owner = dealer.owner;
             Explode();
         }
 
@@ -109,7 +109,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
         private void OnAttachedReceiveDamage(DamageDealer dealer)
         {
-            if (dealer.owner) _owner = dealer.owner;
+            if (dealer.damageType == DamageType.Direct && dealer.owner) _owner = dealer.owner;
             Explode();
         }
 

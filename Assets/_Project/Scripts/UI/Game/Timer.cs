@@ -40,7 +40,7 @@ namespace Game.UI.Game
             }
             else if (_gameState.phase.type == GamePhaseType.Preparation)
             {
-                var countdown = Mathf.CeilToInt(_gameState.phase.info.duration - _gameState.phase.SecondsSinceEntered);
+                var countdown = Mathf.RoundToInt(_gameState.phase.info.duration - _gameState.phase.SecondsSinceEntered);
                 if (TimerUpdate(FormatCountdown(countdown)))
                 {
                     if (countdown == 3) PlayVoiceline(voicelineThreeAudioResource);
