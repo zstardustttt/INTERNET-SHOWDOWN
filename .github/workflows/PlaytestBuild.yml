@@ -1,6 +1,9 @@
 name: Build project for playtest
 
-on: push
+on:
+  push:
+    tags:
+      - "playtest"
 
 jobs:
   buildForAllSupportedPlatforms:
