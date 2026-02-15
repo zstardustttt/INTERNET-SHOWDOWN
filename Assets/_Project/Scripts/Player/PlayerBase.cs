@@ -103,21 +103,21 @@ namespace Game.Player
         {
             public int rarityIndex;
             public int itemIndex;
+            public ItemArgument[] arguments;
 
             public static ItemData Default()
             {
                 return new()
                 {
                     rarityIndex = 0,
-                    itemIndex = -1
+                    itemIndex = -1,
+                    arguments = Array.Empty<ItemArgument>()
                 };
             }
         }
 
         [SyncVar(hook = nameof(OnItemChange))] public ItemData itemData;
         public Item item;
-
-        public ItemArgument[] currentItemArgs;
 
         public struct DamageCapture
         {
@@ -192,13 +192,12 @@ namespace Game.Player
         [Server]
         public void SetItem(ItemConfig item, params ItemArgument[] args)
         {
-            currentItemArgs = args;
-
             var rarityIdx = Array.IndexOf(ItemPool.rarities, item.rarity);
             itemData = new()
             {
                 rarityIndex = rarityIdx,
-                itemIndex = ItemPool.items[rarityIdx].IndexOf(item)
+                itemIndex = ItemPool.items[rarityIdx].IndexOf(item),
+                arguments = args
             };
         }
 
@@ -233,7 +232,8 @@ namespace Game.Player
             itemData = new()
             {
                 rarityIndex = rarityIdx,
-                itemIndex = itemIdx
+                itemIndex = itemIdx,
+                arguments = Array.Empty<ItemArgument>()
             };
         }
 
@@ -291,7 +291,6 @@ namespace Game.Player
         {
             _damageHistory.Clear();
             itemData = ItemData.Default();
-            currentItemArgs = Array.Empty<ItemArgument>();
             health = config.maxHealth;
             dead = false;
             onResetPlayer.Invoke();
@@ -429,7 +428,6 @@ namespace Game.Player
                     damageReceiver.active = false;
 
                     itemData = ItemData.Default();
-                    currentItemArgs = Array.Empty<ItemArgument>();
                     motorLocks++;
                 }
                 else
@@ -458,7 +456,8 @@ namespace Game.Player
             if (_new.itemIndex != -1)
             {
                 item = Instantiate(ItemPool.items[_new.rarityIndex][_new.itemIndex].prefab, itemHolder).GetComponent<Item>();
-                item.args = currentItemArgs;
+                item.holder = this;
+                item.arguments = _new.arguments;
 
                 if (isLocalPlayer)
                 {
@@ -571,10 +570,7 @@ namespace Game.Player
             if (!item || inputLocks != 0) return;
 
             if (item.Use(this, context))
-            {
                 itemData = ItemData.Default();
-                currentItemArgs = Array.Empty<ItemArgument>();
-            }
             else TargetRestartItemAnimation();
         }
 

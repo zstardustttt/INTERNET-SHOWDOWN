@@ -5,7 +5,8 @@ namespace Game.Core.Items
 {
     public abstract class Item : MonoBehaviour
     {
-        public ItemArgument[] args;
+        public PlayerBase holder;
+        public ItemArgument[] arguments;
         public Vector3 offset;
 
         // Called on the server

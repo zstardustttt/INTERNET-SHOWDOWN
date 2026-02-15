@@ -114,7 +114,10 @@ namespace Game.Projectiles.Psycheshock
             else if (dealer == grabHitBox)
             {
                 if (player != _owner || _lifetime < LoopDuration / 2f) return;
-                _owner.SetItem(boomerangItem, new BOOMerangDamageMultiplier() { damageMultiplier = damageMultiply, returns = returns + 1 });
+                _owner.SetItem(boomerangItem,
+                    new IntItemArgument("boomerang_damage_multiplier", damageMultiply),
+                    new IntItemArgument("boomerang_returns", returns + 1)
+                );
                 DestroyProjectile();
             }
         }

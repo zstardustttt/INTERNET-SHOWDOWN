@@ -4,6 +4,7 @@ using Game.Events.GameLoop;
 using Game.Systems;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Game.UI.Game
 {
@@ -11,10 +12,16 @@ namespace Game.UI.Game
     {
         public TMP_Text timerText;
         public TextEffect textEffect;
-        private GameState _gameState;
+        public AudioSource voicelineAudioSource;
+        public AudioResource voicelineOneAudioResource;
+        public AudioResource voicelineTwoAudioResource;
+        public AudioResource voicelineThreeAudioResource;
+        public AudioResource voicelineGoAudioResource;
+        public AudioResource voicelineTimesUpAudioResource;
 
         private string _text;
         private string _previousText;
+        private GameState _gameState;
 
         private void Awake()
         {
@@ -26,7 +33,21 @@ namespace Game.UI.Game
         {
             if (_gameState.phase.type == GamePhaseType.Finish)
             {
-                TimerUpdate("Time's up!");
+                if (TimerUpdate("Time's up!"))
+                {
+                    PlayVoiceline(voicelineTimesUpAudioResource);
+                }
+            }
+            else if (_gameState.phase.type == GamePhaseType.Preparation)
+            {
+                var countdown = Mathf.CeilToInt(_gameState.phase.info.duration - _gameState.phase.SecondsSinceEntered);
+                if (TimerUpdate(FormatCountdown(countdown)))
+                {
+                    if (countdown == 3) PlayVoiceline(voicelineThreeAudioResource);
+                    else if (countdown == 2) PlayVoiceline(voicelineTwoAudioResource);
+                    else if (countdown == 1) PlayVoiceline(voicelineOneAudioResource);
+                    else if (countdown == 0) PlayVoiceline(voicelineGoAudioResource);
+                }
             }
             else
             {
@@ -42,9 +63,9 @@ namespace Game.UI.Game
             return minutes == 0 ? seconds.ToString() : string.Format("{0}:{1:00}", minutes, seconds);
         }
 
-        private void TimerUpdate(string newText)
+        private bool TimerUpdate(string newText)
         {
-            if (_text == newText) return;
+            if (_text == newText) return false;
 
             _previousText = _text;
             _text = newText;
@@ -84,13 +105,21 @@ namespace Game.UI.Game
                 finalText = _text.Insert(_text.Length - 1, "<link=AMov+ACol>");
                 finalText = finalText.Insert(finalText.Length, "</link>");
             }
-            else return;
+            else return true;
 
             timerText.text = finalText;
             timerText.Rebuild(UnityEngine.UI.CanvasUpdate.PreRender);
             textEffect.AddTagEffects(timerText.textInfo.linkInfo, timerText.textInfo.linkCount);
             textEffect.StartManualTagEffects();
             textEffect.StartManualEffect("Bounce");
+
+            return true;
+        }
+
+        public void PlayVoiceline(AudioResource voiceline)
+        {
+            voicelineAudioSource.resource = voiceline;
+            voicelineAudioSource.Play();
         }
     }
 }

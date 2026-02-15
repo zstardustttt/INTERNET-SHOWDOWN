@@ -13,40 +13,28 @@ namespace Game.Items.Psycheshock
         public Transform visual;
 
         private ShakeGenerator _shakeGenerator;
-        private BOOMerangDamageMultiplier _parsedArg;
+        private int _parsedDamageMultiplier;
+        private int _parsedReturns;
 
         private void Start()
         {
-            foreach (var arg in args)
-            {
-                if (arg is not BOOMerangDamageMultiplier dmarg) continue;
+            _parsedDamageMultiplier = arguments.ParseArgument("boomerang_damage_multiplier", 1);
+            _parsedReturns = arguments.ParseArgument("boomerang_returns", 0);
 
-                _parsedArg = dmarg;
-                break;
-            }
-
-            if (_parsedArg != null)
-            {
-                _shakeGenerator = new();
-                _shakeGenerator.Shake(0.001f * _parsedArg.returns * _parsedArg.returns, 7f, 0f);
-            }
+            _shakeGenerator = new();
+            _shakeGenerator.Shake(0.0001f * Mathf.Pow(_parsedReturns, 3f), 7f, 0f);
         }
 
         private void Update()
         {
-            if (_shakeGenerator != null) visual.localPosition = _shakeGenerator.GetShake();
+            visual.localPosition = _shakeGenerator.GetShake();
         }
 
         public override bool Use(PlayerBase user, ItemUseClientContext context)
         {
             var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, context.visualRotation);
-
-            if (_parsedArg != null)
-            {
-                proj.damageMultiply = _parsedArg.damageMultiplier;
-                proj.returns = _parsedArg.returns;
-            }
-            else proj.damageMultiply = 1;
+            proj.damageMultiply = _parsedDamageMultiplier;
+            proj.returns = _parsedReturns;
 
             var secondary = proj.returns > proj.maxReturns || context.secondary;
             proj.secondary = secondary;
@@ -82,11 +70,5 @@ namespace Game.Items.Psycheshock
             proj.SetupPrediction(context.useTime, 2);
             return true;
         }
-    }
-
-    public class BOOMerangDamageMultiplier : ItemArgument
-    {
-        public int damageMultiplier;
-        public int returns;
     }
 }
