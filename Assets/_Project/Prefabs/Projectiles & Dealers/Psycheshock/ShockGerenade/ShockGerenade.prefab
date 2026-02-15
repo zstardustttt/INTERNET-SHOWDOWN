@@ -61,7 +61,6 @@ MonoBehaviour:
   collisionLayerMask:
     serializedVersion: 2
     m_Bits: 2048
-  collisionMethod: 0
   onCollision:
     m_PersistentCalls:
       m_Calls: []
@@ -360,12 +359,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  coll: {fileID: 3814544164326343549}
-  receiverName: 
   active: 1
   onDamage:
     m_PersistentCalls:
       m_Calls: []
+  coll: {fileID: 3814544164326343549}
   ignoreDealers:
   - {fileID: 1595082852376827780}
   previousObservedPosition: {x: 0, y: 0, z: 0}
@@ -441,16 +439,15 @@ MonoBehaviour:
   hitScanCount: 0
   owner: {fileID: 0}
   coll: {fileID: 6595121199782008432}
-  dealerName: Shock Gerenade
-  damageType: 1
-  canDamageOwner: 0
-  singleHitScan: 0
-  knockbackForce: 0
   active: 1
+  damageType: 0
+  singleHitScan: 0
+  canDamageOwner: 0
+  knockbackForce: 0
   onHit:
     m_PersistentCalls:
       m_Calls: []
-  baseDamage: 40
+  baseDamage: 0
 --- !u!1 &3518234589100789453
 GameObject:
   m_ObjectHideFlags: 0

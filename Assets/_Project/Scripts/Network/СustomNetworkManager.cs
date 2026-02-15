@@ -14,6 +14,8 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+using Random = UnityEngine.Random;
+
 namespace Game.Network
 {
     public class CustomNetworkManager : NetworkManager
@@ -40,6 +42,8 @@ namespace Game.Network
 
                 var sceneName = MapLoader.loadedMap.config.sceneName;
                 conn.Send(new SceneMessage() { sceneName = sceneName, sceneOperation = SceneOperation.LoadAdditive });
+                var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
+                conn.identity.GetComponent<PlayerBase>().ServerMovePlayer(position);
                 conn.Send<ServerConfirmPlayerEnteredMatch>(new());
             });
 

@@ -75,12 +75,11 @@ MonoBehaviour:
   hitScanCount: 0
   owner: {fileID: 0}
   coll: {fileID: 7681473800882726293}
-  dealerName: BOOMerang Explosion
-  canDamageOwner: 0
+  active: 1
   damageType: 2
   singleHitScan: 1
+  canDamageOwner: 0
   knockbackForce: 75
-  active: 1
   onHit:
     m_PersistentCalls:
       m_Calls: []

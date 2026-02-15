@@ -12,6 +12,7 @@ namespace Game.Core.Damage
         None,
         Direct,
         Indirect,
+        Continuous
     }
 
     [RequireComponent(typeof(Collider))]
@@ -24,23 +25,14 @@ namespace Game.Core.Damage
         [HideInInspector] public int hitScanCount;
 
         [HideInInspector] public PlayerBase owner;
+        [HideInInspector] public Collider coll;
 
-        [Header("Objects")]
-        public Collider coll;
-
-        [Header("Identification")]
-        public string dealerName;
-        public DamageType damageType;
-
-        [Header("Base Properties")]
-        public bool canDamageOwner;
-        [Tooltip("Allows only one hit scan per dealer's lifetime")] public bool singleHitScan;
-        public float knockbackForce;
-
-        [Header("Other")]
         public bool active = true;
+        public DamageType damageType;
+        [Tooltip("Allows only one hit scan per dealer's lifetime")] public bool singleHitScan;
+        public bool canDamageOwner;
+        public float knockbackForce;
         public UnityEvent<DamageReceiver, float> onHit = new();
-
         public abstract float EvaluateDamage(DamageReceiver receiver);
 
         private void OnValidate()

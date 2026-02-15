@@ -12,16 +12,9 @@ namespace Game.Core.Damage
     public class DamageReceiver : NetworkBehaviour
     {
         public Guid Guid { get; private set; }
-
-        [Header("Objects")]
-        public Collider coll;
-
-        [Header("Identification")]
-        public string receiverName;
-
-        [Header("Other")]
         public bool active = true;
         public UnityEvent<DamageDealer, float> onDamage = new();
+        public Collider coll;
         public List<DamageDealer> ignoreDealers = new();
 
         [HideInInspector] public Vector3 previousObservedPosition;

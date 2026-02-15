@@ -71,16 +71,15 @@ MonoBehaviour:
   hitScanCount: 0
   owner: {fileID: 0}
   coll: {fileID: 140443639753249438}
-  dealerName: 
-  damageType: 1
-  canDamageOwner: 0
-  singleHitScan: 0
-  knockbackForce: 0
   active: 1
+  damageType: 1
+  singleHitScan: 0
+  canDamageOwner: 0
+  knockbackForce: 0
   onHit:
     m_PersistentCalls:
       m_Calls: []
-  baseDamage: 40
+  baseDamage: 50
 --- !u!1 &5419103293203108044
 GameObject:
   m_ObjectHideFlags: 0
@@ -471,7 +470,6 @@ MonoBehaviour:
   collisionLayerMask:
     serializedVersion: 2
     m_Bits: 2048
-  collisionMethod: 0
   onCollision:
     m_PersistentCalls:
       m_Calls: []

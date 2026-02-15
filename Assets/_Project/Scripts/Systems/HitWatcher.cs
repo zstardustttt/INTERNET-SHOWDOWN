@@ -128,8 +128,6 @@ namespace Game.Systems
 
                         if (!dealer.active) continue;
                         if (dealer.singleHitScan && dealer.hitScanCount > 0) continue;
-
-                        if (receiver.coll == dealer.coll) continue;
                         if (receiver.ignoreDealers.Contains(dealer)) continue;
                         ReceiverDealerCheck(receiver, dealer, receiver.previousObservedPosition, receiver.observedDelta, dealer.previousObservedPosition, dealer.observedDelta);
                     }
@@ -166,9 +164,7 @@ namespace Game.Systems
             foreach (var (_, receiver) in _receivers)
             {
                 if (!receiver || !receiver.active) continue;
-                if (receiver.coll == dealer.coll) continue;
                 if (receiver.ignoreDealers.Contains(dealer)) continue;
-
                 ReplaceReceiverCheckCollider(receiver);
                 ReceiverDealerCheck(receiver, dealer, receiver.previousObservedPosition, receiver.observedDelta, point1, point2 - point1);
             }
@@ -214,7 +210,7 @@ namespace Game.Systems
 
             EventBus<OnRegisterHit>.Invoke(new() { dealer = dealer, receiver = receiver });
             var ownerName = dealer.owner ? dealer.owner.gameObject.name : "none";
-            Debug.Log($"{dealer.damageType} hit! on: {receiver.receiverName} from: {dealer.dealerName} by: {ownerName} at: {point} damage: {damage}");
+            Debug.Log($"{dealer.damageType} hit! on: {receiver.gameObject.name} from: {dealer.transform.root.name} by: {ownerName} at: {point} damage: {damage}");
         }
     }
 }

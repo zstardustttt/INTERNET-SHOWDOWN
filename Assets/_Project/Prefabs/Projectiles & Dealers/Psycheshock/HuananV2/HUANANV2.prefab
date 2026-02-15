@@ -85,7 +85,6 @@ MonoBehaviour:
   collisionLayerMask:
     serializedVersion: 2
     m_Bits: 3072
-  collisionMethod: 0
   onCollision:
     m_PersistentCalls:
       m_Calls: []
@@ -296,12 +295,11 @@ MonoBehaviour:
   hitScanCount: 0
   owner: {fileID: 0}
   coll: {fileID: 6480257299289842357}
-  dealerName: HuananV2
-  canDamageOwner: 0
+  active: 1
   damageType: 1
   singleHitScan: 0
+  canDamageOwner: 0
   knockbackForce: 0
-  active: 1
   onHit:
     m_PersistentCalls:
       m_Calls: []

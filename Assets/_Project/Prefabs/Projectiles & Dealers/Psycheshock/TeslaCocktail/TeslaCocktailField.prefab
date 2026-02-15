@@ -5093,17 +5093,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54908c08bb3f98e4592d3b2e227e279a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Projectiles.RadialDamage
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   hitScanCount: 0
   owner: {fileID: 0}
   coll: {fileID: 1835711590667591631}
-  dealerName: Tesla Cocktail Field
-  canDamageOwner: 1
+  active: 1
   damageType: 2
   singleHitScan: 0
+  canDamageOwner: 1
   knockbackForce: 0
-  active: 1
   onHit:
     m_PersistentCalls:
       m_Calls: []

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Game.Core.Damage;
 using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Events.Player;
@@ -235,7 +234,7 @@ namespace Game.Player
 #if DEBUG
             if (NetworkServer.active && Input.GetKeyDown(KeyCode.F2))
             {
-                player.Damage(10f, null, false);
+                player.Damage(10f, null);
             }
 
             if (NetworkServer.active && Input.GetKeyDown(KeyCode.F3))

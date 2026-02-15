@@ -424,12 +424,11 @@ MonoBehaviour:
   hitScanCount: 0
   owner: {fileID: 0}
   coll: {fileID: 8255508435612688206}
-  dealerName: Acophyst Level 1
-  canDamageOwner: 0
+  active: 1
   damageType: 2
   singleHitScan: 0
+  canDamageOwner: 0
   knockbackForce: 0
-  active: 1
   onHit:
     m_PersistentCalls:
       m_Calls: []

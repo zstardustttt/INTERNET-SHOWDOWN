@@ -131,13 +131,13 @@ namespace Game.Player
 
         [SyncVar(hook = nameof(OnMotorLocksChanged))] public int motorLocks;
         [SyncVar(hook = nameof(OnInputLocksChanged))] public int inputLocks;
-        [SyncVar(hook = nameof(OnHitLocksChanged))] public int hitLocks;
-        [SyncVar(hook = nameof(OnDamageLocksChanged))] public int damageLocks;
 
         private void OnMotorLocksChanged(int old, int _new)
         {
             if (_new < 0)
+            {
                 Debug.LogWarning($"Motor locks counter on player {gameObject.name} is less than zero ({_new})");
+            }
 
             if (!_handlingThisPlayer) return;
             motor.enabled = _new == 0;
@@ -146,41 +146,28 @@ namespace Game.Player
         private void OnInputLocksChanged(int old, int _new)
         {
             if (_new < 0)
+            {
                 Debug.LogWarning($"Input locks counter on player {gameObject.name} is less than zero ({_new})");
+            }
         }
 
-        private void OnHitLocksChanged(int old, int _new)
-        {
-            if (_new < 0)
-                Debug.LogWarning($"Hit locks counter on player {gameObject.name} is less than zero ({_new})");
-
-            if (!NetworkServer.active) return;
-            damageReceiver.active = _new == 0;
-        }
-
-        private void OnDamageLocksChanged(int old, int _new)
-        {
-            if (_new < 0)
-                Debug.LogWarning($"Damage locks counter on player {gameObject.name} is less than zero ({_new})");
-        }
-
-        private bool _invincible;
-        private float _invincibleTimer;
+        [SyncVar] public bool invincible;
+        private float _invincibleTimer; // server only
 
         [Server]
         public void ForceRemoveInvincibility()
         {
-            if (_invincible) damageLocks--;
-            _invincible = false;
             _invincibleTimer = 0f;
+            invincible = false;
+            damageReceiver.active = true;
         }
 
         [Server]
         public void ActivateInvincibility(float duration)
         {
-            if (!_invincible) damageLocks++;
-            _invincible = true;
             _invincibleTimer = duration;
+            invincible = true;
+            damageReceiver.active = false;
         }
 
         private bool _guidReceived;
@@ -197,22 +184,9 @@ namespace Game.Player
         private Vector3 _prevTransientPosition;
 
         [Server]
-        public void OnAddedToMap(Map map)
+        public void OnAddedToMap()
         {
             damageReceiver.Register(new Guid(playerGuid));
-            damageReceiver.receiverName = playerName;
-
-            var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, map.info.spawnPoints.Length)].position;
-            ServerMovePlayer(position);
-        }
-
-        [Server]
-        public void OnRemovedFromMap(Map map)
-        {
-            damageReceiver.Unregister();
-
-            ServerMovePlayer(Vector3.zero);
-            ResetPlayer();
         }
 
         [Server]
@@ -346,23 +320,19 @@ namespace Game.Player
             }
 
             if (dealer.owner == this && !dealer.canDamageOwner) return;
-            if (dealer.damageType != DamageType.None)
-            {
-                if (dealer.owner && dealer.owner != this)
-                    dealer.owner.RegisterHit(dealer.damageType);
-            }
+            if (dealer.damageType == DamageType.None) return;
 
-            Damage(damage, dealer.owner, true);
+            Damage(damage, dealer.owner);
+            if (dealer.owner && dealer.owner != this)
+                dealer.owner.RegisterHit(dealer.damageType);
+
             onReceiveDamage.Invoke(dealer);
         }
 
         [Server]
-        public void Damage(float damage, PlayerBase author, bool activateInvincibility)
+        public void Damage(float damage, PlayerBase author, bool activateInvincibility = true)
         {
-            if (damageLocks != 0) return;
-
             _damageHistory.Push(new() { damage = damage, author = author });
-
             health -= damage;
             if (activateInvincibility) ActivateInvincibility(config.damageInvincibilityDuration);
             onDamage.Invoke();
@@ -455,11 +425,10 @@ namespace Game.Player
                 if (_new)
                 {
                     _respawnTimer = config.respawnDuration;
+                    damageReceiver.active = false;
 
                     itemData = ItemData.Default();
                     motorLocks++;
-                    damageLocks++;
-                    hitLocks++;
                 }
                 else
                 {
@@ -471,8 +440,6 @@ namespace Game.Player
                     ResetPlayer();
                     ActivateInvincibility(config.deathInvincibilityDuration);
                     motorLocks--;
-                    damageLocks--;
-                    hitLocks--;
                 }
             }
 
@@ -553,14 +520,14 @@ namespace Game.Player
             if (!NetworkServer.active) return;
 
             // Handle invincibility
-            if (_invincible)
+            if (!dead)
             {
-                if (_invincibleTimer <= 0f)
+                _invincibleTimer -= Time.deltaTime;
+                if (_invincibleTimer <= 0f && invincible)
                 {
-                    _invincible = false;
-                    damageLocks--;
+                    invincible = false;
+                    damageReceiver.active = true;
                 }
-                else _invincibleTimer -= Time.deltaTime;
             }
 
             // Teleport back if clipped out of bounds
