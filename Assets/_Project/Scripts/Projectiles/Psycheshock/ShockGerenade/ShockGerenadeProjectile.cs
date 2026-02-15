@@ -39,9 +39,6 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         private Vector3 _previousAttachedPosition;
         private float _collectedAttachedDelta;
 
-        private float _damageInterval;
-        private float _damageTimer;
-
         private ShakeGenerator _shakeGenerator;
         private bool _exploded;
 
@@ -100,7 +97,6 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             _attached = player;
             _attached.onReceiveDamage.AddListener(OnAttachedReceiveDamage);
             _attached.onDeath.AddListener(Detach);
-            _damageInterval = _attached.config.damageInvincibilityDuration;
             _previousAttachedPosition = player.transform.position;
 
             TargetSpawnVisual(_attached.netIdentity.connectionToClient);
@@ -163,7 +159,6 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             }
 
             MainUpdate();
-            if (_damageTimer > 0f) _damageTimer -= Time.deltaTime;
         }
 
         private void MainUpdate()
@@ -185,17 +180,6 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
                 }
 
                 if (_collectedAttachedDelta >= detachTotalDelta) Detach();
-                else
-                {
-                    if (_damageTimer <= 0f)
-                    {
-                        _attached.Damage(holdDamage, _owner, false);
-                        if (_owner) _owner.RegisterHit(DamageType.Continuous);
-                        _damageTimer = _damageInterval;
-                    }
-
-                    return;
-                }
             }
 
             if (_lifetime <= activateGravityAfter || _attached) return;

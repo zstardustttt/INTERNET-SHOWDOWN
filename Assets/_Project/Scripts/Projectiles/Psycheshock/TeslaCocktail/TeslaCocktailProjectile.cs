@@ -24,7 +24,7 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
             field.transform.up = normal;
             field.GetComponent<DamageDealer>().owner = _owner;
             NetworkServer.Spawn(field);
-            NetworkServer.Destroy(gameObject);
+            DestroyProjectile();
         }
 
         public override ProjectilePredictionData Predict(float timePassed)

@@ -71,11 +71,12 @@ MonoBehaviour:
   hitScanCount: 0
   owner: {fileID: 0}
   coll: {fileID: 2917248093975008040}
-  active: 1
-  damageType: 0
-  singleHitScan: 0
+  dealerName: Tesla Cocktail
+  damageType: 1
   canDamageOwner: 0
+  singleHitScan: 0
   knockbackForce: 0
+  active: 1
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -301,6 +302,7 @@ MonoBehaviour:
   collisionLayerMask:
     serializedVersion: 2
     m_Bits: 2048
+  collisionMethod: 0
   onCollision:
     m_PersistentCalls:
       m_Calls: []

@@ -6,7 +6,6 @@ namespace Game.Player
     public struct PlayerStats : IEquatable<PlayerStats>
     {
         public int activity;
-        public int continuousHits;
         public int indirectHits;
         public int directHits;
         public int supportingKills;
@@ -17,10 +16,6 @@ namespace Game.Player
         {
             switch (type)
             {
-                case DamageType.Continuous:
-                    continuousHits++;
-                    break;
-
                 case DamageType.Indirect:
                     indirectHits++;
                     break;
@@ -37,7 +32,6 @@ namespace Game.Player
         public readonly bool Equals(PlayerStats other)
         {
             return activity.Equals(other.activity)
-                && continuousHits.Equals(other.continuousHits)
                 && indirectHits.Equals(other.indirectHits)
                 && directHits.Equals(other.directHits)
                 && supportingKills.Equals(other.supportingKills)
@@ -47,8 +41,7 @@ namespace Game.Player
 
         public readonly int GetScore()
         {
-            return continuousHits
-                + indirectHits * 2
+            return indirectHits * 1
                 + directHits * 3
                 + supportingKills * 2
                 + finishingKills * 2

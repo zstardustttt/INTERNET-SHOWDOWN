@@ -76,7 +76,7 @@ namespace Game.Core.Maps
             {
                 loadedMap.players.Add(player.playerGuid, player);
                 EventBus<OnAddPlayerOnMap>.Invoke(new() { player = player });
-                player.OnAddedToMap();
+                player.OnAddedToMap(loadedMap);
             }
             return true;
         }
@@ -125,9 +125,7 @@ namespace Game.Core.Maps
                     sceneOperation = SceneOperation.UnloadAdditive
                 });
 
-                player.ServerMovePlayer(Vector3.zero);
-                player.ResetPlayer();
-                player.damageReceiver.Unregister();
+                player.OnRemovedFromMap(loadedMap);
             }
 
             EventBus<OnUnloadMap>.Invoke(new());

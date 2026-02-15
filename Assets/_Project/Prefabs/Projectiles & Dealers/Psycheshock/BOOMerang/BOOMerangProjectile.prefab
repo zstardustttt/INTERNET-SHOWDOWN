@@ -71,11 +71,12 @@ MonoBehaviour:
   hitScanCount: 0
   owner: {fileID: 0}
   coll: {fileID: 5446390781259671826}
-  active: 1
+  dealerName: BOOMerang Grab
+  canDamageOwner: 1
   damageType: 0
   singleHitScan: 0
-  canDamageOwner: 1
   knockbackForce: 0
+  active: 1
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -10315,11 +10316,12 @@ MonoBehaviour:
   hitScanCount: 0
   owner: {fileID: 0}
   coll: {fileID: 1945585768103449025}
-  active: 1
+  dealerName: BOOMerang
+  canDamageOwner: 0
   damageType: 1
   singleHitScan: 0
-  canDamageOwner: 0
   knockbackForce: 0
+  active: 1
   onHit:
     m_PersistentCalls:
       m_Calls: []

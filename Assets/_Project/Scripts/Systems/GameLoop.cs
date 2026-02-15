@@ -167,7 +167,8 @@ namespace Game.Systems
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
                 player.inputLocks++;
-                player.ActivateInvincibility(finishPhaseInfo.duration);
+                player.hitLocks++;
+                player.damageLocks++;
             }
         }
 
@@ -182,7 +183,8 @@ namespace Game.Systems
                 player.ResetPlayer();
                 player.ResetStats();
                 player.inputLocks = 0;
-                player.ForceRemoveInvincibility();
+                player.hitLocks = 0;
+                player.damageLocks = 0;
             }
 
             state = new(new(GamePhaseType.Break, breakPhaseInfo), -1, -1, 0);
