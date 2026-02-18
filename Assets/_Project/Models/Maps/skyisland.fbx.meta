@@ -91,12 +91,12 @@ ModelImporter:
     maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
-    secondaryUVAngleDistortion: 8
-    secondaryUVAreaDistortion: 15
+    secondaryUVAngleDistortion: 7
+    secondaryUVAreaDistortion: 13
     secondaryUVHardAngle: 88
     secondaryUVMarginMethod: 1
-    secondaryUVMinLightmapResolution: 35
-    secondaryUVMinObjectScale: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 0.1
     secondaryUVPackMargin: 4
     useFileScale: 1
     strictVertexDataChecks: 0
