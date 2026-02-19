@@ -1,7 +1,7 @@
 <h1>INTERNET SHOWDOWN</h1>
 
 <h2>about</h2>
-штеуктуе ырщцвщцт Потом напишуaaaaaaaaa ГОВНО ЕБАНое
+штеуктуе ырщцвщцт
 
 <h2>building</h2>
 
