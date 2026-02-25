@@ -1,3 +1,4 @@
+using Game.Core.Hits;
 using UnityEngine;
 
 namespace Game.Projectiles.Psycheshock.LinkedShurikens
@@ -6,5 +7,6 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
     {
         public LineRenderer lineRenderer;
         public AudioSource audioSource;
+        public CapsuleHitEntity hitEntity;
     }
 }

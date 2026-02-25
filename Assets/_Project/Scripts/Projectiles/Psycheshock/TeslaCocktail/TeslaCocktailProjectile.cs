@@ -1,4 +1,6 @@
-using Game.Core.Damage;
+using Game.Core.Damages;
+using Game.Core.Hits;
+using Game.Core.Hits.Events;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
 using Game.Player;
@@ -9,20 +11,29 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
 {
     public class TeslaCocktailProjectile : PredictableProjectile
     {
-        public DamageDealer fieldPrefab;
-        public DamageDealer playerFieldPrefab;
+        [Header("Objects")]
+        public GameObject fieldPrefab;
+        public GameObject playerFieldPrefab;
+        public HitListener hitListener;
+
+        [Header("Properties")]
         public float speed;
         public float gravityAcceleration;
         public float activateGravityAfter;
 
+        public override void OnStartServer()
+        {
+            hitListener.onHit.AddListener(OnHit);
+        }
+
         protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
-            var field = Instantiate(fieldPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
+            var field = Instantiate(fieldPrefab, point, Quaternion.identity, new InstantiateParameters()
             {
                 scene = MapLoader.loadedMap.scene
             });
             field.transform.up = normal;
-            field.GetComponent<DamageDealer>().owner = _owner;
+            field.GetComponent<DamageSource>().author = author;
             NetworkServer.Spawn(field);
             NetworkServer.Destroy(gameObject);
         }
@@ -35,26 +46,26 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
             var gravityVelocity = gravityAcceleration * timePassedSinceStartedAccelerating * Vector3.down;
             var velocity = flyingVelocity + gravityVelocity;
 
-            var predictedPos = _spawnPosition + flyingVelocity * timePassed + 0.5f * timePassedSinceStartedAccelerating * gravityVelocity;
+            var predictedPos = spawnPosition + flyingVelocity * timePassed + 0.5f * timePassedSinceStartedAccelerating * gravityVelocity;
 
             return new()
             {
                 position = predictedPos,
-                rotation = _spawnRotation,
+                rotation = spawnRotation,
                 velocity = velocity
             };
         }
 
-        protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage)
+        private void OnHit(HitEvent hitEvent)
         {
-            if (!receiver.TryGetComponent(out PlayerBase player)) return;
-            if (player == _owner) return;
+            if (!hitEvent.target.TryGetComponent(out PlayerBase player)) return;
+            if (player == author) return;
 
-            var field = Instantiate(playerFieldPrefab.gameObject, player.transform.position, Quaternion.identity, new InstantiateParameters()
+            var field = Instantiate(playerFieldPrefab, player.transform.position, Quaternion.identity, new InstantiateParameters()
             {
                 scene = MapLoader.loadedMap.scene
             });
-            field.GetComponent<DamageDealer>().owner = _owner;
+            field.GetComponent<DamageSource>().author = author;
             field.GetComponent<TeslaCocktailPlayerField>().player = player;
             NetworkServer.Spawn(field);
             DestroyProjectile();
@@ -64,7 +75,7 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
         {
             if (!NetworkServer.active) return;
 
-            if (_lifetime <= activateGravityAfter) return;
+            if (lifetime <= activateGravityAfter) return;
             rb.linearVelocity -= gravityAcceleration * Time.deltaTime * Vector3.up;
         }
     }

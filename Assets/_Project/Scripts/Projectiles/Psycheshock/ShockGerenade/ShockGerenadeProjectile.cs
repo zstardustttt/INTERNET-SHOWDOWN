@@ -1,5 +1,8 @@
 using System;
-using Game.Core.Damage;
+using Game.Core.Damages;
+using Game.Core.Damages.Events;
+using Game.Core.Hits;
+using Game.Core.Hits.Events;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
 using Game.Other;
@@ -11,6 +14,20 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 {
     public class ShockGerenadeProjectile : PredictableProjectile
     {
+        [Header("Objects")]
+        public GameObject explosion;
+        public GameObject visual;
+        public GameObject localGerenadeVisualPrefab;
+        public Transform shakee;
+
+        public HitListener attachHitListener;
+        public DamageTarget damageTarget;
+
+        public AudioSource tickAudioSource;
+        public AudioSource attachAudioSource;
+        public AudioSource detachAudioSource;
+
+        [Header("Properties")]
         public float speed;
         public float secondarySpeed;
         public float gravityAcceleration;
@@ -18,19 +35,10 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         public float explodeAfterPrimary;
         public float explodeAfterSecondary;
         public float detachTotalDelta;
-        public DamageDealer explosion;
         public float collisionRadius;
-        public GameObject visual;
-        public GameObject localGerenadeVisualPrefab;
-        public AudioSource tickAudioSource;
         public float holdDamage;
-        public Transform shakee;
         public float visualShakeFrequency;
         public float visualShakeIncreaseRate;
-        public DamageReceiver damageReceiver;
-
-        public AudioSource attachAudioSource;
-        public AudioSource detachAudioSource;
 
         // client
         private ShockGerenadeLocalVisual _localGerenadeVisual;
@@ -38,9 +46,6 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         private PlayerBase _attached;
         private Vector3 _previousAttachedPosition;
         private float _collectedAttachedDelta;
-
-        private float _damageInterval;
-        private float _damageTimer;
 
         private ShakeGenerator _shakeGenerator;
         private bool _exploded;
@@ -60,25 +65,19 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
         public override void OnStartServer()
         {
-            damageReceiver.onDamage.AddListener(OnDamageReceived);
-            damageReceiver.Register(Guid.NewGuid());
+            damageTarget.onDamage.AddListener(OnDamage);
+            attachHitListener.onHit.AddListener(OnHit);
         }
 
-        private void OnDamageReceived(DamageDealer dealer, float _)
+        private void OnDamage(DamageEvent damageEvent)
         {
-            if (dealer.damageType == DamageType.None || _attached) return;
-            if (dealer.damageType == DamageType.Direct && dealer.owner) _owner = dealer.owner;
-            Explode();
+            if (_attached) return;
+            var explosionAuthor = damageEvent.damage.type == DamageType.Direct && damageEvent.source.author ? damageEvent.source.author : author;
+            Explode(explosionAuthor);
         }
 
         private void OnDestroy()
         {
-            if (NetworkServer.active)
-            {
-                damageReceiver.Unregister();
-                damageReceiver.onDamage.RemoveListener(OnDamageReceived);
-            }
-
             if (!_localGerenadeVisual) return;
             Destroy(_localGerenadeVisual.gameObject);
         }
@@ -86,31 +85,24 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
             if (_attached) return;
-
             transform.position = point + normal * collisionRadius;
         }
 
-        protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage)
+        private void OnHit(HitEvent hitEvent)
         {
             if (_attached) return;
-            if (!receiver.TryGetComponent(out PlayerBase player)) return;
-            if (player == _owner) return;
-            dealer.active = false;
+            if (!hitEvent.target.TryGetComponent(out PlayerBase player)) return;
+            if (player == author) return;
+
+            attachHitListener.active = false;
 
             _attached = player;
-            _attached.onReceiveDamage.AddListener(OnAttachedReceiveDamage);
             _attached.onDeath.AddListener(Detach);
-            _damageInterval = _attached.config.damageInvincibilityDuration;
             _previousAttachedPosition = player.transform.position;
 
+            author.stats.directHits++;
             TargetSpawnVisual(_attached.netIdentity.connectionToClient);
             RpcPlayAttachAudio();
-        }
-
-        private void OnAttachedReceiveDamage(DamageDealer dealer)
-        {
-            if (dealer.damageType == DamageType.Direct && dealer.owner) _owner = dealer.owner;
-            Explode();
         }
 
         [ClientRpc]
@@ -148,7 +140,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         protected override void OnUpdate()
         {
             tickAudioSource.pitch = sourceSpeedMultiplier;
-            _shakeGenerator.shakeAmplitude = _lifetime * _lifetime * visualShakeIncreaseRate * sourceSpeedMultiplier;
+            _shakeGenerator.shakeAmplitude = lifetime * lifetime * visualShakeIncreaseRate * sourceSpeedMultiplier;
             var shake = _shakeGenerator.GetShake();
             shakee.localPosition = shake;
             if (_localGerenadeVisual)
@@ -156,18 +148,12 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
             if (!NetworkServer.active) return;
 
-            if (_lifetime > explodeAfter)
+            if (lifetime > explodeAfter)
             {
-                Explode();
+                Explode(author);
                 return;
             }
 
-            MainUpdate();
-            if (_damageTimer > 0f) _damageTimer -= Time.deltaTime;
-        }
-
-        private void MainUpdate()
-        {
             if (_attached)
             {
                 rb.linearVelocity = Vector3.zero;
@@ -185,20 +171,12 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
                 }
 
                 if (_collectedAttachedDelta >= detachTotalDelta) Detach();
-                else
-                {
-                    if (_damageTimer <= 0f)
-                    {
-                        _attached.Damage(holdDamage, _owner, false);
-                        if (_owner) _owner.RegisterHit(DamageType.Continuous);
-                        _damageTimer = _damageInterval;
-                    }
+                else _attached.healthModule.ApplyDamage(new(author, DamageType.Indirect, holdDamage));
 
-                    return;
-                }
+                return;
             }
 
-            if (_lifetime <= activateGravityAfter || _attached) return;
+            if (lifetime <= activateGravityAfter) return;
             rb.linearVelocity -= gravityAcceleration * Time.deltaTime * Vector3.up;
         }
 
@@ -206,7 +184,6 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         {
             TargetDestroyVisual(_attached.netIdentity.connectionToClient);
             _attached.onDeath.RemoveListener(Detach);
-            _attached.onReceiveDamage.RemoveListener(OnAttachedReceiveDamage);
             _attached = null;
             RpcPlayDetachAudio();
         }
@@ -217,7 +194,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             detachAudioSource.Play();
         }
 
-        private void Explode()
+        private void Explode(PlayerBase explosionAuthor)
         {
             if (_exploded) return;
             _exploded = true;
@@ -225,18 +202,17 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             Vector3 pos;
             if (_attached)
             {
-                _attached.ForceRemoveInvincibility();
+                _attached.healthModule.ForceRemoveInvincibility();
                 _attached.onDeath.RemoveListener(Detach);
-                _attached.onReceiveDamage.RemoveListener(OnAttachedReceiveDamage);
                 pos = _attached.transform.position;
             }
             else pos = transform.position;
 
-            var exp = Instantiate(explosion.gameObject, pos, Quaternion.identity, new InstantiateParameters()
+            var exp = Instantiate(explosion, pos, Quaternion.identity, new InstantiateParameters()
             {
                 scene = MapLoader.loadedMap.scene
             });
-            exp.GetComponent<DamageDealer>().owner = _owner;
+            exp.GetComponent<DamageSource>().author = explosionAuthor;
             NetworkServer.Spawn(exp);
             DestroyProjectile();
         }
@@ -249,12 +225,12 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             var gravityVelocity = gravityAcceleration * timePassedSinceStartedAccelerating * Vector3.down;
             var velocity = flyingVelocity + gravityVelocity;
 
-            var predictedPos = _spawnPosition + flyingVelocity * timePassed + 0.5f * timePassedSinceStartedAccelerating * gravityVelocity;
+            var predictedPos = spawnPosition + flyingVelocity * timePassed + 0.5f * timePassedSinceStartedAccelerating * gravityVelocity;
 
             return new()
             {
                 position = predictedPos,
-                rotation = _spawnRotation,
+                rotation = spawnRotation,
                 velocity = velocity
             };
         }

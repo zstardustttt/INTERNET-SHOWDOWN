@@ -274,7 +274,6 @@ GameObject:
   - component: {fileID: 3085756864833092725}
   - component: {fileID: 2462157491766292911}
   - component: {fileID: 4075737330760207556}
-  - component: {fileID: 351218294003561760}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -297,6 +296,7 @@ Transform:
   m_Children:
   - {fileID: 6124577175492389443}
   - {fileID: 5212860309231172166}
+  - {fileID: 4512329816075396210}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6936427358180725379
@@ -455,7 +455,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -479,12 +479,13 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  hitEntity: {fileID: 8243380858814391041}
+  healthModule: {fileID: 5880631188279301956}
   config: {fileID: 11400000, guid: 6557f4f69351e73429465a2a5dfea442, type: 2}
   motor: {fileID: 3085756864833092725}
   horizontalOrientation: {fileID: 6124577175492389443}
   verticalOrientation: {fileID: 9199459176827721078}
   itemHolder: {fileID: 4582289290584614918}
-  damageReceiver: {fileID: 351218294003561760}
   modelContainer: {fileID: 6485277279108889857}
   mainModel: {fileID: 7050680160326592069}
   ghostModel: {fileID: 7006930605099416351}
@@ -515,21 +516,17 @@ MonoBehaviour:
   onResetPlayer:
     m_PersistentCalls:
       m_Calls: []
-  onReceiveDamage:
-    m_PersistentCalls:
-      m_Calls: []
-  onDamage:
-    m_PersistentCalls:
-      m_Calls: []
   onDeath:
     m_PersistentCalls:
       m_Calls: []
+  onRespawn:
+    m_PersistentCalls:
+      m_Calls: []
   item: {fileID: 0}
-  health: 0
   dead: 0
+  respawnTimer: 0
   motorLocks: 0
   inputLocks: 0
-  invincible: 0
   playerGuid: 
   playerName: 
   boxSpawnerPreviousObservedPosition: {x: 0, y: 0, z: 0}
@@ -554,7 +551,7 @@ MonoBehaviour:
   serverSide: 0
   config: {fileID: 11400000, guid: 78903821474925b4bb25818b3f68d3a8, type: 2}
   audioSourcesContainer: {fileID: 5212860309231172166}
-  movement: {fileID: 6754057132338759635}
+  player: {fileID: 6754057132338759635}
 --- !u!114 &3085756864833092725
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -649,30 +646,157 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
---- !u!114 &351218294003561760
+--- !u!1 &1977572232203292389
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4512329816075396210}
+  - component: {fileID: 6144822228631900321}
+  - component: {fileID: 8243380858814391041}
+  - component: {fileID: 5880631188279301956}
+  - component: {fileID: 5918298169735325867}
+  m_Layer: 9
+  m_Name: HitEntity
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4512329816075396210
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977572232203292389}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7958844430475812704}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &6144822228631900321
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977572232203292389}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.25
+  m_Height: 1.8
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &8243380858814391041
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1635209751978783220}
+  m_GameObject: {fileID: 1977572232203292389}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bfe8a0521ace9747bc0c29027d7b9b1, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a1be63370c4da848a6f1e56658cc567, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damage.DamageReceiver
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Hits.CapsuleHitEntity
+  active: 1
+  sources: []
+  targets:
+  - {fileID: 5880631188279301956}
+  - {fileID: 5918298169735325867}
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  previousObservedPosition: {x: 0, y: 0, z: 0}
+  observedDelta: {x: 0, y: 0, z: 0}
+  completedSelfChecks: 0
+  capsuleCollider: {fileID: 6144822228631900321}
+--- !u!114 &5880631188279301956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977572232203292389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25f4a8beddcc0a845a08dc54f26d6401, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Player.PlayerHealthModule
   syncMethod: 0
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  hitEntity: {fileID: 8243380858814391041}
   active: 1
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
   onDamage:
     m_PersistentCalls:
       m_Calls: []
-  coll: {fileID: 241399185085964307}
-  ignoreDealers: []
-  previousObservedPosition: {x: 0, y: 0, z: 0}
-  observedDelta: {x: 0, y: 0, z: 0}
+  player: {fileID: 6754057132338759635}
+  health: 0
+  invincible: 0
+--- !u!114 &5918298169735325867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977572232203292389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff4c8eb34fa0ee479b983c3ca2ba1ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Hits.KnockbackTarget
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 8243380858814391041}
+  active: 1
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+  onKnockback:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6754057132338759635}
+        m_TargetAssemblyTypeName: Game.Player.PlayerBase, Assembly-CSharp
+        m_MethodName: TargetSetAdditionalForce
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2443618441499736647
 GameObject:
   m_ObjectHideFlags: 0

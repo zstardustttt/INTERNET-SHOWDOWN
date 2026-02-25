@@ -16,7 +16,7 @@ TagManager:
   - Player
   - Speedlines
   - ItemVisual
-  - DamageDealer
+  - HitEntity
   - Projectile
   - Enviroment
   - ReceiverCheck

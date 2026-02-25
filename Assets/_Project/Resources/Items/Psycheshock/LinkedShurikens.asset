@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 418f73291c68b2e49a3036283a475a59, type: 3}
   m_Name: LinkedShurikens
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Items.ItemConfig
-  include: 1
+  include: 0
   prefab: {fileID: 8697607699108650305, guid: fc57f507e5d26ed498e81c33b559baa9, type: 3}
   rarity: {fileID: 11400000, guid: ef58f522f451a5b4fbeec67c68daf1c4, type: 2}
   displayName: Linked Shurikens

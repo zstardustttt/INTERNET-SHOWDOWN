@@ -1,6 +1,6 @@
 using Game.Core.Events;
-using Game.Events.UI;
 using Game.Other;
+using Game.Player.Events;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,18 +34,21 @@ namespace Game.UI.Game
         private void Awake()
         {
             _shakeGenerator = new();
-            EventBus<OnHealthUpdate>.Listen(OnHealthUpdate);
+            EventBus<OnPlayerHealthChanged>.Listen(OnPlayerHealthChanged);
         }
 
-        private void OnHealthUpdate(OnHealthUpdate data)
+        private void OnPlayerHealthChanged(OnPlayerHealthChanged data)
         {
-            if (data.health < _targetHealth)
+            if (!data.healthModule.isLocalPlayer) return;
+
+            if (data.newHealth < data.oldHealth)
                 _shakeGenerator.Shake(shakeAmplitude, shakeFrequency, shakeFalloffSpeed);
             else
                 _healColorAffection = 1f;
 
-            healthBarSlider.maxValue = data.maxHealth;
-            _targetHealth = data.health;
+            // TODO: this shit
+            healthBarSlider.maxValue = data.healthModule.player.config.maxHealth;
+            _targetHealth = data.newHealth;
         }
 
         private void Update()

@@ -2,6 +2,7 @@ using System.Collections;
 using Game.Core.Events;
 using Game.Events.GameLoop;
 using Game.Events.UI;
+using Game.Player.Events;
 using Game.Systems;
 using UnityEngine;
 using UnityEngine.UI;
@@ -47,7 +48,12 @@ namespace Game.UI.Game
             });
 
             EventBus<HitIndicatorRequest>.Listen((_) => HitIndicatorAnimation());
-            EventBus<DamageIndicatorRequest>.Listen((_) => DamageIndicatorAnimation());
+            EventBus<OnPlayerHealthChanged>.Listen((data) =>
+            {
+                if (!data.healthModule.isLocalPlayer) return;
+                if (data.newHealth >= data.oldHealth) return;
+                DamageIndicatorAnimation();
+            });
             EventBus<PureKillIndicatorRequest>.Listen((_) => PureKillIndicatorAnimation());
             EventBus<UnpureKillIndicatorRequest>.Listen((_) => UnpureKillIndicatorAnimation());
 

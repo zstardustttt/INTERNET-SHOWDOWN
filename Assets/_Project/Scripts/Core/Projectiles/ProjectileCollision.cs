@@ -1,12 +1,16 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Game.Core.Projectiles
 {
-    public enum CollisionMethod
+    [Flags]
+    public enum CollisionCase
     {
-        Enter,
-        Stay
+        None = 0,
+        Enter = 1 << 0,
+        Stay = 1 << 1,
+        Exit = 1 << 2
     }
 
     [RequireComponent(typeof(Projectile))]
@@ -16,7 +20,7 @@ namespace Game.Core.Projectiles
         public abstract Collider Collider { get; }
         public Projectile projectile;
         public LayerMask collisionLayerMask;
-        public CollisionMethod collisionMethod;
+        public CollisionCase collisionCase;
         public UnityEvent<Vector3, Vector3, Collider> onCollision = new();
 
         protected virtual void OnValidate()
@@ -42,15 +46,21 @@ namespace Game.Core.Projectiles
 
         protected abstract void CheckCollisionBetweenTwoPointsInside(Vector3 p1, Vector3 p2);
 
-        private void OnCollisionStay(Collision collision)
+        private void OnCollisionEnter(Collision collision)
         {
-            if (collisionMethod != CollisionMethod.Stay) return;
+            if (!collisionCase.HasFlag(CollisionCase.Enter)) return;
             InternalOnCollision(collision);
         }
 
-        private void OnCollisionEnter(Collision collision)
+        private void OnCollisionStay(Collision collision)
         {
-            if (collisionMethod != CollisionMethod.Enter) return;
+            if (!collisionCase.HasFlag(CollisionCase.Stay)) return;
+            InternalOnCollision(collision);
+        }
+
+        private void OnCollisionExit(Collision collision)
+        {
+            if (!collisionCase.HasFlag(CollisionCase.Exit)) return;
             InternalOnCollision(collision);
         }
 

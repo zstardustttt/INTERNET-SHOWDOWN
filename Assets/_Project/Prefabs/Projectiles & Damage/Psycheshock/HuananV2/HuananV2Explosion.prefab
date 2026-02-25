@@ -24669,10 +24669,14 @@ GameObject:
   m_Component:
   - component: {fileID: 2423040992310831495}
   - component: {fileID: 5563388409014675495}
+  - component: {fileID: 269320848474243765}
   - component: {fileID: 697191921998550392}
   - component: {fileID: 5262067622161689008}
   - component: {fileID: 3063369220174135175}
   - component: {fileID: 7809162878553861463}
+  - component: {fileID: 6188270649285907794}
+  - component: {fileID: 772117909738435127}
+  - component: {fileID: 8129586979763025812}
   m_Layer: 9
   m_Name: HuananV2Explosion
   m_TagString: Untagged
@@ -24717,6 +24721,30 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 6
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &269320848474243765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8596668877135600386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c39eb37d459a2f84cbb7eefbc65f9e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Hits.SphereHitEntity
+  active: 1
+  sources:
+  - {fileID: 697191921998550392}
+  - {fileID: 772117909738435127}
+  targets: []
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  previousObservedPosition: {x: 0, y: 0, z: 0}
+  observedDelta: {x: 0, y: 0, z: 0}
+  completedSelfChecks: 0
+  sphereCollider: {fileID: 5563388409014675495}
 --- !u!114 &697191921998550392
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24733,24 +24761,25 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  previousObservedPosition: {x: 0, y: 0, z: 0}
-  observedDelta: {x: 0, y: 0, z: 0}
-  hitScanCount: 0
-  owner: {fileID: 0}
-  coll: {fileID: 5563388409014675495}
+  hitEntity: {fileID: 269320848474243765}
   active: 1
-  damageType: 2
-  singleHitScan: 1
-  canDamageOwner: 0
-  knockbackForce: 75
-  OnHit:
+  onHit:
     m_PersistentCalls:
       m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+  canDamageFamily: 0
+  onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  author: {fileID: 0}
   centerOffset: {x: 0, y: 0, z: 0}
+  damageType: 1
   outerRadius: 6
-  outerDamage: 10
+  outerDamageAmount: 10
   innerRadius: 3
-  innerDamage: 20
+  innerDamageAmount: 20
 --- !u!114 &5262067622161689008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24800,3 +24829,56 @@ MonoBehaviour:
   amplitude: 2
   minDistance: 5
   maxDistance: 100
+--- !u!114 &6188270649285907794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8596668877135600386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eef81084b3dd3742b5117e5a584bdc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Hits.DeactivateHitListenerAfterTime
+  hitListener: {fileID: 697191921998550392}
+  time: 0.2
+--- !u!114 &772117909738435127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8596668877135600386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5146d3ec95ebfe144a3fa4d61b9ea686, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Hits.KnockbackSource
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 269320848474243765}
+  active: 1
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+  knockbackForce: 65
+--- !u!114 &8129586979763025812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8596668877135600386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eef81084b3dd3742b5117e5a584bdc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Hits.DeactivateHitListenerAfterTime
+  hitListener: {fileID: 772117909738435127}
+  time: 0.1

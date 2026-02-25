@@ -1,8 +1,4 @@
-using Game.Core.Events;
-using Game.Events.HitWatcher;
-using Game.Player;
 using Mirror;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Core.Projectiles
@@ -29,7 +25,7 @@ namespace Game.Core.Projectiles
         {
             SpawnTime = spawnTime;
             SpawnDelay = (float)(NetworkTime.time - spawnTime);
-            _lifetime = SpawnDelay;
+            lifetime = SpawnDelay;
 
             var finalPrediction = Predict(SpawnDelay);
             transform.SetPositionAndRotation(finalPrediction.position, finalPrediction.rotation);
@@ -37,8 +33,8 @@ namespace Game.Core.Projectiles
 
             var previousPrediction = new ProjectilePredictionData()
             {
-                position = _spawnPosition,
-                rotation = _spawnRotation,
+                position = spawnPosition,
+                rotation = spawnRotation,
                 velocity = rb.linearVelocity,
             };
 
@@ -46,16 +42,6 @@ namespace Game.Core.Projectiles
             for (int i = 1; i <= checkIterations; i++)
             {
                 var prediction = i == checkIterations ? finalPrediction : Predict(deltaTime * i);
-                foreach (var dealer in damageDealers)
-                {
-                    EventBus<RequestTwoPointsDealerCheck>.Invoke(new()
-                    {
-                        dealer = dealer,
-                        point1 = previousPrediction.position,
-                        point2 = prediction.position,
-                    });
-                }
-
                 if (collision)
                     collision.CheckCollisionBetweenTwoPoints(previousPrediction.position, prediction.position);
 
@@ -66,7 +52,7 @@ namespace Game.Core.Projectiles
         private void OnDrawGizmosSelected()
         {
             var deltaTime = predictionDebugTimePassed / predictionDebugIterations;
-            var lastStartPoint = _spawnPosition;
+            var lastStartPoint = spawnPosition;
             for (int i = 0; i < predictionDebugIterations; i++)
             {
                 var prediction = Predict(deltaTime * i);

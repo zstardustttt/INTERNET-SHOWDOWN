@@ -127,7 +127,7 @@ namespace Game.Core.Maps
 
                 player.ServerMovePlayer(Vector3.zero);
                 player.ResetPlayer();
-                player.damageReceiver.Unregister();
+                player.dead = false;
             }
 
             EventBus<OnUnloadMap>.Invoke(new());

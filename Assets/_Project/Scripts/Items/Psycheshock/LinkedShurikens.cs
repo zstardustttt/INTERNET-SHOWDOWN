@@ -32,7 +32,9 @@ namespace Game.Items.Psycheshock
                 {
                     scene = MapLoader.loadedMap.scene
                 }).GetComponent<LinkedShurikensManager>();
-                _manager.hitDealer.owner = user;
+
+                // TODO: here
+                //_manager.hitDealer.owner = user;
                 NetworkServer.Spawn(_manager.gameObject);
             }
 

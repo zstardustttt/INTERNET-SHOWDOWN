@@ -1,4 +1,4 @@
-using Game.Core.Damage;
+using Game.Core.Damages;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
 using Mirror;
@@ -8,12 +8,21 @@ namespace Game.Projectiles.Psycheshock
 {
     public class HuananV2Projectile : PredictableProjectile
     {
-        public DamageDealer explosionPrefab;
+        [Header("Objects")]
+        public GameObject explosionPrefab;
+        public Transform visual;
+        public DamageSource mainDamage;
+
+        [Header("Properties")]
         public float speed;
         public float rotationSpeed;
-        public Transform visual;
 
-        protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage) { }
+        public override void OnStartServer()
+        {
+            // TODO: could be replaced using SendMessage API
+            mainDamage.author = author;
+            mainDamage.family = author.healthModule.family;
+        }
 
         protected override void OnUpdate()
         {
@@ -23,24 +32,25 @@ namespace Game.Projectiles.Psycheshock
         public override ProjectilePredictionData Predict(float timePassed)
         {
             var velocity = speed * transform.forward;
-            var predictedPos = _spawnPosition + velocity * timePassed;
+            var predictedPos = spawnPosition + velocity * timePassed;
 
             return new()
             {
                 position = predictedPos,
-                rotation = _spawnRotation,
+                rotation = spawnRotation,
                 velocity = velocity,
             };
         }
 
         protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
-            var explosion = Instantiate(explosionPrefab.gameObject, point, Quaternion.identity, new InstantiateParameters()
+            var explosion = Instantiate(explosionPrefab, point, Quaternion.identity, new InstantiateParameters()
             {
                 scene = MapLoader.loadedMap.scene
-            });
-            explosion.GetComponent<DamageDealer>().owner = _owner;
-            NetworkServer.Spawn(explosion);
+            }).GetComponent<DamageSource>();
+            explosion.author = author;
+            explosion.family = author.healthModule.family;
+            NetworkServer.Spawn(explosion.gameObject);
             DestroyProjectile();
         }
     }

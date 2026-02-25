@@ -1,4 +1,3 @@
-using Game.Core.Damage;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
 using Mirror;
@@ -9,26 +8,29 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
 {
     public class LinkedShurikenProjectile : PredictableProjectile
     {
-        public float flySpeed;
-        public UnityEvent<LinkedShurikenProjectile> onDestroy = new();
-        public float maxLifetime;
+        [Header("Objects")]
         public Transform visualToRotate;
         public AudioSource flyAudioSource;
         public AudioSource collideAudioSource;
+
+        [Header("Properties")]
+        public float flySpeed;
+        public float maxLifetime;
         public float flyAudioCenterPitch;
         public float visualRotationFactor;
+        public UnityEvent<LinkedShurikenProjectile> onDestroy = new();
 
         [HideInInspector, SyncVar] public float collideAudioPitch;
 
         public override ProjectilePredictionData Predict(float timePassed)
         {
             var velocity = flySpeed * transform.forward;
-            var predictedPos = _spawnPosition + velocity * timePassed;
+            var predictedPos = spawnPosition + velocity * timePassed;
 
             return new()
             {
                 position = predictedPos,
-                rotation = _spawnRotation,
+                rotation = spawnRotation,
                 velocity = velocity,
             };
         }
@@ -48,7 +50,7 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
             var closestDistance = 2000f;
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
-                if (player.dead || player == _owner) continue;
+                if (player.dead || player == author) continue;
                 var distance = Vector3.Distance(player.transform.position, transform.position);
                 if (distance < closestDistance)
                 {
@@ -78,14 +80,12 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
             collideAudioSource.Play();
         }
 
-        protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage) { }
-
         protected override void OnUpdate()
         {
             visualToRotate.Rotate(Vector3.up, rb.linearVelocity.magnitude * visualRotationFactor * Time.deltaTime);
             flyAudioSource.pitch = rb.linearVelocity.magnitude / flySpeed * flyAudioCenterPitch;
             if (!NetworkServer.active) return;
-            if (_lifetime >= maxLifetime) DestroyProjectile();
+            if (lifetime >= maxLifetime) DestroyProjectile();
         }
 
         private void OnDestroy()

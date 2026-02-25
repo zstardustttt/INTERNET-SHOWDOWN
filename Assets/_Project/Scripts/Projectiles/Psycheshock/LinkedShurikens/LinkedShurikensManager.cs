@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Game.Core.Damage;
-using Game.Core.Events;
-using Game.Events.HitWatcher;
 using Mirror;
 using UnityEngine;
 
@@ -10,10 +7,13 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
 {
     public class LinkedShurikensManager : NetworkBehaviour
     {
+        [Header("Objects")]
         public ShurikenLink shurikenLinkPrefab;
-        public DamageDealer hitDealer;
+
+        [Header("Properties")]
         public int maxLinksCount;
         public int linkSegmentsCount;
+
         private List<LinkedShurikenProjectile> _projectiles;
         private List<ShurikenLink> _shurikenLinks;
 
@@ -83,16 +83,10 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
                 starts.Add(start);
                 ends.Add(end);
 
-                if (projectile != previousProjectile)
-                {
-                    EventBus<RequestTwoPointsDealerCheck>.Invoke(new()
-                    {
-                        dealer = hitDealer,
-                        point1 = start,
-                        point2 = end,
-                        ignoreInactive = true,
-                    });
-                }
+                var link = _shurikenLinks[i];
+                link.hitEntity.transform.position = (start + end) / 2f;
+                link.hitEntity.transform.up = (start - end).normalized;
+                link.hitEntity.capsuleCollider.height = (start - end).magnitude;
 
                 previousProjectile = projectile;
             }

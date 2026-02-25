@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Game.Core.Damage;
 using Game.Core.Events;
+using Game.Core.Hits;
 using Game.Core.Items;
 using Game.Core.Maps;
 using Game.Events.Player;
@@ -23,13 +21,14 @@ namespace Game.Player
         private bool _handlingThisPlayer;
         public Bounds WorldHitbox => new(transform.position + config.hitbox.center, config.hitbox.size);
 
+        public HitEntity hitEntity;
+        public PlayerHealthModule healthModule;
         public PlayerConfig config;
         public IPlayerController controller;
         public KinematicCharacterMotor motor;
         public Transform horizontalOrientation;
         public Transform verticalOrientation;
         public Transform itemHolder;
-        public DamageReceiver damageReceiver;
 
         [Space(9)]
         public GameObject modelContainer;
@@ -94,10 +93,8 @@ namespace Game.Player
         [HideInInspector] public UnityEvent<Collider> onCollide = new();
         [HideInInspector] public UnityEvent onItemPickup = new();
         [HideInInspector] public UnityEvent onResetPlayer = new();
-        [HideInInspector] public UnityEvent onRespawn = new();
-        [HideInInspector] public UnityEvent<DamageDealer> onReceiveDamage = new();
-        [HideInInspector] public UnityEvent onDamage = new();
         [HideInInspector] public UnityEvent onDeath = new();
+        [HideInInspector] public UnityEvent onRespawn = new();
 
         public struct ItemData
         {
@@ -119,15 +116,8 @@ namespace Game.Player
         [SyncVar(hook = nameof(OnItemChange))] public ItemData itemData;
         public Item item;
 
-        public struct DamageCapture
-        {
-            public PlayerBase author;
-            public float damage;
-        }
-        [SyncVar(hook = nameof(OnHealthChange))] public float health;
-        private Stack<DamageCapture> _damageHistory;
         [SyncVar(hook = nameof(OnDeathOrRespawn))] public bool dead;
-        private float _respawnTimer;
+        public float respawnTimer;
 
         [SyncVar(hook = nameof(OnMotorLocksChanged))] public int motorLocks;
         [SyncVar(hook = nameof(OnInputLocksChanged))] public int inputLocks;
@@ -151,25 +141,6 @@ namespace Game.Player
             }
         }
 
-        [SyncVar] public bool invincible;
-        private float _invincibleTimer; // server only
-
-        [Server]
-        public void ForceRemoveInvincibility()
-        {
-            _invincibleTimer = 0f;
-            invincible = false;
-            damageReceiver.active = true;
-        }
-
-        [Server]
-        public void ActivateInvincibility(float duration)
-        {
-            _invincibleTimer = duration;
-            invincible = true;
-            damageReceiver.active = false;
-        }
-
         private bool _guidReceived;
         [SyncVar] public string playerGuid;
         [SyncVar] public string playerName;
@@ -186,7 +157,7 @@ namespace Game.Player
         [Server]
         public void OnAddedToMap()
         {
-            damageReceiver.Register(new Guid(playerGuid));
+
         }
 
         [Server]
@@ -271,9 +242,6 @@ namespace Game.Player
         [Server]
         public void ServerMovePlayer(Vector3 position)
         {
-            damageReceiver.previousObservedPosition = position;
-            damageReceiver.observedDelta = Vector3.zero;
-
             boxSpawnerPreviousObservedPosition = position;
             boxSpawnerObservedDelta = Vector3.zero;
 
@@ -286,12 +254,12 @@ namespace Game.Player
             SetPosition(position);
         }
 
+        // TODO: split this function
         [Server]
         public void ResetPlayer()
         {
-            _damageHistory.Clear();
+            healthModule.ResetHealth();
             itemData = ItemData.Default();
-            health = config.maxHealth;
             dead = false;
             onResetPlayer.Invoke();
         }
@@ -304,144 +272,13 @@ namespace Game.Player
 
         public override void OnStartServer()
         {
-            _damageHistory = new();
-            damageReceiver.onDamage.AddListener(OnReceiveDamage);
             ResetPlayer();
-        }
-
-        [Server]
-        private void OnReceiveDamage(DamageDealer dealer, float damage)
-        {
-            if (dealer.knockbackForce != 0f)
-            {
-                var playerCenter = transform.position + motor.Capsule.center;
-                var direction = (playerCenter - dealer.transform.position).normalized;
-                TargetKnockback(direction * dealer.knockbackForce);
-            }
-
-            if (dealer.owner == this && !dealer.canDamageOwner) return;
-            if (dealer.damageType == DamageType.None) return;
-
-            Damage(damage, dealer.owner);
-            if (dealer.owner && dealer.owner != this)
-                dealer.owner.RegisterHit(dealer.damageType);
-
-            onReceiveDamage.Invoke(dealer);
-        }
-
-        [Server]
-        public void Damage(float damage, PlayerBase author, bool activateInvincibility = true)
-        {
-            _damageHistory.Push(new() { damage = damage, author = author });
-            health -= damage;
-            if (activateInvincibility) ActivateInvincibility(config.damageInvincibilityDuration);
-            onDamage.Invoke();
-        }
-
-        [Server]
-        public void Heal(float value)
-        {
-            var targetHealth = Mathf.Clamp(health + value, 0f, config.maxHealth);
-            var difference = targetHealth - health;
-
-            var differenceCounter = 0f;
-            while (_damageHistory.Count > 0)
-            {
-                var capture = _damageHistory.Pop();
-                differenceCounter += capture.damage;
-
-                if (differenceCounter <= difference) continue;
-                _damageHistory.Push(new() { author = capture.author, damage = differenceCounter - difference });
-                break;
-            }
-
-            health = targetHealth;
-        }
-
-        private void OnHealthChange(float old, float _new)
-        {
-            if (netIdentity.isLocalPlayer)
-            {
-                EventBus<OnHealthUpdate>.Invoke(new() { maxHealth = config.maxHealth, health = health });
-                if (_new < old) EventBus<DamageIndicatorRequest>.Invoke(new());
-            }
-
-            if (!NetworkServer.active) return;
-            if (_new <= 0f)
-            {
-                // Death logic
-                var killer = _damageHistory.Peek().author;
-                var damages = new Dictionary<PlayerBase, float>();
-                foreach (var capture in _damageHistory)
-                {
-                    if (!capture.author) continue;
-
-                    if (damages.TryAdd(capture.author, capture.damage)) continue;
-                    damages[capture.author] += capture.damage;
-                }
-
-                PlayerBase supporter = null;
-                if (damages.Count != 0)
-                {
-                    var sortedDamages = damages.OrderByDescending(x => x.Value).ToArray();
-                    supporter = sortedDamages[0].Key;
-                }
-
-                if (killer && killer != this && killer == supporter)
-                {
-                    killer.stats.pureKills++;
-                    killer.TargetOnKill(true);
-                    killer.Heal(damages[killer] / 2f);
-                }
-                else
-                {
-                    if (killer && killer != this)
-                    {
-                        killer.stats.finishingKills++;
-                        killer.TargetOnKill(false);
-                        killer.Heal(damages[killer] / 2f);
-                    }
-
-                    if (supporter && supporter != this)
-                    {
-                        supporter.stats.supportingKills++;
-                        supporter.TargetOnKill(false);
-                        supporter.Heal(damages[supporter] / 2f);
-                    }
-                }
-
-                onDeath.Invoke();
-                dead = true;
-            }
         }
 
         private void OnDeathOrRespawn(bool old, bool _new)
         {
-            if (!_new) onRespawn.Invoke();
-
-            if (NetworkServer.active)
-            {
-                // if dead
-                if (_new)
-                {
-                    _respawnTimer = config.respawnDuration;
-                    damageReceiver.active = false;
-
-                    itemData = ItemData.Default();
-                    motorLocks++;
-                }
-                else
-                {
-                    var position = MapLoader.IsPlayerOnMap(this) ?
-                        MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position :
-                        Vector3.zero;
-
-                    ServerMovePlayer(position);
-                    ResetPlayer();
-                    ActivateInvincibility(config.deathInvincibilityDuration);
-                    motorLocks--;
-                }
-            }
+            if (_new) onDeath.Invoke();
+            else onRespawn.Invoke();
 
             mainModel.SetActive(!_new);
             ghostModel.SetActive(_new);
@@ -518,18 +355,6 @@ namespace Game.Player
             }
 
             if (!NetworkServer.active) return;
-
-            // Handle invincibility
-            if (!dead)
-            {
-                _invincibleTimer -= Time.deltaTime;
-                if (_invincibleTimer <= 0f && invincible)
-                {
-                    invincible = false;
-                    damageReceiver.active = true;
-                }
-            }
-
             // Teleport back if clipped out of bounds
             if (MapLoader.IsPlayerOnMap(this) && transform.position.y < MapLoader.loadedMap.info.boundsMin.y)
             {
@@ -546,13 +371,6 @@ namespace Game.Player
                 EventBus<OnStatsChanged>.Invoke(new() { player = this });
             }
             _prevStats = stats;
-
-            // Handle respawning
-            if (dead)
-            {
-                if (_respawnTimer <= 0f) dead = false;
-                else _respawnTimer -= Time.deltaTime;
-            }
         }
 
         [Command]
@@ -981,13 +799,7 @@ namespace Game.Player
             }
         }
 
-        [Server]
-        public void RegisterHit(DamageType damageType)
-        {
-            stats.AddHit(damageType);
-            TargetOnHit();
-        }
-
+        // TODO: TargetOnHit isn't called anywhere
         [TargetRpc]
         public void TargetOnHit()
         {
@@ -1004,9 +816,9 @@ namespace Game.Player
         }
 
         [TargetRpc]
-        public void TargetKnockback(Vector3 force)
+        public void TargetSetAdditionalForce(Vector3 force)
         {
-            _additionalVelocity += force;
+            _additionalVelocity = force;
         }
 
         private void OnDrawGizmos()

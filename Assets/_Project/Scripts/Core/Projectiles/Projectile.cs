@@ -1,4 +1,3 @@
-using Game.Core.Damage;
 using Game.Core.Maps;
 using Game.Player;
 using Mirror;
@@ -15,13 +14,10 @@ namespace Game.Core.Projectiles
         public NetworkRigidbodyReliable netRb;
         public ProjectileCollision collision;
 
-        [Header("Base Settings")]
-        public DamageDealer[] damageDealers;
-
-        protected PlayerBase _owner;
-        protected float _lifetime;
-        protected Vector3 _spawnPosition;
-        protected Quaternion _spawnRotation;
+        [HideInInspector] public PlayerBase author;
+        [HideInInspector] public float lifetime;
+        [HideInInspector] public Vector3 spawnPosition;
+        [HideInInspector] public Quaternion spawnRotation;
 
         protected override void OnValidate()
         {
@@ -35,12 +31,11 @@ namespace Game.Core.Projectiles
             netTransform.syncDirection = SyncDirection.ServerToClient;
             netRb.syncDirection = SyncDirection.ServerToClient;
 
-            damageDealers = GetComponentsInChildren<DamageDealer>();
             TryGetComponent(out collision);
         }
 
         [Server]
-        public static T Spawn<T>(T prefab, PlayerBase owner, Vector3 headPosition, Vector3 position, Quaternion rotation) where T : Projectile
+        public static T Spawn<T>(T prefab, PlayerBase author, Vector3 headPosition, Vector3 position, Quaternion rotation) where T : Projectile
         {
             if (MapLoader.loadedMap == null || !MapLoader.loadedMap.scene.IsValid()) throw new("Map is not loaded");
 
@@ -49,15 +44,9 @@ namespace Game.Core.Projectiles
                 scene = MapLoader.loadedMap.scene,
             });
             var projectile = projectileObject.GetComponent<T>();
-            projectile._owner = owner;
-            projectile._spawnPosition = position;
-            projectile._spawnRotation = rotation;
-
-            foreach (var dealer in projectile.damageDealers)
-            {
-                dealer.owner = owner;
-                dealer.onHit.AddListener((player, damage) => projectile.OnDealerHit(dealer, player, damage));
-            }
+            projectile.author = author;
+            projectile.spawnPosition = position;
+            projectile.spawnRotation = rotation;
 
             NetworkServer.Spawn(projectileObject);
 
@@ -70,7 +59,6 @@ namespace Game.Core.Projectiles
             return projectile;
         }
 
-        protected abstract void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage);
         protected abstract void OnCollision(Vector3 point, Vector3 normal, Collider other);
         protected abstract void OnUpdate();
 
@@ -84,7 +72,7 @@ namespace Game.Core.Projectiles
 
         private void Update()
         {
-            _lifetime += Time.deltaTime;
+            lifetime += Time.deltaTime;
             OnUpdate();
 
             if (!NetworkServer.active) return;

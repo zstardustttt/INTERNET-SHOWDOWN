@@ -1,4 +1,5 @@
-using Game.Core.Damage;
+using Game.Core.Damages;
+using Game.Core.Damages.Events;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
 using Mirror;
@@ -8,6 +9,11 @@ namespace Game.Projectiles.Crystalline
 {
     public class AcophystProjectile : PredictableProjectile
     {
+        [Header("Objects")]
+        public AcophystProjectile projectileToSpawnOnHit;
+        public DamageSource mainDamage;
+
+        [Header("Properties")]
         public float flySpeed;
         public float beginMaxDot;
         public float continueMaxDot;
@@ -17,7 +23,6 @@ namespace Game.Projectiles.Crystalline
         public float gravityAcceleration;
         public float activateGravityAfter;
         public float autoAimOnClosestFactor;
-        public AcophystProjectile projectileToSpawnOnHit;
 
         private Vector3 _direction;
         private Vector3 _previousNormal;
@@ -29,6 +34,9 @@ namespace Game.Projectiles.Crystalline
         {
             _direction = transform.forward;
             _wishVelocity = rb.linearVelocity;
+
+            mainDamage.onDamage.AddListener(OnDamage);
+            mainDamage.author = author;
         }
 
         public override ProjectilePredictionData Predict(float timePassed)
@@ -38,19 +46,19 @@ namespace Game.Projectiles.Crystalline
             var flyingVelocity = flySpeed * transform.forward;
             var gravityVelocity = gravityAcceleration * timePassedSinceStartedAccelerating * Vector3.down;
             var velocity = flyingVelocity + gravityVelocity;
-            var predictedPos = _spawnPosition + flyingVelocity * timePassed + 0.5f * timePassedSinceStartedAccelerating * gravityVelocity;
+            var predictedPos = spawnPosition + flyingVelocity * timePassed + 0.5f * timePassedSinceStartedAccelerating * gravityVelocity;
 
             return new()
             {
                 position = predictedPos,
                 velocity = velocity,
-                rotation = _spawnRotation
+                rotation = spawnRotation
             };
         }
 
         protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
-            if (_lifetime > desroyOnBounceAfter) DestroyProjectile();
+            if (lifetime > desroyOnBounceAfter) DestroyProjectile();
             else
             {
                 Bounce(point, normal);
@@ -63,7 +71,7 @@ namespace Game.Projectiles.Crystalline
         {
             var movementDirection = _wishVelocity.normalized;
 
-            var maxDot = _lifetime <= beginMaxDotDuration ? beginMaxDot : continueMaxDot;
+            var maxDot = lifetime <= beginMaxDotDuration ? beginMaxDot : continueMaxDot;
             if (Vector3.Dot(normal, movementDirection) > maxDot) return;
 
             if (normal == _previousNormal && Vector3.Distance(point, _previousPoint) < 0.1f) return;
@@ -72,7 +80,7 @@ namespace Game.Projectiles.Crystalline
             var closestDistance = 2000f;
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
-                if (player.dead || player == _owner) continue;
+                if (player.dead || player == author) continue;
                 var distance = Vector3.Distance(player.transform.position, transform.position);
                 if (distance < closestDistance)
                 {
@@ -87,18 +95,18 @@ namespace Game.Projectiles.Crystalline
             _gravityTimer = 0f;
         }
 
-        protected override void OnDealerHit(DamageDealer dealer, DamageReceiver receiver, float damage)
+        private void OnDamage(DamageEvent _)
         {
-            if (!projectileToSpawnOnHit || receiver == _owner.damageReceiver) return;
+            if (!projectileToSpawnOnHit) return;
 
             var axisEuler = transform.up * 90f;
             var rotation1 = Quaternion.Euler(axisEuler);
             var rotation2 = Quaternion.Euler(-axisEuler);
 
-            var proj1 = Spawn(projectileToSpawnOnHit, _owner, transform.position, transform.position, rotation1);
+            var proj1 = Spawn(projectileToSpawnOnHit, author, transform.position, transform.position, rotation1);
             proj1.SetupPrediction(NetworkTime.time, 0);
 
-            var proj2 = Spawn(projectileToSpawnOnHit, _owner, transform.position, transform.position, rotation2);
+            var proj2 = Spawn(projectileToSpawnOnHit, author, transform.position, transform.position, rotation2);
             proj2.SetupPrediction(NetworkTime.time, 0);
 
             DestroyProjectile();
@@ -110,8 +118,8 @@ namespace Game.Projectiles.Crystalline
 
             _wishVelocity = _direction * flySpeed - _gravityTimer * gravityAcceleration * Vector3.up;
             rb.linearVelocity = _wishVelocity;
-            if (_lifetime > activateGravityAfter) _gravityTimer += Time.deltaTime;
-            if (_lifetime > maxLifetime) DestroyProjectile();
+            if (lifetime > activateGravityAfter) _gravityTimer += Time.deltaTime;
+            if (lifetime > maxLifetime) DestroyProjectile();
         }
     }
 }
