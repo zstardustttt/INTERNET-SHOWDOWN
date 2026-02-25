@@ -4412,7 +4412,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Systems.PlayerDeathWatcher
   respawnDuration: 5
-  respawnInvincibilityDuration: 5
+  respawnInvincibilityDuration: 2
 --- !u!114 &1174911735
 MonoBehaviour:
   m_ObjectHideFlags: 0

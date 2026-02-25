@@ -318,7 +318,7 @@ namespace Game.Player
         {
             if (itemData.itemIndex == -1 || inputLocks != 0 || dead) return;
 
-            var crosshairHit = Physics.Raycast(verticalOrientation.position, verticalOrientation.forward, out var hitInfo, 1000f, LayerMask.GetMask("Player", "Enviroment"));
+            var crosshairHit = Physics.Raycast(verticalOrientation.position, verticalOrientation.forward, out var hitInfo, 1000f, LayerMask.GetMask("Enviroment"));
             var ctx = new ItemUseClientContext()
             {
                 visualPosition = item.transform.position,
