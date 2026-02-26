@@ -118,8 +118,6 @@ public class MenuManager : MonoBehaviour
             (-Mathf.InverseLerp(0, Screen.width, Mouse.current.position.ReadValue().x) + 0.5f) * 2f,
             0f);
 
-        Debug.Log(Mouse.current.position.ReadValue().x);
-
         if (_init == false & isGameWindowFocused)
         {
             InputSystem.onAnyButtonPress
