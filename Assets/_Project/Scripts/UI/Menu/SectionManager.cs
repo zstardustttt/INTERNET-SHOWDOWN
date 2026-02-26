@@ -40,22 +40,6 @@ public class SectionManager : MonoBehaviour
 
         var sequence = DOTween.Sequence();
 
-        if (subsect != 0)
-        {
-            sequence
-                .Append(_mainPanel.DOLocalRotate(
-                    rotations[index] + (rotations[index] / (5 - subsect)), 1f)
-                    .SetEase(Ease.OutExpo));
-
-        }
-        else
-        {
-            sequence
-                .Append(_mainPanel.DOLocalRotate(
-                    rotations[index], 1f)
-                    .SetEase(Ease.OutExpo));
-        }
-
         _currentSubSection = 1;
     }
 

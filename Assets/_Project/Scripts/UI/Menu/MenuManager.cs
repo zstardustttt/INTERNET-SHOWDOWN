@@ -17,6 +17,7 @@ public class MenuManager : MonoBehaviour
     public GameObject logoOutline;
     public GameObject star;
     public GameObject[] buttons;
+    private RectTransform _mainPanelTransform;
     private RectTransform _logoContainerTransform;
     private RectTransform _starTransform;
     private RawImage _logoRawImage;
@@ -38,6 +39,7 @@ public class MenuManager : MonoBehaviour
     private void Awake()
     {
         logoContainer.SetActive(true);
+        _mainPanelTransform = mainPanel.GetComponent<RectTransform>();
         _logoContainerTransform = logoContainer.GetComponent<RectTransform>();
         _starTransform = star.GetComponent<RectTransform>();
 
@@ -111,6 +113,12 @@ public class MenuManager : MonoBehaviour
             _starTransform.localEulerAngles.z + 10f * Time.deltaTime
         );
 
+        _mainPanelTransform.localEulerAngles = new Vector3(
+            (Mathf.InverseLerp(0, Screen.height, Mouse.current.position.ReadValue().y) - 0.5f) * 2f,
+            (-Mathf.InverseLerp(0, Screen.width, Mouse.current.position.ReadValue().x) + 0.5f) * 2f,
+            0f);
+
+        Debug.Log(Mouse.current.position.ReadValue().x);
 
         if (_init == false & isGameWindowFocused)
         {
