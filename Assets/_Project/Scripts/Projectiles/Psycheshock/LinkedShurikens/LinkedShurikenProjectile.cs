@@ -1,3 +1,4 @@
+using Game.Core.Broadcast;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
 using Mirror;
@@ -6,7 +7,7 @@ using UnityEngine.Events;
 
 namespace Game.Projectiles.Psycheshock.LinkedShurikens
 {
-    public class LinkedShurikenProjectile : PredictableProjectile
+    public class LinkedShurikenProjectile : PredictableProjectile, IBroadcastReceiver<ProjectileCollisionBroadcast>
     {
         [Header("Objects")]
         public Transform visualToRotate;
@@ -35,44 +36,6 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
             };
         }
 
-        protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
-        {
-            var bounds = collision.Collider.bounds;
-            var offset = new Vector3
-            (
-                normal.x * bounds.extents.x,
-                normal.y * bounds.extents.y,
-                normal.z * bounds.extents.z
-            );
-            transform.position = point + offset;
-
-            var newVelocity = Vector3.zero;
-            var closestDistance = 2000f;
-            foreach (var (_, player) in MapLoader.loadedMap.players)
-            {
-                if (player.dead || player == author) continue;
-                var distance = Vector3.Distance(player.transform.position, transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    newVelocity = 0.25f * flySpeed * (player.transform.position - transform.position).normalized;
-                }
-            }
-
-            rb.linearVelocity = newVelocity;
-            if (newVelocity == Vector3.zero)
-            {
-                var dot = Vector3.Dot(transform.forward, normal);
-                if (dot > -0.5f && dot < 0.5f)
-                {
-                    transform.forward = (transform.forward - normal) / 2f;
-                }
-            }
-            else rb.rotation = Quaternion.LookRotation(newVelocity);
-
-            RpcPlayCollisionAudio();
-        }
-
         [ClientRpc]
         public void RpcPlayCollisionAudio()
         {
@@ -92,6 +55,44 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
         {
             if (!NetworkServer.active) return;
             onDestroy.Invoke(this);
+        }
+
+        public void Receive(ProjectileCollisionBroadcast broadcast)
+        {
+            var bounds = broadcast.collision.Collider.bounds;
+            var offset = new Vector3
+            (
+                broadcast.normal.x * bounds.extents.x,
+                broadcast.normal.y * bounds.extents.y,
+                broadcast.normal.z * bounds.extents.z
+            );
+            transform.position = broadcast.point + offset;
+
+            var newVelocity = Vector3.zero;
+            var closestDistance = 2000f;
+            foreach (var (_, player) in MapLoader.loadedMap.players)
+            {
+                if (player.dead || player == author) continue;
+                var distance = Vector3.Distance(player.transform.position, transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    newVelocity = 0.25f * flySpeed * (player.transform.position - transform.position).normalized;
+                }
+            }
+
+            rb.linearVelocity = newVelocity;
+            if (newVelocity == Vector3.zero)
+            {
+                var dot = Vector3.Dot(transform.forward, broadcast.normal);
+                if (dot > -0.5f && dot < 0.5f)
+                {
+                    transform.forward = (transform.forward - broadcast.normal) / 2f;
+                }
+            }
+            else rb.rotation = Quaternion.LookRotation(newVelocity);
+
+            RpcPlayCollisionAudio();
         }
     }
 }

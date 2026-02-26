@@ -1,3 +1,4 @@
+using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Hits;
 using Game.Core.Hits.Events;
@@ -9,7 +10,7 @@ using UnityEngine;
 
 namespace Game.Projectiles.Psycheshock.TeslaCocktail
 {
-    public class TeslaCocktailProjectile : PredictableProjectile
+    public class TeslaCocktailProjectile : PredictableProjectile, IBroadcastReceiver<ProjectileCollisionBroadcast>
     {
         [Header("Objects")]
         public GameObject fieldPrefab;
@@ -24,18 +25,6 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
         public override void OnStartServer()
         {
             hitListener.onHit.AddListener(OnHit);
-        }
-
-        protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
-        {
-            var field = Instantiate(fieldPrefab, point, Quaternion.identity, new InstantiateParameters()
-            {
-                scene = MapLoader.loadedMap.scene
-            });
-            field.transform.up = normal;
-            field.GetComponent<DamageSource>().author = author;
-            NetworkServer.Spawn(field);
-            NetworkServer.Destroy(gameObject);
         }
 
         public override ProjectilePredictionData Predict(float timePassed)
@@ -77,6 +66,18 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
 
             if (lifetime <= activateGravityAfter) return;
             rb.linearVelocity -= gravityAcceleration * Time.deltaTime * Vector3.up;
+        }
+
+        public void Receive(ProjectileCollisionBroadcast broadcast)
+        {
+            var field = Instantiate(fieldPrefab, broadcast.point, Quaternion.identity, new InstantiateParameters()
+            {
+                scene = MapLoader.loadedMap.scene
+            });
+            field.transform.up = broadcast.normal;
+            field.GetComponent<DamageSource>().author = author;
+            NetworkServer.Spawn(field);
+            NetworkServer.Destroy(gameObject);
         }
     }
 }

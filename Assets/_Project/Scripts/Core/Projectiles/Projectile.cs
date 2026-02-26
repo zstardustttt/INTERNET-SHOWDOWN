@@ -1,3 +1,5 @@
+using Game.Core.Broadcast;
+using Game.Core.Damages;
 using Game.Core.Maps;
 using Game.Player;
 using Mirror;
@@ -12,12 +14,12 @@ namespace Game.Core.Projectiles
         public Rigidbody rb;
         public NetworkTransformReliable netTransform;
         public NetworkRigidbodyReliable netRb;
-        public ProjectileCollision collision;
 
         [HideInInspector] public PlayerBase author;
         [HideInInspector] public float lifetime;
         [HideInInspector] public Vector3 spawnPosition;
         [HideInInspector] public Quaternion spawnRotation;
+        [HideInInspector] public double spawnTime;
 
         protected override void OnValidate()
         {
@@ -30,12 +32,10 @@ namespace Game.Core.Projectiles
             rb.interpolation = RigidbodyInterpolation.Interpolate;
             netTransform.syncDirection = SyncDirection.ServerToClient;
             netRb.syncDirection = SyncDirection.ServerToClient;
-
-            TryGetComponent(out collision);
         }
 
         [Server]
-        public static T Spawn<T>(T prefab, PlayerBase author, Vector3 headPosition, Vector3 position, Quaternion rotation) where T : Projectile
+        public static T Spawn<T>(T prefab, PlayerBase author, Vector3 position, Quaternion rotation, double spawnTime) where T : Projectile
         {
             if (MapLoader.loadedMap == null || !MapLoader.loadedMap.scene.IsValid()) throw new("Map is not loaded");
 
@@ -47,26 +47,24 @@ namespace Game.Core.Projectiles
             projectile.author = author;
             projectile.spawnPosition = position;
             projectile.spawnRotation = rotation;
+            projectile.spawnTime = spawnTime;
+
+            projectile.gameObject.BroadcastOnChildren(new SetupDamageSourceBroadcast()
+            {
+                family = author.healthModule.family,
+                author = author
+            });
 
             NetworkServer.Spawn(projectileObject);
-
-            if (projectile.collision)
-            {
-                projectile.collision.onCollision.AddListener(projectile.OnCollision);
-                projectile.collision.CheckLinecastBetweenTwoPoints(headPosition, position);
-            }
-
+            projectile.OnSpawned();
             return projectile;
         }
 
-        protected abstract void OnCollision(Vector3 point, Vector3 normal, Collider other);
-        protected abstract void OnUpdate();
+        protected virtual void OnSpawned() { }
+        protected virtual void OnUpdate() { }
 
         protected void DestroyProjectile()
         {
-            if (collision)
-                collision.onCollision.RemoveAllListeners();
-
             NetworkServer.Destroy(gameObject);
         }
 

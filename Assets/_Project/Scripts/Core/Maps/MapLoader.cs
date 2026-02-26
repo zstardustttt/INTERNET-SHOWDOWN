@@ -142,5 +142,20 @@ namespace Game.Core.Maps
             if (loadedMap == null) return false;
             return loadedMap.players.ContainsKey(player.playerGuid);
         }
+
+        [Server]
+        public static GameObject NetworkSpawnOnMap(GameObject obj, Vector3 position, Quaternion rotation)
+        {
+            if (loadedMap == null)
+                throw new("Can't spawn object on map. Map isn't loaded");
+
+            var newObject = Object.Instantiate(obj, position, rotation, new InstantiateParameters()
+            {
+                scene = loadedMap.scene
+            });
+            NetworkServer.Spawn(newObject);
+
+            return newObject;
+        }
     }
 }

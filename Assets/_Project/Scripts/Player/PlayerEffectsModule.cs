@@ -6,7 +6,7 @@ namespace Game.Player
 {
     // i want to die
     [RequireComponent(typeof(PlayerBase))]
-    public class PlayerEffects : NetworkBehaviour
+    public class PlayerEffectsModule : NetworkBehaviour
     {
         public bool serverSide;
         public PlayerEffectsConfig config;

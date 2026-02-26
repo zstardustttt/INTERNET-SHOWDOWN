@@ -1,22 +1,22 @@
 using System.Collections.Generic;
+using Game.Boxes.Events;
 using Game.Core.Events;
+using Game.Core.Hits.Events;
 using Game.Core.Maps;
-using Game.Events.Boxes;
+using Game.Events.GameLoop;
 using Game.Player;
+using Game.Systems;
 using Mirror;
 using UnityEngine;
 
-namespace Game.Systems
+namespace Game.Boxes
 {
     // This object is only active on the server
     public class BoxHandler : MonoBehaviour
     {
-        public LayerMask playerBoxCheckLayerMask;
         public GameObject boxPrefab;
         public float spawnRate;
         public int maxBoxesPerPlayer;
-        public float castMargin;
-        public LayerMask layerMask;
 
         [Header("Box spawning settings")]
         public int maxSpawnFails;
@@ -27,16 +27,34 @@ namespace Game.Systems
         private bool _active;
         private float _timer;
         private int _spawnedBoxesCounter;
+        private LayerMask _enviromentLayerMask;
 
-        // TODO: consider making box handler a per map system
         private void Awake()
         {
-            EventBus<SetBoxSpawnerActive>.Listen((data) =>
+            _enviromentLayerMask = LayerMask.GetMask("Enviroment");
+
+            EventBus<OnGameStateChange>.Listen((data) =>
             {
                 _timer = 0f;
-                if (data.resetSpawnedBoxesCounter) _spawnedBoxesCounter = 0;
-                _active = data.active;
+                _active = data.state.phase.type == GamePhaseType.Match;
             });
+
+            EventBus<OnBoxSpawn>.Listen((_) => _spawnedBoxesCounter++);
+            EventBus<OnBoxDestroy>.Listen((_) => _spawnedBoxesCounter--);
+
+            EventBus<HitEvent>.Listen(OnHit);
+        }
+
+        private void OnHit(HitEvent hitEvent)
+        {
+            if (hitEvent.source is not ItemBox itemBox) return;
+            if (hitEvent.target is not PlayerItemModule playerItemModule) return;
+
+            if (playerItemModule.itemData.itemIndex == -1)
+            {
+                playerItemModule.PickRandomItem();
+                NetworkServer.Destroy(itemBox.gameObject);
+            }
         }
 
         private void Update()
@@ -51,7 +69,6 @@ namespace Game.Systems
             }
 
             HandleBoxSpawning();
-            HandleBoxPicking();
         }
 
         private void HandleBoxSpawning()
@@ -64,61 +81,11 @@ namespace Game.Systems
                 _timer = 1f / (spawnRate * playerCount);
                 for (int i = 0; i < maxSpawnFails; i++)
                 {
-                    if (TrySpawnBox())
-                    {
-                        _spawnedBoxesCounter++;
-                        break;
-                    }
+                    if (TrySpawnBox()) break;
                     Debug.Log($"Failed to spawn box. Fail iteration: {i}");
                 }
             }
             else _timer -= Time.deltaTime;
-        }
-
-        private void HandleBoxPicking()
-        {
-            foreach (var (_, player) in MapLoader.loadedMap.players)
-            {
-                if (!player || player.dead) continue;
-                player.boxSpawnerObservedDelta = player.transform.position - player.boxSpawnerPreviousObservedPosition;
-
-                if (player.itemData.itemIndex == -1 && PlayerBoxCheck(player, out var box))
-                {
-                    player.PickRandomItem();
-                    NetworkServer.Destroy(box);
-                    _spawnedBoxesCounter--;
-                }
-
-                player.boxSpawnerPreviousObservedPosition = player.transform.position;
-            }
-        }
-
-        private bool PlayerBoxCheck(PlayerBase player, out GameObject box)
-        {
-            var radius = player.motor.Capsule.radius;
-
-            var pos = player.boxSpawnerPreviousObservedPosition;
-            var p1 = pos + Vector3.up * radius;
-            var p2 = pos + Vector3.up * (player.motor.Capsule.height - radius);
-
-            var velDir = player.boxSpawnerObservedDelta.normalized;
-            var delta = player.boxSpawnerObservedDelta.magnitude + castMargin;
-
-            var overlaps = Physics.OverlapCapsule(p1, p2, radius, playerBoxCheckLayerMask, QueryTriggerInteraction.Collide);
-            foreach (var overlap in overlaps)
-            {
-                box = overlap.gameObject;
-                return true;
-            }
-
-            if (!Physics.CapsuleCast(p1, p2, radius, velDir, out var hit, delta, playerBoxCheckLayerMask, QueryTriggerInteraction.Collide))
-            {
-                box = null;
-                return false;
-            }
-
-            box = hit.collider.gameObject;
-            return true;
         }
 
         private bool TrySpawnBox()
@@ -158,12 +125,12 @@ namespace Game.Systems
 
             var origin = info.transform.position + new Vector3(randomPoint.x, info.boundsMax.y, randomPoint.y);
             var possibleSpawnPoints = new List<Vector3>();
-            while (Physics.Raycast(origin, Vector3.down, out var hit, 200f, layerMask))
+            while (Physics.Raycast(origin, Vector3.down, out var hit, 200f, _enviromentLayerMask))
             {
                 origin = hit.point + Vector3.down * 0.1f;
 
                 if (Vector3.Angle(Vector3.up, hit.normal) > maxGroundAngle) continue;
-                if (Physics.CheckSphere(hit.point + Vector3.up * spawnYOffset, spawnMargin, layerMask)) continue;
+                if (Physics.CheckSphere(hit.point + Vector3.up * spawnYOffset, spawnMargin, _enviromentLayerMask)) continue;
 
                 possibleSpawnPoints.Add(hit.point);
             }
@@ -171,9 +138,7 @@ namespace Game.Systems
             if (possibleSpawnPoints.Count == 0) return false;
 
             var point = possibleSpawnPoints[Random.Range(0, possibleSpawnPoints.Count)];
-            var box = Instantiate(boxPrefab, point + Vector3.up * spawnYOffset, Quaternion.identity, new InstantiateParameters() { scene = MapLoader.loadedMap.scene });
-            NetworkServer.Spawn(box);
-
+            MapLoader.NetworkSpawnOnMap(boxPrefab, point + Vector3.up * spawnYOffset, Quaternion.identity);
             return true;
         }
     }

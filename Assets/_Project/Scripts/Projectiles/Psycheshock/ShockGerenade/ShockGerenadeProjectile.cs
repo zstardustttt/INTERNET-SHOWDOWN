@@ -1,4 +1,5 @@
 using System;
+using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Damages.Events;
 using Game.Core.Hits;
@@ -12,7 +13,7 @@ using UnityEngine;
 
 namespace Game.Projectiles.Psycheshock.ShockGerenade
 {
-    public class ShockGerenadeProjectile : PredictableProjectile
+    public class ShockGerenadeProjectile : PredictableProjectile, IBroadcastReceiver<ProjectileCollisionBroadcast>
     {
         [Header("Objects")]
         public GameObject explosion;
@@ -80,12 +81,6 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         {
             if (!_localGerenadeVisual) return;
             Destroy(_localGerenadeVisual.gameObject);
-        }
-
-        protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
-        {
-            if (_attached) return;
-            transform.position = point + normal * collisionRadius;
         }
 
         private void OnHit(HitEvent hitEvent)
@@ -233,6 +228,12 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
                 rotation = spawnRotation,
                 velocity = velocity
             };
+        }
+
+        public void Receive(ProjectileCollisionBroadcast broadcast)
+        {
+            if (_attached) return;
+            transform.position = broadcast.point + broadcast.normal * collisionRadius;
         }
     }
 }

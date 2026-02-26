@@ -1,19 +1,17 @@
-using Game.Core.Damages;
+using Game.Core.Broadcast;
 using Game.Core.Damages.Events;
-using Game.Core.Hits;
 using Game.Core.Hits.Events;
 using Game.Core.Items;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
 using Game.Damages;
-using Game.Items.Psycheshock;
 using Game.Player;
 using Mirror;
 using UnityEngine;
 
 namespace Game.Projectiles.Psycheshock
 {
-    public class BOOMerangProjectle : PredictableProjectile
+    public class BOOMerangProjectle : PredictableProjectile, IBroadcastReceiver<ProjectileCollisionBroadcast>
     {
         [Header("Objects")]
         public BasicDamageSource mainDamage;
@@ -81,18 +79,6 @@ namespace Game.Projectiles.Psycheshock
                 };
             }
         }
-
-        protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
-        {
-            if (!secondary)
-            {
-                if (lifetime <= LoopDuration / 2f + 0.05f) return;
-                if (lifetime >= LoopDuration && lifetime <= LoopDuration + 0.035f) return;
-            }
-
-            Explode(point, normal);
-        }
-
         private void Explode(Vector3 point, Vector3 explosionUp)
         {
             var explosion = Instantiate(explosionPrefab, point, Quaternion.identity, new InstantiateParameters()
@@ -116,7 +102,7 @@ namespace Game.Projectiles.Psycheshock
 
             if (player != author || lifetime < LoopDuration / 2f) return;
 
-            author.SetItem(boomerangItem,
+            author.itemModule.SetItem(boomerangItem,
                 new IntItemArgument("boomerang_damage_multiplier", damageMultiply),
                 new IntItemArgument("boomerang_returns", returns + 1)
             );
@@ -153,6 +139,17 @@ namespace Game.Projectiles.Psycheshock
         private Vector3 GetBezierPosition(Vector3 wishPosition, Vector3 endPosition, float t)
         {
             return Vector3.LerpUnclamped(Vector3.LerpUnclamped(spawnPosition, wishPosition, t * 2f), Vector3.LerpUnclamped(wishPosition, endPosition, t), t);
+        }
+
+        public void Receive(ProjectileCollisionBroadcast broadcast)
+        {
+            if (!secondary)
+            {
+                if (lifetime <= LoopDuration / 2f + 0.05f) return;
+                if (lifetime >= LoopDuration && lifetime <= LoopDuration + 0.035f) return;
+            }
+
+            Explode(broadcast.point, broadcast.normal);
         }
     }
 }

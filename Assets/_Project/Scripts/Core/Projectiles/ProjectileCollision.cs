@@ -1,4 +1,5 @@
 using System;
+using Game.Core.Broadcast;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,6 +12,14 @@ namespace Game.Core.Projectiles
         Enter = 1 << 0,
         Stay = 1 << 1,
         Exit = 1 << 2
+    }
+
+    public struct ProjectileCollisionBroadcast
+    {
+        public ProjectileCollision collision;
+        public Vector3 point;
+        public Vector3 normal;
+        public Collider other;
     }
 
     [RequireComponent(typeof(Projectile))]
@@ -35,7 +44,15 @@ namespace Game.Core.Projectiles
             if (!active) return;
             if (!Physics.Linecast(p1, p2, out var hit, collisionLayerMask)) return;
             if (hit.collider.gameObject == gameObject) return;
+
             onCollision.Invoke(hit.point, hit.normal, hit.collider);
+            gameObject.BroadcastOnHierarchy(new ProjectileCollisionBroadcast()
+            {
+                collision = this,
+                point = hit.point,
+                normal = hit.normal,
+                other = hit.collider
+            });
         }
 
         public void CheckCollisionBetweenTwoPoints(Vector3 p1, Vector3 p2)
@@ -71,6 +88,14 @@ namespace Game.Core.Projectiles
             foreach (var contact in collision.contacts)
             {
                 onCollision.Invoke(contact.point, contact.normal, collision.collider);
+
+                gameObject.BroadcastOnHierarchy(new ProjectileCollisionBroadcast()
+                {
+                    collision = this,
+                    point = contact.point,
+                    normal = contact.normal,
+                    other = collision.collider
+                });
             }
         }
     }

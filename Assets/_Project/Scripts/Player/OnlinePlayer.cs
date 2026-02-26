@@ -82,6 +82,7 @@ namespace Game.Player
         private float _cameraBopTilt;
 
         [Header("Camera Shake")]
+        public AnimationCurve shakeDistanceCurve;
         public float shakeFrequency;
         public float shakeFalloffSpeed;
         private ShakeGenerator _shakeGenerator;
@@ -145,7 +146,7 @@ namespace Game.Player
                 NetworkClient.Send<ClientRequestMapLoad>(new());
             });
 
-            player.onItemPickup.AddListener(() =>
+            player.itemModule.onItemPickup.AddListener(() =>
             {
                 if (!isLocalPlayer) return;
                 itemPickupSource.Play();
@@ -191,7 +192,10 @@ namespace Game.Player
                 var distance = Vector3.Distance(_camera.transform.position, shaker.transform.position);
                 var amplitude = shaker.amplitude;
                 if (distance > shaker.minDistance)
-                    amplitude *= 1f - Mathf.InverseLerp(shaker.minDistance, shaker.maxDistance, distance);
+                {
+                    var distance01 = Mathf.InverseLerp(shaker.minDistance, shaker.maxDistance, distance);
+                    amplitude *= shakeDistanceCurve.Evaluate(1f - distance01);
+                }
 
                 _shakeGenerator.Shake(amplitude, shakeFrequency, shakeFalloffSpeed);
             });
@@ -245,8 +249,8 @@ namespace Game.Player
 #endif
 
             // TODO: new input system
-            if (Input.GetMouseButtonDown(0)) player.TryUseItem(false);
-            else if (Input.GetMouseButtonDown(1)) player.TryUseItem(true);
+            if (Input.GetMouseButtonDown(0)) player.itemModule.TryUseItem(false);
+            else if (Input.GetMouseButtonDown(1)) player.itemModule.TryUseItem(true);
 
             // SIDE RUN TILT
             var targetSideRunTilt = player.inputs.move.normalized.x * maxSideRunTilt;
@@ -288,7 +292,7 @@ namespace Game.Player
 
             // CAMERA ROTATION
             var delta = _actions.Camera.Look.ReadValue<Vector2>() * _mouseSens;
-            if (player.item) player.item.Sway(delta, player.localTransientVelocity, player.verticalOrientation);
+            if (player.itemModule.item) player.itemModule.item.Sway(delta, player.localTransientVelocity, player.verticalOrientation);
 
             player.horizontalOrientation.localEulerAngles += new Vector3(0f, delta.x, 0f);
             _cameraRotX -= delta.y;

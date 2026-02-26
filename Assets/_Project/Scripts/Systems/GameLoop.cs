@@ -2,7 +2,6 @@ using System;
 using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Events.GameLoop;
-using Game.Events.Boxes;
 using Mirror;
 using UnityEngine;
 using Game.Player;
@@ -152,17 +151,14 @@ namespace Game.Systems
 
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
-                player.PickRandomItem();
+                player.itemModule.PickRandomItem();
             }
-
-            EventBus<SetBoxSpawnerActive>.Invoke(new() { active = true, resetSpawnedBoxesCounter = true });
         }
 
         [Server]
         private void EnterFinish()
         {
             state = new(new(GamePhaseType.Finish, finishPhaseInfo), state.mapIndex, state.soundtrackIndex, state.soundtrackBeginTime);
-            EventBus<SetBoxSpawnerActive>.Invoke(new() { active = false });
 
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {

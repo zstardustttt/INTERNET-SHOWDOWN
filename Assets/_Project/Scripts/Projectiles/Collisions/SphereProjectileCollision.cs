@@ -1,3 +1,4 @@
+using Game.Core.Broadcast;
 using Game.Core.Projectiles;
 using UnityEngine;
 
@@ -35,6 +36,13 @@ namespace Game.Projectiles.Collisions
                 }
 
                 onCollision.Invoke(point, normal, hit.collider);
+                gameObject.BroadcastOnHierarchy(new ProjectileCollisionBroadcast()
+                {
+                    collision = this,
+                    point = point,
+                    normal = normal,
+                    other = hit.collider
+                });
             }
         }
     }

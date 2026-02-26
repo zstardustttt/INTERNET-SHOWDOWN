@@ -23,12 +23,12 @@ namespace Game.Player
 
         public HitEntity hitEntity;
         public PlayerHealthModule healthModule;
+        public PlayerItemModule itemModule;
         public PlayerConfig config;
         public IPlayerController controller;
         public KinematicCharacterMotor motor;
         public Transform horizontalOrientation;
         public Transform verticalOrientation;
-        public Transform itemHolder;
 
         [Space(9)]
         public GameObject modelContainer;
@@ -91,30 +91,9 @@ namespace Game.Player
         [HideInInspector] public UnityEvent onDash = new();
         [HideInInspector] public UnityEvent<bool> onEndDash = new();
         [HideInInspector] public UnityEvent<Collider> onCollide = new();
-        [HideInInspector] public UnityEvent onItemPickup = new();
         [HideInInspector] public UnityEvent onResetPlayer = new();
         [HideInInspector] public UnityEvent onDeath = new();
         [HideInInspector] public UnityEvent onRespawn = new();
-
-        public struct ItemData
-        {
-            public int rarityIndex;
-            public int itemIndex;
-            public ItemArgument[] arguments;
-
-            public static ItemData Default()
-            {
-                return new()
-                {
-                    rarityIndex = 0,
-                    itemIndex = -1,
-                    arguments = Array.Empty<ItemArgument>()
-                };
-            }
-        }
-
-        [SyncVar(hook = nameof(OnItemChange))] public ItemData itemData;
-        public Item item;
 
         [SyncVar(hook = nameof(OnDeathOrRespawn))] public bool dead;
         public float respawnTimer;
@@ -158,54 +137,6 @@ namespace Game.Player
         public void OnAddedToMap()
         {
 
-        }
-
-        [Server]
-        public void SetItem(ItemConfig item, params ItemArgument[] args)
-        {
-            var rarityIdx = Array.IndexOf(ItemPool.rarities, item.rarity);
-            itemData = new()
-            {
-                rarityIndex = rarityIdx,
-                itemIndex = ItemPool.items[rarityIdx].IndexOf(item),
-                arguments = args
-            };
-        }
-
-        [Server]
-        public void PickRandomItem()
-        {
-            int rarityIdx;
-            for (rarityIdx = 0; rarityIdx < ItemPool.rarities.Length - 1; rarityIdx++)
-            {
-                if (Random.value <= 0.6f) break;
-            }
-
-            Debug.Log($"Picked rarity {rarityIdx} for player {gameObject.name}");
-
-            var itemPool = ItemPool.items[rarityIdx];
-            while (itemPool == null)
-            {
-                rarityIdx--;
-                if (rarityIdx < 0) break;
-                itemPool = ItemPool.items[rarityIdx];
-            }
-
-            if (itemPool == null)
-            {
-                Debug.LogWarning("No valid item pools were found");
-                return;
-            }
-
-            var itemIdx = Random.Range(0, itemPool.Count);
-            Debug.Log($"Picked item index {itemIdx} for player {gameObject.name}");
-
-            itemData = new()
-            {
-                rarityIndex = rarityIdx,
-                itemIndex = itemIdx,
-                arguments = Array.Empty<ItemArgument>()
-            };
         }
 
         private void InnerSetGuid(string guid)
@@ -259,7 +190,7 @@ namespace Game.Player
         public void ResetPlayer()
         {
             healthModule.ResetHealth();
-            itemData = ItemData.Default();
+            itemModule.itemData = PlayerItemData.Default();
             dead = false;
             onResetPlayer.Invoke();
         }
@@ -286,58 +217,6 @@ namespace Game.Player
             if (_handlingThisPlayer) _additionalVelocity = Vector3.zero;
         }
 
-        private void OnItemChange(ItemData old, ItemData _new)
-        {
-            if (item) Destroy(item.gameObject);
-
-            if (_new.itemIndex != -1)
-            {
-                item = Instantiate(ItemPool.items[_new.rarityIndex][_new.itemIndex].prefab, itemHolder).GetComponent<Item>();
-                item.holder = this;
-                item.arguments = _new.arguments;
-
-                if (isLocalPlayer)
-                {
-                    var layer = LayerMask.NameToLayer("ItemVisual");
-                    var children = item.GetComponentsInChildren<Transform>(includeInactive: true);
-                    foreach (var child in children)
-                    {
-                        child.gameObject.layer = layer;
-                    }
-
-                    item.transform.localPosition = new(item.offset.x, item.offset.y, -Mathf.Abs(verticalOrientation.position.z - itemHolder.position.z));
-                    itemHolder.localScale = new(0.1f, 4f, 0.1f);
-                }
-                else item.transform.localPosition = item.offset;
-
-                onItemPickup.Invoke();
-            }
-        }
-
-        public void TryUseItem(bool secondary)
-        {
-            if (itemData.itemIndex == -1 || inputLocks != 0 || dead) return;
-
-            var crosshairHit = Physics.Raycast(verticalOrientation.position, verticalOrientation.forward, out var hitInfo, 1000f, LayerMask.GetMask("Enviroment"));
-            var ctx = new ItemUseClientContext()
-            {
-                visualPosition = item.transform.position,
-                visualRotation = item.transform.rotation,
-                headPosition = verticalOrientation.position,
-                headRotation = verticalOrientation.rotation,
-                didCrosshairHit = crosshairHit,
-                crosshairHitPoint = hitInfo.point,
-                crosshairHitNormal = hitInfo.normal,
-                crosshairHitDistance = hitInfo.distance,
-                useTime = NetworkTime.time,
-                velocity = localTransientVelocity,
-                secondary = secondary
-            };
-
-            if (NetworkServer.active) UseItem(ctx);
-            else CmdUseItem(ctx);
-        }
-
         private void Update()
         {
             // Ascend if dead
@@ -346,12 +225,6 @@ namespace Game.Player
                 var distance = config.respawnAscendSpeed * Time.deltaTime;
                 if (!Physics.Raycast(transform.position, Vector3.up, motor.Capsule.height + distance, LayerMask.GetMask("Enviroment")))
                     transform.position += distance * Vector3.up;
-            }
-
-            if (isLocalPlayer && item)
-            {
-                item.transform.localPosition = Vector3.Lerp(item.transform.localPosition, item.offset, Time.deltaTime * 15f);
-                itemHolder.localScale = Vector3.Lerp(itemHolder.localScale, Vector3.one, Time.deltaTime * 30f);
             }
 
             if (!NetworkServer.active) return;
@@ -371,33 +244,6 @@ namespace Game.Player
                 EventBus<OnStatsChanged>.Invoke(new() { player = this });
             }
             _prevStats = stats;
-        }
-
-        [Command]
-        private void CmdUseItem(ItemUseClientContext context)
-        {
-            if (dead) return;
-            stats.activity++;
-            // TODO: Validate context
-            UseItem(context);
-        }
-
-        [Server]
-        private void UseItem(ItemUseClientContext context)
-        {
-            if (!item || inputLocks != 0) return;
-
-            if (item.Use(this, context))
-                itemData = ItemData.Default();
-            else TargetRestartItemAnimation();
-        }
-
-        [TargetRpc]
-        private void TargetRestartItemAnimation()
-        {
-            if (!item) return;
-            item.transform.localPosition = new(item.offset.x, item.offset.y, -Mathf.Abs(verticalOrientation.position.z - itemHolder.position.z));
-            itemHolder.localScale = new(0.1f, 4f, 0.1f);
         }
 
         public void SetPosition(Vector3 position)
@@ -799,7 +645,6 @@ namespace Game.Player
             }
         }
 
-        // TODO: TargetOnHit isn't called anywhere
         [TargetRpc]
         public void TargetOnHit()
         {

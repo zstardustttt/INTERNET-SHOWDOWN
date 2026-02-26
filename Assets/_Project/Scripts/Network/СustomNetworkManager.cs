@@ -57,7 +57,8 @@ namespace Game.Network
 
             EventBus<OnAddPlayerOnMap>.Listen((data) =>
             {
-                if (_gameState.phase.type == GamePhaseType.Match) data.player.PickRandomItem();
+                if (_gameState.phase.type == GamePhaseType.Match)
+                    data.player.itemModule.PickRandomItem();
 
                 NetworkServer.SendToAll(new ServerAddLeaderboardItem()
                 {

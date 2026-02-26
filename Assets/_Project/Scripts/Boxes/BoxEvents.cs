@@ -1,14 +1,7 @@
 using Game.Core.Events;
-using Game.Other;
 
-namespace Game.Events.Boxes
+namespace Game.Boxes.Events
 {
-    public struct SetBoxSpawnerActive : IEvent
-    {
-        public bool active;
-        public bool resetSpawnedBoxesCounter;
-    }
-
     public struct OnBoxSpawn : IEvent
     {
         public ItemBox box;

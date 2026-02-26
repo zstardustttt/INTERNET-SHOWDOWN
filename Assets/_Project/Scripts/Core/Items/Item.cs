@@ -5,7 +5,6 @@ namespace Game.Core.Items
 {
     public abstract class Item : MonoBehaviour
     {
-        public PlayerBase holder;
         public ItemArgument[] arguments;
         public Vector3 offset;
 

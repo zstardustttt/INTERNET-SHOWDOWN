@@ -1,4 +1,5 @@
 using System;
+using Game.Core.Broadcast;
 using Game.Core.Damages.Events;
 using Game.Core.Hits;
 using Game.Player;
@@ -7,7 +8,13 @@ using UnityEngine.Events;
 
 namespace Game.Core.Damages
 {
-    public class DamageSource : HitListener
+    public struct SetupDamageSourceBroadcast
+    {
+        public Guid family;
+        public PlayerBase author;
+    }
+
+    public class DamageSource : HitListener, IBroadcastReceiver<SetupDamageSourceBroadcast>
     {
         public bool canDamageFamily;
         public UnityEvent<DamageEvent> onDamage;
@@ -18,6 +25,12 @@ namespace Game.Core.Damages
         public virtual Damage? EvaluateDamage(DamageTarget target)
         {
             return null;
+        }
+
+        public void Receive(SetupDamageSourceBroadcast broadcast)
+        {
+            family = broadcast.family;
+            author = broadcast.author;
         }
     }
 }

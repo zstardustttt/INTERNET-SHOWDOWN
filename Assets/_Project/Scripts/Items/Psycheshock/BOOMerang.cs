@@ -32,7 +32,7 @@ namespace Game.Items.Psycheshock
 
         public override bool Use(PlayerBase user, ItemUseClientContext context)
         {
-            var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, context.visualRotation);
+            /*var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, context.visualRotation);
             proj.damageMultiply = _parsedDamageMultiplier;
             proj.returns = _parsedReturns;
 
@@ -67,7 +67,7 @@ namespace Game.Items.Psycheshock
                 proj.wishPosition = context.headPosition + proj.transform.forward * wishPosDist;
             }
 
-            proj.SetupPrediction(context.useTime, 2);
+            proj.SetupPrediction(context.useTime, 2);*/
             return true;
         }
     }

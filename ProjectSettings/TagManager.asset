@@ -19,9 +19,9 @@ TagManager:
   - HitEntity
   - Projectile
   - Enviroment
-  - ReceiverCheck
-  - Box
-  - LocalPlayer
+  - BoxVisual
+  - 
+  - 
   - 
   - 
   - 

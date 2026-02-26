@@ -21,7 +21,7 @@ namespace Game.Items.Psycheshock
 
         public override bool Use(PlayerBase user, ItemUseClientContext context)
         {
-            var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHitPoint - context.visualPosition) : context.visualRotation;
+            /*var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHitPoint - context.visualPosition) : context.visualRotation;
             var proj = Projectile.Spawn(projectilePrefab, user, context.headPosition, context.visualPosition, finalRotation);
             proj.SetupPrediction(context.useTime, 1);
             proj.collideAudioPitch = initialPitch + _uses * pitchIncrease;
@@ -38,7 +38,7 @@ namespace Game.Items.Psycheshock
                 NetworkServer.Spawn(_manager.gameObject);
             }
 
-            _manager.AddProjectile(proj);
+            _manager.AddProjectile(proj);*/
 
             _uses++;
             return _uses >= maxUses;

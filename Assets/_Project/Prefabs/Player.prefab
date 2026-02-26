@@ -436,6 +436,39 @@ MonoBehaviour:
   cameraBopTiltAmplitude: 0.3
   cameraBopFrequency: 10.5
   cameraBopStopSpeed: 5
+  shakeDistanceCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.60179365
+      outSlope: 0.60179365
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.12934363
+    - serializedVersion: 3
+      time: 0.7
+      value: 0.5003662
+      inSlope: 1.2079384
+      outSlope: 1.2079384
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1.0031967
+      inSlope: 0.42558637
+      outSlope: 0.42558637
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.10656676
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   shakeFrequency: 7
   shakeFalloffSpeed: 9
   groundSlamCameraShakeMultiplier: 0.06
@@ -481,11 +514,11 @@ MonoBehaviour:
   syncInterval: 0
   hitEntity: {fileID: 8243380858814391041}
   healthModule: {fileID: 5880631188279301956}
+  itemModule: {fileID: 7304304024719944416}
   config: {fileID: 11400000, guid: 6557f4f69351e73429465a2a5dfea442, type: 2}
   motor: {fileID: 3085756864833092725}
   horizontalOrientation: {fileID: 6124577175492389443}
   verticalOrientation: {fileID: 9199459176827721078}
-  itemHolder: {fileID: 4582289290584614918}
   modelContainer: {fileID: 6485277279108889857}
   mainModel: {fileID: 7050680160326592069}
   ghostModel: {fileID: 7006930605099416351}
@@ -510,9 +543,6 @@ MonoBehaviour:
   onCollide:
     m_PersistentCalls:
       m_Calls: []
-  onItemPickup:
-    m_PersistentCalls:
-      m_Calls: []
   onResetPlayer:
     m_PersistentCalls:
       m_Calls: []
@@ -522,7 +552,6 @@ MonoBehaviour:
   onRespawn:
     m_PersistentCalls:
       m_Calls: []
-  item: {fileID: 0}
   dead: 0
   respawnTimer: 0
   motorLocks: 0
@@ -659,6 +688,7 @@ GameObject:
   - component: {fileID: 8243380858814391041}
   - component: {fileID: 5880631188279301956}
   - component: {fileID: 5918298169735325867}
+  - component: {fileID: 7304304024719944416}
   m_Layer: 9
   m_Name: HitEntity
   m_TagString: Untagged
@@ -721,6 +751,7 @@ MonoBehaviour:
   targets:
   - {fileID: 5880631188279301956}
   - {fileID: 5918298169735325867}
+  - {fileID: 7304304024719944416}
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -797,6 +828,39 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7304304024719944416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977572232203292389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dff78874b5db041a7dc6d6f075e6ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Player.PlayerItemModule
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 8243380858814391041}
+  active: 1
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+  player: {fileID: 6754057132338759635}
+  itemHolder: {fileID: 4582289290584614918}
+  itemData:
+    rarityIndex: 0
+    itemIndex: 0
+  item: {fileID: 0}
+  onItemPickup:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2443618441499736647
 GameObject:
   m_ObjectHideFlags: 0

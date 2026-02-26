@@ -65,7 +65,7 @@ namespace Game.Systems
             player.respawnTimer = respawnDuration;
 
             player.hitEntity.active = false;
-            player.itemData = PlayerBase.ItemData.Default();
+            player.itemModule.itemData = PlayerItemData.Default();
             player.motorLocks++;
 
             var damages = new Dictionary<PlayerBase, float>();

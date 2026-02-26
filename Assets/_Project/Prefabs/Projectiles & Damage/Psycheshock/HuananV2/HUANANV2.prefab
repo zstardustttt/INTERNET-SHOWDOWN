@@ -59,16 +59,17 @@ MonoBehaviour:
   rb: {fileID: 2459362012733599560}
   netTransform: {fileID: 7706021185470277638}
   netRb: {fileID: 7706021185470277638}
-  collision: {fileID: 3044793796010491125}
   author: {fileID: 0}
   lifetime: 0
   spawnPosition: {x: 0, y: 0, z: 0}
   spawnRotation: {x: 0, y: 0, z: 0, w: 0}
+  spawnTime: 0
   predictionDebugIterations: 1
   predictionDebugTimePassed: 1
   explosionPrefab: {fileID: 8596668877135600386, guid: d18396bccccba4c4abcc7971c45bb3ba, type: 3}
   visual: {fileID: 8790266594367465333}
   mainDamage: {fileID: 1638724938105410804}
+  collision: {fileID: 3044793796010491125}
   speed: 100
   rotationSpeed: 500
 --- !u!114 &3044793796010491125

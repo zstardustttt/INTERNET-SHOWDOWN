@@ -1,3 +1,5 @@
+using System;
+using Game.Core.Broadcast;
 using Mirror;
 using UnityEngine;
 
@@ -12,7 +14,6 @@ namespace Game.Core.Projectiles
 
     public abstract class PredictableProjectile : Projectile
     {
-        public double SpawnTime { get; private set; }
         public float SpawnDelay { get; private set; }
 
         [Header("Prediction Debug")]
@@ -21,9 +22,8 @@ namespace Game.Core.Projectiles
 
         public abstract ProjectilePredictionData Predict(float timePassed);
 
-        public void SetupPrediction(double spawnTime, int checkIterations)
+        public void PredictSpawn(int checkIterations, Action<ProjectilePredictionData, ProjectilePredictionData> onIteration = null)
         {
-            SpawnTime = spawnTime;
             SpawnDelay = (float)(NetworkTime.time - spawnTime);
             lifetime = SpawnDelay;
 
@@ -42,9 +42,7 @@ namespace Game.Core.Projectiles
             for (int i = 1; i <= checkIterations; i++)
             {
                 var prediction = i == checkIterations ? finalPrediction : Predict(deltaTime * i);
-                if (collision)
-                    collision.CheckCollisionBetweenTwoPoints(previousPrediction.position, prediction.position);
-
+                onIteration?.Invoke(previousPrediction, prediction);
                 previousPrediction = prediction;
             }
         }

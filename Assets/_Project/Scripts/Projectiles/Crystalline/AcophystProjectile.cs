@@ -1,3 +1,4 @@
+using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Damages.Events;
 using Game.Core.Maps;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 namespace Game.Projectiles.Crystalline
 {
-    public class AcophystProjectile : PredictableProjectile
+    public class AcophystProjectile : PredictableProjectile, IBroadcastReceiver<ProjectileCollisionBroadcast>
     {
         [Header("Objects")]
         public AcophystProjectile projectileToSpawnOnHit;
@@ -56,17 +57,6 @@ namespace Game.Projectiles.Crystalline
             };
         }
 
-        protected override void OnCollision(Vector3 point, Vector3 normal, Collider other)
-        {
-            if (lifetime > desroyOnBounceAfter) DestroyProjectile();
-            else
-            {
-                Bounce(point, normal);
-                _previousNormal = normal;
-                _previousPoint = point;
-            }
-        }
-
         private void Bounce(Vector3 point, Vector3 normal)
         {
             var movementDirection = _wishVelocity.normalized;
@@ -103,11 +93,8 @@ namespace Game.Projectiles.Crystalline
             var rotation1 = Quaternion.Euler(axisEuler);
             var rotation2 = Quaternion.Euler(-axisEuler);
 
-            var proj1 = Spawn(projectileToSpawnOnHit, author, transform.position, transform.position, rotation1);
-            proj1.SetupPrediction(NetworkTime.time, 0);
-
-            var proj2 = Spawn(projectileToSpawnOnHit, author, transform.position, transform.position, rotation2);
-            proj2.SetupPrediction(NetworkTime.time, 0);
+            Spawn(projectileToSpawnOnHit, author, transform.position, rotation1, NetworkTime.time);
+            Spawn(projectileToSpawnOnHit, author, transform.position, rotation2, NetworkTime.time);
 
             DestroyProjectile();
         }
@@ -120,6 +107,17 @@ namespace Game.Projectiles.Crystalline
             rb.linearVelocity = _wishVelocity;
             if (lifetime > activateGravityAfter) _gravityTimer += Time.deltaTime;
             if (lifetime > maxLifetime) DestroyProjectile();
+        }
+
+        public void Receive(ProjectileCollisionBroadcast broadcast)
+        {
+            if (lifetime > desroyOnBounceAfter) DestroyProjectile();
+            else
+            {
+                Bounce(broadcast.point, broadcast.normal);
+                _previousNormal = broadcast.normal;
+                _previousPoint = broadcast.point;
+            }
         }
     }
 }

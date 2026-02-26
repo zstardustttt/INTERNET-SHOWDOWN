@@ -53,7 +53,7 @@ MonoBehaviour:
     thickness: 0.1
     layerMask:
       serializedVersion: 2
-      m_Bits: 9280
+      m_Bits: 13376
     enableDepth: 1
     depthStrength: 1
     depthThickness: 50

@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Game.Boxes.Events;
 using Game.Core.Events;
-using Game.Events.Boxes;
-using Game.Other;
 using UnityEngine;
 
-namespace Game.Systems
+namespace Game.Boxes
 {
     [Serializable]
     public struct PossibleBoxMesh

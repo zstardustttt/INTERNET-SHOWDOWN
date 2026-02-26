@@ -1,10 +1,12 @@
+using Game.Boxes.Events;
 using Game.Core.Events;
-using Game.Events.Boxes;
+using Game.Core.Hits;
 using UnityEngine;
 
-namespace Game.Other
+namespace Game.Boxes
 {
-    public class ItemBox : MonoBehaviour
+    // TODO: implement with layers
+    public class ItemBox : HitListener
     {
         public MeshFilter outerFieldFilter;
         public MeshFilter outlineFilter;

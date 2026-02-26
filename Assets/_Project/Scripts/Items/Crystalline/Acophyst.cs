@@ -12,9 +12,9 @@ namespace Game.Items.Crystalline
 
         public override bool Use(PlayerBase user, ItemUseClientContext context)
         {
-            var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHitPoint - context.visualPosition) : context.visualRotation;
-            var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, finalRotation);
-            proj.SetupPrediction(context.useTime, 1);
+            //var finalRotation = context.didCrosshairHit ? Quaternion.LookRotation(context.crosshairHitPoint - context.visualPosition) : context.visualRotation;
+            //var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, finalRotation);
+            //proj.SetupPrediction(context.useTime, 1);
             return true;
         }
     }
