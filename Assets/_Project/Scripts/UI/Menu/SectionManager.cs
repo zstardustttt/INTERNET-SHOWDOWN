@@ -80,11 +80,6 @@ public class SectionManager : MonoBehaviour
                 .SetEase(b)
         );
 
-        sequence.Join(
-            _mainPanel.DOLocalRotate(rotations[index], 1f)
-                .SetEase(b)
-        );
-
         sequence.OnComplete(() =>
         {
             _sectionChanging = false;
