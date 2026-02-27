@@ -689,6 +689,7 @@ GameObject:
   - component: {fileID: 5880631188279301956}
   - component: {fileID: 5918298169735325867}
   - component: {fileID: 7304304024719944416}
+  - component: {fileID: 2706654681915954732}
   m_Layer: 9
   m_Name: HitEntity
   m_TagString: Untagged
@@ -752,6 +753,7 @@ MonoBehaviour:
   - {fileID: 5880631188279301956}
   - {fileID: 5918298169735325867}
   - {fileID: 7304304024719944416}
+  - {fileID: 2706654681915954732}
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -863,6 +865,31 @@ MonoBehaviour:
     itemIndex: 0
   item: {fileID: 0}
   onItemPickup:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &2706654681915954732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977572232203292389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d338db2b35244b48b6dd54bdec004f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Hits.HitListener
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 8243380858814391041}
+  active: 1
+  layer: {fileID: 11400000, guid: d9e26ebc23a17394384d7297bde67696, type: 2}
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &2443618441499736647

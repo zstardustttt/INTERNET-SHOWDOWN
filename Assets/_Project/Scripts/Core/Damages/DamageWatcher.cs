@@ -25,9 +25,12 @@ namespace Game.Core.Damages
                 if (!evaluation.HasValue) return;
 
                 var damage = evaluation.Value;
+                var damageEvent = new DamageEvent(source, target, damage);
+
+                source.onWishDamage.Invoke(damageEvent);
+                target.onWishDamage.Invoke(damageEvent);
                 if (!target.ApplyDamage(damage)) return;
 
-                var damageEvent = new DamageEvent(source, target, damage);
                 source.onDamage.Invoke(damageEvent);
                 target.onDamage.Invoke(damageEvent);
                 EventBus<DamageEvent>.Invoke(damageEvent);

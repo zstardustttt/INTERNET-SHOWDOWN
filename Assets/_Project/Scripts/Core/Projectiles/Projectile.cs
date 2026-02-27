@@ -1,3 +1,4 @@
+using System;
 using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Maps;
@@ -35,7 +36,7 @@ namespace Game.Core.Projectiles
         }
 
         [Server]
-        public static T Spawn<T>(T prefab, PlayerBase author, Vector3 position, Quaternion rotation, double spawnTime) where T : Projectile
+        public static T Spawn<T>(T prefab, PlayerBase author, Vector3 position, Quaternion rotation, double spawnTime, Action<T> setup = null) where T : Projectile
         {
             if (MapLoader.loadedMap == null || !MapLoader.loadedMap.scene.IsValid()) throw new("Map is not loaded");
 
@@ -48,6 +49,7 @@ namespace Game.Core.Projectiles
             projectile.spawnPosition = position;
             projectile.spawnRotation = rotation;
             projectile.spawnTime = spawnTime;
+            setup?.Invoke(projectile);
 
             projectile.gameObject.BroadcastOnChildren(new SetupDamageSourceBroadcast()
             {
@@ -61,11 +63,13 @@ namespace Game.Core.Projectiles
         }
 
         protected virtual void OnSpawned() { }
+        protected virtual void OnDestroyed() { }
         protected virtual void OnUpdate() { }
 
         protected void DestroyProjectile()
         {
             NetworkServer.Destroy(gameObject);
+            OnDestroyed();
         }
 
         private void Update()

@@ -27,6 +27,11 @@ namespace Game.Projectiles.Psycheshock
             });
         }
 
+        protected override void OnDestroyed()
+        {
+            collision.onCollision.RemoveAllListeners();
+        }
+
         protected override void OnUpdate()
         {
             visual.Rotate(transform.forward, rotationSpeed * Time.deltaTime, Space.World);

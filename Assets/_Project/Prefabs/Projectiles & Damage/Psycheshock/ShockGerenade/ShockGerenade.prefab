@@ -17,7 +17,6 @@ GameObject:
   - component: {fileID: 490452635148387784}
   - component: {fileID: 3814544164326343549}
   - component: {fileID: 65647630199678033}
-  - component: {fileID: 4050009569507431300}
   m_Layer: 10
   m_Name: ShockGerenade
   m_TagString: Untagged
@@ -61,6 +60,7 @@ MonoBehaviour:
   collisionLayerMask:
     serializedVersion: 2
     m_Bits: 2048
+  collisionCase: 1
   onCollision:
     m_PersistentCalls:
       m_Calls: []
@@ -84,11 +84,23 @@ MonoBehaviour:
   rb: {fileID: 8422152388811641674}
   netTransform: {fileID: 8203638565341032619}
   netRb: {fileID: 518300984145970512}
-  collision: {fileID: 8328632736421125881}
-  damageDealers:
-  - {fileID: 1595082852376827780}
+  author: {fileID: 0}
+  lifetime: 0
+  spawnPosition: {x: 0, y: 0, z: 0}
+  spawnRotation: {x: 0, y: 0, z: 0, w: 0}
+  spawnTime: 0
   predictionDebugIterations: 5
   predictionDebugTimePassed: 1
+  explosionPrefab: {fileID: 1228057851501706029, guid: f18910510fd7d844d9b701fa7ed10828, type: 3}
+  visual: {fileID: 6539476148835066508}
+  localGerenadeVisualPrefab: {fileID: 8905043781987494722, guid: 4bd9b2a3092f793469e0538dc506de48, type: 3}
+  shakee: {fileID: 6290191911296125310}
+  attachHitListener: {fileID: 7040493596059717009}
+  damageTarget: {fileID: 1186501378575783335}
+  collision: {fileID: 8328632736421125881}
+  tickAudioSource: {fileID: 65647630199678033}
+  attachAudioSource: {fileID: 3981060045207202204}
+  detachAudioSource: {fileID: 8324473391558815466}
   speed: 70
   secondarySpeed: 140
   gravityAcceleration: 25
@@ -96,18 +108,10 @@ MonoBehaviour:
   explodeAfterPrimary: 5
   explodeAfterSecondary: 8
   detachTotalDelta: 85
-  explosion: {fileID: 871211422364439796, guid: f18910510fd7d844d9b701fa7ed10828, type: 3}
   collisionRadius: 0.35
-  visual: {fileID: 6539476148835066508}
-  localGerenadeVisualPrefab: {fileID: 8905043781987494722, guid: 4bd9b2a3092f793469e0538dc506de48, type: 3}
-  tickAudioSource: {fileID: 65647630199678033}
   holdDamage: 3.5
-  shakee: {fileID: 6290191911296125310}
   visualShakeFrequency: 10
   visualShakeIncreaseRate: 0.005
-  damageReceiver: {fileID: 4050009569507431300}
-  attachAudioSource: {fileID: 3981060045207202204}
-  detachAudioSource: {fileID: 8324473391558815466}
   flySpeed: 0
   explodeAfter: 5
   sourceSpeedMultiplier: 0
@@ -343,31 +347,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &4050009569507431300
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1459376448108328031}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bfe8a0521ace9747bc0c29027d7b9b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damage.DamageReceiver
-  syncMethod: 0
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  active: 1
-  onDamage:
-    m_PersistentCalls:
-      m_Calls: []
-  coll: {fileID: 3814544164326343549}
-  ignoreDealers:
-  - {fileID: 1595082852376827780}
-  previousObservedPosition: {x: 0, y: 0, z: 0}
-  observedDelta: {x: 0, y: 0, z: 0}
 --- !u!1 &2011318079426229929
 GameObject:
   m_ObjectHideFlags: 0
@@ -378,9 +357,11 @@ GameObject:
   m_Component:
   - component: {fileID: 5579502603859467838}
   - component: {fileID: 6595121199782008432}
-  - component: {fileID: 1595082852376827780}
+  - component: {fileID: 833443915890373196}
+  - component: {fileID: 7040493596059717009}
+  - component: {fileID: 1186501378575783335}
   m_Layer: 9
-  m_Name: HitBox
+  m_Name: HitEntity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -422,7 +403,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1595082852376827780
+--- !u!114 &833443915890373196
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -431,23 +412,75 @@ MonoBehaviour:
   m_GameObject: {fileID: 2011318079426229929}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70b6ac8510fb386459347986532adcad, type: 3}
+  m_Script: {fileID: 11500000, guid: c39eb37d459a2f84cbb7eefbc65f9e51, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Projectiles.DirectDamage
-  previousObservedPosition: {x: 0, y: 0, z: 0}
-  observedDelta: {x: 0, y: 0, z: 0}
-  hitScanCount: 0
-  owner: {fileID: 0}
-  coll: {fileID: 6595121199782008432}
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Hits.SphereHitEntity
   active: 1
-  damageType: 0
-  singleHitScan: 0
-  canDamageOwner: 0
-  knockbackForce: 0
+  sources:
+  - {fileID: 7040493596059717009}
+  targets:
+  - {fileID: 1186501378575783335}
   onHit:
     m_PersistentCalls:
       m_Calls: []
-  baseDamage: 0
+  hitLayerMask: 0
+  previousObservedPosition: {x: 0, y: 0, z: 0}
+  observedDelta: {x: 0, y: 0, z: 0}
+  completedSelfChecks: 0
+  sphereCollider: {fileID: 6595121199782008432}
+--- !u!114 &7040493596059717009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011318079426229929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d338db2b35244b48b6dd54bdec004f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Hits.HitListener
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 833443915890373196}
+  active: 1
+  layer: {fileID: 11400000, guid: d9e26ebc23a17394384d7297bde67696, type: 2}
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1186501378575783335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011318079426229929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8493745d09ad9c245b809c5994df0409, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.DamageTarget
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 833443915890373196}
+  active: 1
+  layer: {fileID: 11400000, guid: 06165ca6f2cb1584fb040de7c828041d, type: 2}
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+  onDamage:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3518234589100789453
 GameObject:
   m_ObjectHideFlags: 0

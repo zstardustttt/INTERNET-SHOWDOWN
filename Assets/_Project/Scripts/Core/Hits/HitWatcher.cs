@@ -104,7 +104,7 @@ namespace Game.Core.Hits
                     source.beforeHitScan.Invoke();
 
                     source.UpdateActivity();
-                    if (source.active) sourcesActive = true;
+                    if (source.Active) sourcesActive = true;
                 }
 
                 var targetsActive = false;
@@ -121,32 +121,27 @@ namespace Game.Core.Hits
 
                 entity.observedDelta = entity.transform.position - entity.previousObservedPosition;
                 entity.previousObservedPosition = entity.transform.position;
-                entity.completedSelfChecks = false;
             }
         }
 
         private void HitScan()
         {
-            foreach (var (_, selfEntity) in _entities)
+            foreach (var (selfGuid, selfEntity) in _entities)
             {
                 if (!selfEntity) continue;
                 if (!selfEntity.Active || !selfEntity.SourcesActive) continue;
 
-                // Setting to true immideatly so there is no need to compare self guid and other guid
-                selfEntity.completedSelfChecks = true;
-
-                foreach (var (_, otherEntity) in _entities)
+                foreach (var (otherGuid, otherEntity) in _entities)
                 {
                     if (!otherEntity) continue;
                     if (!otherEntity.Active || !otherEntity.TargetsActive) continue;
-                    if (otherEntity.completedSelfChecks) continue;
+                    if (selfGuid == otherGuid) continue;
 
                     // Check for overlap in hit layer masks
                     if ((selfEntity.hitLayerMask & otherEntity.hitLayerMask) == 0) continue;
 
                     if (!EntityPairCheck(selfEntity, otherEntity, out var hitPoint)) continue;
                     InvokeHitEvents(selfEntity, otherEntity, hitPoint);
-                    InvokeHitEvents(otherEntity, selfEntity, hitPoint); // Inversed
                 }
             }
         }

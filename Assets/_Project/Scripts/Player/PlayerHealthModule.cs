@@ -28,7 +28,6 @@ namespace Game.Player
         {
             _invincibleTimer = 0f;
             invincible = false;
-            active = true;
         }
 
         [Server]
@@ -36,7 +35,6 @@ namespace Game.Player
         {
             _invincibleTimer = duration;
             invincible = true;
-            active = false;
         }
 
         // TODO: PlayerDamageTargetConfig
@@ -57,14 +55,11 @@ namespace Game.Player
             if (!player.dead)
             {
                 _invincibleTimer -= Time.deltaTime;
-                if (_invincibleTimer <= 0f && invincible)
-                {
-                    invincible = false;
-                    active = true;
-                }
+                if (_invincibleTimer <= 0f && invincible) invincible = false;
             }
         }
 
+        // TODO: smarter invincibility?
         public override bool ApplyDamage(Damage damage)
         {
             if (invincible) return false;
@@ -74,13 +69,13 @@ namespace Game.Player
             {
                 damage.author.ReportDealtDamage
                 (
-                    Mathf.Min(health, damage.amount),
+                    Mathf.Clamp(damage.amount, 0f, health),
                     damage.type
                 );
             }
 
             damageHistory.Push(damage);
-            health -= damage.amount;
+            health = Mathf.Clamp(health - damage.amount, 0f, player.config.maxHealth);
             _wasHit = true;
             return true;
         }

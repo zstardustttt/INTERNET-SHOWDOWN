@@ -9937,10 +9937,14 @@ GameObject:
   m_Component:
   - component: {fileID: 6829104020347600159}
   - component: {fileID: 7299828617124353764}
-  - component: {fileID: 871211422364439796}
   - component: {fileID: 3353753891631006950}
   - component: {fileID: 843034427712460526}
   - component: {fileID: 2075086479816858645}
+  - component: {fileID: 7753722371368250800}
+  - component: {fileID: 6279231139512775734}
+  - component: {fileID: 5298370162904033481}
+  - component: {fileID: 5345040428679002968}
+  - component: {fileID: 4870092962609594493}
   m_Layer: 9
   m_Name: ShockGerenadeExplosion
   m_TagString: Untagged
@@ -9985,40 +9989,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 8
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &871211422364439796
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1228057851501706029}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54908c08bb3f98e4592d3b2e227e279a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Projectiles.RadialDamage
-  syncMethod: 0
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  previousObservedPosition: {x: 0, y: 0, z: 0}
-  observedDelta: {x: 0, y: 0, z: 0}
-  hitScanCount: 0
-  owner: {fileID: 0}
-  coll: {fileID: 7299828617124353764}
-  active: 1
-  damageType: 2
-  singleHitScan: 1
-  canDamageOwner: 1
-  knockbackForce: 50
-  onHit:
-    m_PersistentCalls:
-      m_Calls: []
-  centerOffset: {x: 0, y: 0, z: 0}
-  outerRadius: 8
-  outerDamage: 30
-  innerRadius: 5
-  innerDamage: 60
 --- !u!114 &3353753891631006950
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10065,9 +10035,126 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc606dc11acb7694ca9c69c3f9d9bcd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Player.CameraShaker
-  amplitude: 2
+  amplitude: 4
   minDistance: 5
   maxDistance: 100
+--- !u!114 &7753722371368250800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228057851501706029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c39eb37d459a2f84cbb7eefbc65f9e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Hits.SphereHitEntity
+  active: 1
+  sources:
+  - {fileID: 6279231139512775734}
+  - {fileID: 5345040428679002968}
+  targets: []
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  hitLayerMask: 0
+  previousObservedPosition: {x: 0, y: 0, z: 0}
+  observedDelta: {x: 0, y: 0, z: 0}
+  sphereCollider: {fileID: 7299828617124353764}
+--- !u!114 &6279231139512775734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228057851501706029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54908c08bb3f98e4592d3b2e227e279a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Damages.RadialDamageSource
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 7753722371368250800}
+  active: 1
+  layer: {fileID: 11400000, guid: 06165ca6f2cb1584fb040de7c828041d, type: 2}
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+  canDamageFamily: 1
+  onWishDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  author: {fileID: 0}
+  centerOffset: {x: 0, y: 0, z: 0}
+  damageType: 1
+  outerRadius: 8
+  outerDamageAmount: 25
+  innerRadius: 4
+  innerDamageAmount: 50
+--- !u!114 &5298370162904033481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228057851501706029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eef81084b3dd3742b5117e5a584bdc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Hits.DeactivateHitListenerAfterTime
+  hitListener: {fileID: 6279231139512775734}
+  time: 0.1
+--- !u!114 &5345040428679002968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228057851501706029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5146d3ec95ebfe144a3fa4d61b9ea686, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Hits.KnockbackSource
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 7753722371368250800}
+  active: 1
+  layer: {fileID: 11400000, guid: 5784d28fcb2f5bd409f7f96c1a55336c, type: 2}
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+  knockbackForce: 50
+--- !u!114 &4870092962609594493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228057851501706029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eef81084b3dd3742b5117e5a584bdc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Hits.DeactivateHitListenerAfterTime
+  hitListener: {fileID: 5345040428679002968}
+  time: 0.1
 --- !u!1 &3556841456498905073
 GameObject:
   m_ObjectHideFlags: 0

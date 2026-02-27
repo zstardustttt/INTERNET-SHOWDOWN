@@ -1,4 +1,3 @@
-using System;
 using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Damages.Events;
@@ -13,16 +12,17 @@ using UnityEngine;
 
 namespace Game.Projectiles.Psycheshock.ShockGerenade
 {
-    public class ShockGerenadeProjectile : PredictableProjectile, IBroadcastReceiver<ProjectileCollisionBroadcast>
+    public class ShockGerenadeProjectile : PredictableProjectile
     {
         [Header("Objects")]
-        public GameObject explosion;
+        public GameObject explosionPrefab;
         public GameObject visual;
         public GameObject localGerenadeVisualPrefab;
         public Transform shakee;
 
         public HitListener attachHitListener;
         public DamageTarget damageTarget;
+        public ProjectileCollision collision;
 
         public AudioSource tickAudioSource;
         public AudioSource attachAudioSource;
@@ -49,7 +49,6 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         private float _collectedAttachedDelta;
 
         private ShakeGenerator _shakeGenerator;
-        private bool _exploded;
 
         [HideInInspector] public float flySpeed;
         [HideInInspector] public float explodeAfter;
@@ -64,45 +63,89 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             };
         }
 
-        public override void OnStartServer()
-        {
-            damageTarget.onDamage.AddListener(OnDamage);
-            attachHitListener.onHit.AddListener(OnHit);
-        }
-
-        private void OnDamage(DamageEvent damageEvent)
-        {
-            if (_attached) return;
-            var explosionAuthor = damageEvent.damage.type == DamageType.Direct && damageEvent.source.author ? damageEvent.source.author : author;
-            Explode(explosionAuthor);
-        }
-
         private void OnDestroy()
         {
             if (!_localGerenadeVisual) return;
             Destroy(_localGerenadeVisual.gameObject);
         }
 
-        private void OnHit(HitEvent hitEvent)
+        protected override void OnSpawned()
         {
-            if (_attached) return;
-            if (!hitEvent.target.TryGetComponent(out PlayerBase player)) return;
-            if (player == author) return;
+            attachHitListener.onHit.AddListener(OnHit);
+            damageTarget.onDamage.AddListener(OnDamage);
+            collision.onCollision.AddListener(OnCollision);
 
-            attachHitListener.active = false;
-
-            _attached = player;
-            _attached.onDeath.AddListener(Detach);
-            _previousAttachedPosition = player.transform.position;
-
-            TargetSpawnVisual(_attached.netIdentity.connectionToClient);
-            RpcPlayAttachAudio();
+            PredictSpawn(4, (previousPrediction, prediction) =>
+            {
+                collision.CheckCollisionBetweenTwoPoints(previousPrediction.position, prediction.position);
+            });
         }
 
-        [ClientRpc]
-        private void RpcPlayAttachAudio()
+        protected override void OnDestroyed()
         {
-            attachAudioSource.Play();
+            attachHitListener.onHit.RemoveAllListeners();
+            collision.onCollision.RemoveAllListeners();
+
+            if (_attached)
+            {
+                _attached.onDeath.RemoveListener(OnAttachedDeath);
+                _attached.healthModule.onWishDamage.RemoveListener(OnDamage);
+            }
+        }
+
+        private void OnHit(HitEvent hitEvent)
+        {
+            if (!hitEvent.target.transform.root.TryGetComponent(out PlayerBase player)) return;
+            if (player == author) return;
+
+            Attach(player);
+        }
+
+        private void OnDamage(DamageEvent damageEvent)
+        {
+            var explosionAuthor = damageEvent.damage.type == DamageType.Direct && damageEvent.source.author
+                ? damageEvent.source.author
+                : author;
+
+            Explode(explosionAuthor);
+        }
+
+        public void OnCollision(Vector3 point, Vector3 normal, Collider other)
+        {
+            if (_attached) return;
+            transform.position = point + normal * collisionRadius;
+        }
+
+        private void Attach(PlayerBase player)
+        {
+            attachHitListener.active = false;
+            damageTarget.onDamage.RemoveAllListeners();
+
+            _attached = player;
+            _attached.onDeath.AddListener(OnAttachedDeath);
+            _attached.healthModule.onWishDamage.AddListener(OnDamage);
+            _previousAttachedPosition = player.transform.position;
+
+            if (_attached.netIdentity.connectionToClient != null)
+                TargetSpawnVisual(_attached.netIdentity.connectionToClient);
+
+            RpcPlayAttachDetachAudio(true);
+        }
+
+        private void Detach()
+        {
+            attachHitListener.active = true;
+            damageTarget.onDamage.AddListener(OnDamage);
+
+            _attached.onDeath.RemoveListener(OnAttachedDeath);
+            _attached.healthModule.onWishDamage.RemoveListener(OnDamage);
+
+            if (_attached.netIdentity.connectionToClient != null)
+                TargetDestroyVisual(_attached.netIdentity.connectionToClient);
+
+            RpcPlayAttachDetachAudio(false);
+
+            _attached = null;
         }
 
         [TargetRpc]
@@ -113,6 +156,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             var yOffset = player.motor.Capsule.center.y * 1.1f * Vector3.up;
             _localGerenadeVisual.transform.localPosition = yOffset + Vector3.forward * (player.motor.Capsule.radius + collisionRadius);
             visual.SetActive(false);
+
             tickAudioSource.spatialBlend = 0f;
             attachAudioSource.spatialBlend = 0f;
         }
@@ -120,15 +164,20 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         [TargetRpc]
         private void TargetDestroyVisual(NetworkConnectionToClient _)
         {
-            LocalDestroyVisual();
-        }
-
-        private void LocalDestroyVisual()
-        {
             if (!_localGerenadeVisual) return;
+
             Destroy(_localGerenadeVisual.gameObject);
             visual.SetActive(true);
             tickAudioSource.spatialBlend = 1f;
+        }
+
+        private void OnAttachedDeath() => Explode(author);
+
+        [ClientRpc]
+        private void RpcPlayAttachDetachAudio(bool attach)
+        {
+            if (attach) attachAudioSource.Play();
+            else detachAudioSource.Play();
         }
 
         protected override void OnUpdate()
@@ -165,7 +214,11 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
                 }
 
                 if (_collectedAttachedDelta >= detachTotalDelta) Detach();
-                else _attached.healthModule.ApplyDamage(new(author, DamageType.Indirect, holdDamage, Guid.Empty));
+                else
+                {
+                    var damage = holdDamage * (explodeAfterPrimary / explodeAfter);
+                    _attached.healthModule.ApplyDamage(new(author, DamageType.Indirect, damage, author.healthModule.family));
+                }
 
                 return;
             }
@@ -174,40 +227,27 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             rb.linearVelocity -= gravityAcceleration * Time.deltaTime * Vector3.up;
         }
 
-        private void Detach()
-        {
-            TargetDestroyVisual(_attached.netIdentity.connectionToClient);
-            _attached.onDeath.RemoveListener(Detach);
-            _attached = null;
-            RpcPlayDetachAudio();
-        }
-
-        [ClientRpc]
-        private void RpcPlayDetachAudio()
-        {
-            detachAudioSource.Play();
-        }
-
         private void Explode(PlayerBase explosionAuthor)
         {
-            if (_exploded) return;
-            _exploded = true;
-
             Vector3 pos;
             if (_attached)
             {
+                _attached.onDeath.RemoveListener(OnAttachedDeath);
+                _attached.healthModule.onWishDamage.RemoveListener(OnDamage);
+
                 _attached.healthModule.ForceRemoveInvincibility();
-                _attached.onDeath.RemoveListener(Detach);
-                pos = _attached.transform.position;
+                _attached.healthModule.ApplyDamage(new(explosionAuthor, DamageType.Indirect, 100f, explosionAuthor.healthModule.family));
+                pos = _attached.motor.Capsule.bounds.center;
             }
             else pos = transform.position;
 
-            var exp = Instantiate(explosion, pos, Quaternion.identity, new InstantiateParameters()
+            var explosion = MapLoader.NetworkSpawnOnMap(explosionPrefab, pos, Quaternion.identity);
+            explosion.BroadcastOnChildren(new SetupDamageSourceBroadcast()
             {
-                scene = MapLoader.loadedMap.scene
+                family = explosionAuthor.healthModule.family,
+                author = explosionAuthor
             });
-            exp.GetComponent<DamageSource>().author = explosionAuthor;
-            NetworkServer.Spawn(exp);
+
             DestroyProjectile();
         }
 
@@ -227,12 +267,6 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
                 rotation = spawnRotation,
                 velocity = velocity
             };
-        }
-
-        public void Receive(ProjectileCollisionBroadcast broadcast)
-        {
-            if (_attached) return;
-            transform.position = broadcast.point + broadcast.normal * collisionRadius;
         }
     }
 }

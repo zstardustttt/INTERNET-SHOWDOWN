@@ -17,6 +17,7 @@ namespace Game.Core.Damages
     public class DamageSource : HitListener, IBroadcastReceiver<SetupDamageSourceBroadcast>
     {
         public bool canDamageFamily;
+        public UnityEvent<DamageEvent> onWishDamage;
         public UnityEvent<DamageEvent> onDamage;
 
         [HideInInspector] public Guid family;

@@ -22,7 +22,6 @@ namespace Game.Core.Hits
         [HideInInspector] public int hitLayerMask;
         [HideInInspector] public Vector3 previousObservedPosition;
         [HideInInspector] public Vector3 observedDelta;
-        [HideInInspector] public bool completedSelfChecks;
 
         public abstract int CastNonAlloc(Vector3 origin, Vector3 direction, float length, LayerMask layerMask, RaycastHit[] results, QueryTriggerInteraction triggerInteraction);
         public abstract int OverlapNonAlloc(Vector3 origin, LayerMask layerMask, Collider[] results, QueryTriggerInteraction triggerInteraction);
@@ -32,16 +31,22 @@ namespace Game.Core.Hits
             Collider.isTrigger = true;
             gameObject.layer = LayerMask.NameToLayer("HitEntity");
 
-            foreach (var source in sources)
+            if (sources != null)
             {
-                if (!source) continue;
-                source.hitEntity = this;
+                foreach (var source in sources)
+                {
+                    if (!source) continue;
+                    source.hitEntity = this;
+                }
             }
 
-            foreach (var target in targets)
+            if (targets != null)
             {
-                if (!target) continue;
-                target.hitEntity = this;
+                foreach (var target in targets)
+                {
+                    if (!target) continue;
+                    target.hitEntity = this;
+                }
             }
         }
 
@@ -59,13 +64,6 @@ namespace Game.Core.Hits
         public void UpdateActivity(bool sourcesActive, bool targetsActive)
         {
             Active = gameObject.activeInHierarchy && enabled && active;
-            if (!Active)
-            {
-                SourcesActive = false;
-                TargetsActive = false;
-                return;
-            }
-
             SourcesActive = sourcesActive;
             TargetsActive = targetsActive;
         }
