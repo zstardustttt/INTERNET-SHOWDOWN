@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
-namespace Game.Player
+namespace Game.Player.Effects
 {
     // i want to die
     [RequireComponent(typeof(PlayerBase))]

@@ -6,13 +6,14 @@ using Game.Player.Events;
 using Mirror;
 using UnityEngine;
 
-namespace Game.Player
+namespace Game.Player.Health
 {
     // TODO: ServerMovePlayer resets observed position?
     public class PlayerHealthModule : DamageTarget
     {
         [Header("Objects")]
         public PlayerBase player;
+        public PlayerHealthConfig config;
 
         [Header("Runtime")]
         [SyncVar(hook = nameof(OnHealthChange))] public float health;
@@ -41,7 +42,7 @@ namespace Game.Player
         public void ResetHealth()
         {
             damageHistory?.Clear();
-            health = player.config.maxHealth;
+            health = config.maxHealth;
         }
 
         public override void OnStartServer()
@@ -75,7 +76,7 @@ namespace Game.Player
             }
 
             damageHistory.Push(damage);
-            health = Mathf.Clamp(health - damage.amount, 0f, player.config.maxHealth);
+            health = Mathf.Clamp(health - damage.amount, 0f, config.maxHealth);
             _wasHit = true;
             return true;
         }
@@ -83,7 +84,7 @@ namespace Game.Player
         [Server]
         public void Heal(float value)
         {
-            var targetHealth = Mathf.Clamp(health + value, 0f, player.config.maxHealth);
+            var targetHealth = Mathf.Clamp(health + value, 0f, config.maxHealth);
             var difference = targetHealth - health;
 
             var differenceCounter = 0f;
@@ -112,7 +113,7 @@ namespace Game.Player
 
         public override void BeforeHitScan()
         {
-            if (_wasHit) ActivateInvincibility(player.config.damageInvincibilityDuration);
+            if (_wasHit) ActivateInvincibility(config.invincibilityDuration);
             _wasHit = false;
         }
     }

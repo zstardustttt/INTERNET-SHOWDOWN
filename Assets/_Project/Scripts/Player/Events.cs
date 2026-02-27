@@ -1,4 +1,5 @@
 using Game.Core.Events;
+using Game.Player.Health;
 
 namespace Game.Player.Events
 {

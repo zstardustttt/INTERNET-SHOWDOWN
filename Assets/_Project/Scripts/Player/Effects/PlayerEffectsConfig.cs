@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Game.Player
+namespace Game.Player.Effects
 {
-    [CreateAssetMenu(fileName = "PlayerEffectsConfig", menuName = "Player Effects Config", order = 0)]
+    [CreateAssetMenu(fileName = "PlayerEffectsConfig", menuName = "Player/Player Effects Config", order = 0)]
     public class PlayerEffectsConfig : ScriptableObject
     {
         [Header("Objects")]

@@ -1,9 +1,8 @@
-using System.Reflection;
 using UnityEngine;
 
 namespace Game.Player
 {
-    [CreateAssetMenu(fileName = "PlayerConfig", menuName = "Player Config", order = 0)]
+    [CreateAssetMenu(fileName = "PlayerConfig", menuName = "Player/Player Config", order = 0)]
     public class PlayerConfig : ScriptableObject
     {
         public Bounds hitbox;
@@ -69,10 +68,6 @@ namespace Game.Player
         [Header("Other")]
         public float groundAdditionalVelocityDrag;
         public float airAdditionalVelocityDrag;
-
-        [Header("Health")]
-        public float maxHealth;
-        public float damageInvincibilityDuration;
         public float respawnAscendSpeed;
     }
 }

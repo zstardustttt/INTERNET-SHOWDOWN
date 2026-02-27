@@ -46,8 +46,7 @@ namespace Game.UI.Game
             else
                 _healColorAffection = 1f;
 
-            // TODO: this shit
-            healthBarSlider.maxValue = data.healthModule.player.config.maxHealth;
+            healthBarSlider.maxValue = data.healthModule.config.maxHealth;
             _targetHealth = data.newHealth;
         }
 
