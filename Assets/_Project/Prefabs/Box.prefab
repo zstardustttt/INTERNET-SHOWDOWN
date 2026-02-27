@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 8222996875898718387}
   - component: {fileID: 5714547169537719582}
   - component: {fileID: 6692163388603468775}
+  - component: {fileID: 7762867787826688087}
   m_Layer: 9
   m_Name: Box
   m_TagString: Untagged
@@ -176,19 +177,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52cf161b4bc25bf49975d0eeecfac34d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Other.BoxAnimation
-  syncMethod: 0
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  hitEntity: {fileID: 6692163388603468775}
-  active: 1
-  layer: {fileID: 11400000, guid: 4cd91094a9195d344a5f51aa6e49d70c, type: 2}
-  onHit:
-    m_PersistentCalls:
-      m_Calls: []
-  beforeHitScan:
-    m_PersistentCalls:
-      m_Calls: []
   outerFieldFilter: {fileID: 1860077646714807812}
   outlineFilter: {fileID: 8480133697489101004}
   visual: {fileID: 2789467421147770397}
@@ -209,7 +197,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Hits.BoxHitEntity
   active: 1
   sources:
-  - {fileID: 5714547169537719582}
+  - {fileID: 7762867787826688087}
   targets: []
   onHit:
     m_PersistentCalls:
@@ -219,6 +207,31 @@ MonoBehaviour:
   observedDelta: {x: 0, y: 0, z: 0}
   completedSelfChecks: 0
   boxCollider: {fileID: 8222996875898718387}
+--- !u!114 &7762867787826688087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4198238566599423486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d338db2b35244b48b6dd54bdec004f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Hits.HitListener
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 6692163388603468775}
+  active: 1
+  layer: {fileID: 11400000, guid: 4cd91094a9195d344a5f51aa6e49d70c, type: 2}
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7354700484325785103
 GameObject:
   m_ObjectHideFlags: 0

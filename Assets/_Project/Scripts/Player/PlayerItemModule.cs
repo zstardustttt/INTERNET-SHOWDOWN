@@ -66,8 +66,6 @@ namespace Game.Player
                 if (Random.value <= 0.6f) break;
             }
 
-            Debug.Log($"Picked rarity {rarityIdx} for player {gameObject.name}");
-
             var itemPool = ItemPool.items[rarityIdx];
             while (itemPool == null)
             {
@@ -83,7 +81,7 @@ namespace Game.Player
             }
 
             var itemIdx = Random.Range(0, itemPool.Count);
-            Debug.Log($"Picked item index {itemIdx} for player {gameObject.name}");
+            Debug.Log($"Picked item {itemPool[itemIdx].displayName} for player {player.playerName}");
 
             itemData = new()
             {
@@ -143,7 +141,7 @@ namespace Game.Player
         private void CmdUseItem(ItemUseClientContext context)
         {
             if (player.dead) return;
-            player.stats.activity++;
+
             // TODO: Validate context
             UseItem(context);
         }
@@ -154,7 +152,10 @@ namespace Game.Player
             if (!item || player.inputLocks != 0) return;
 
             if (item.Use(player, context))
+            {
                 itemData = PlayerItemData.Default();
+                player.stats.activity++;
+            }
             else TargetRestartItemAnimation();
         }
 

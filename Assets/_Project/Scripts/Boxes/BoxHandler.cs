@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Game.Boxes.Events;
 using Game.Core.Events;
+using Game.Core.Hits;
 using Game.Core.Hits.Events;
 using Game.Core.Maps;
 using Game.Events.GameLoop;
@@ -15,6 +16,7 @@ namespace Game.Boxes
     public class BoxHandler : MonoBehaviour
     {
         public GameObject boxPrefab;
+        public HitLayer boxesLayer;
         public float spawnRate;
         public int maxBoxesPerPlayer;
 
@@ -47,13 +49,13 @@ namespace Game.Boxes
 
         private void OnHit(HitEvent hitEvent)
         {
-            if (hitEvent.source is not ItemBox itemBox) return;
+            if (hitEvent.source.layer != boxesLayer) return;
             if (hitEvent.target is not PlayerItemModule playerItemModule) return;
 
             if (playerItemModule.itemData.itemIndex == -1)
             {
                 playerItemModule.PickRandomItem();
-                NetworkServer.Destroy(itemBox.gameObject);
+                NetworkServer.Destroy(hitEvent.source.gameObject);
             }
         }
 

@@ -69,6 +69,16 @@ namespace Game.Player
         {
             if (invincible) return false;
 
+            var sharingFamily = family != Guid.Empty && damage.family != Guid.Empty && family == damage.family;
+            if (damage.author && !sharingFamily)
+            {
+                damage.author.ReportDealtDamage
+                (
+                    Mathf.Min(health, damage.amount),
+                    damage.type
+                );
+            }
+
             damageHistory.Push(damage);
             health -= damage.amount;
             _wasHit = true;
@@ -88,7 +98,7 @@ namespace Game.Player
                 differenceCounter += damage.amount;
 
                 if (differenceCounter <= difference) continue;
-                damageHistory.Push(new(damage.author, damage.type, differenceCounter - difference));
+                damageHistory.Push(new(damage.author, damage.type, differenceCounter - difference, damage.family));
                 break;
             }
 

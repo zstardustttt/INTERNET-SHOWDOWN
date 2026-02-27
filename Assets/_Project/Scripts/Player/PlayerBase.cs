@@ -1,7 +1,6 @@
-using System;
+using Game.Core.Damages;
 using Game.Core.Events;
 using Game.Core.Hits;
-using Game.Core.Items;
 using Game.Core.Maps;
 using Game.Events.Player;
 using Game.Events.UI;
@@ -124,8 +123,8 @@ namespace Game.Player
         [SyncVar] public string playerGuid;
         [SyncVar] public string playerName;
 
-        private PlayerStats _prevStats;
-        [SyncVar] public PlayerStats stats;
+        public PlayerStats stats;
+        private PlayerStats _previousStats;
 
         [HideInInspector] public Vector3 boxSpawnerPreviousObservedPosition;
         [HideInInspector] public Vector3 boxSpawnerObservedDelta;
@@ -239,11 +238,29 @@ namespace Game.Player
                 ServerMovePlayer(Vector3.zero);
             }
 
-            if (!stats.Equals(_prevStats))
+            if (!_previousStats.Equals(stats))
             {
-                EventBus<OnStatsChanged>.Invoke(new() { player = this });
+                EventBus<OnPlayerStatsChanged>.Invoke(new()
+                {
+                    player = this,
+                    previous = _previousStats,
+                    current = stats
+                });
+
+                if (!isLocalPlayer) TargetOnStatsChanged(_previousStats, stats);
             }
-            _prevStats = stats;
+            _previousStats = stats;
+        }
+
+        [TargetRpc]
+        private void TargetOnStatsChanged(PlayerStats previous, PlayerStats current)
+        {
+            EventBus<OnPlayerStatsChanged>.Invoke(new()
+            {
+                player = this,
+                previous = previous,
+                current = current
+            });
         }
 
         public void SetPosition(Vector3 position)
@@ -645,19 +662,22 @@ namespace Game.Player
             }
         }
 
-        [TargetRpc]
-        public void TargetOnHit()
+        [Server]
+        public void ReportDealtDamage(float amount, DamageType type)
         {
-            EventBus<HitIndicatorRequest>.Invoke(new());
+            stats.damageDealt += amount;
+            if (type == DamageType.Direct) stats.directHits++;
+            else if (type == DamageType.Indirect) stats.indirectHits++;
+            else throw new($"Damage type {type} isn't supported");
         }
 
-        [TargetRpc]
-        public void TargetOnKill(bool pure)
+        [Server]
+        public void ReportKill(KillType type)
         {
-            if (pure)
-                EventBus<PureKillIndicatorRequest>.Invoke(new());
-            else
-                EventBus<UnpureKillIndicatorRequest>.Invoke(new());
+            if (type == KillType.Pure) stats.pureKills++;
+            else if (type == KillType.Finishing) stats.finishingKills++;
+            else if (type == KillType.Supporting) stats.supportingKills++;
+            else throw new($"Kill type {type} isn't supported");
         }
 
         [TargetRpc]

@@ -1,6 +1,7 @@
 using System.Collections;
 using Game.Core.Events;
 using Game.Events.GameLoop;
+using Game.Events.Player;
 using Game.Events.UI;
 using Game.Player.Events;
 using Game.Systems;
@@ -47,15 +48,24 @@ namespace Game.UI.Game
                 else _uiSwitchRequested = true;
             });
 
-            EventBus<HitIndicatorRequest>.Listen((_) => HitIndicatorAnimation());
+            EventBus<OnPlayerStatsChanged>.Listen((data) =>
+            {
+                if (!data.player.isLocalPlayer) return;
+
+                if (data.previous.directHits != data.current.directHits) HitIndicatorAnimation();
+                else if (data.previous.indirectHits != data.current.indirectHits) HitIndicatorAnimation();
+
+                if (data.previous.pureKills != data.current.pureKills) PureKillIndicatorAnimation();
+                else if (data.previous.finishingKills != data.current.finishingKills) UnpureKillIndicatorAnimation();
+                else if (data.previous.supportingKills != data.current.supportingKills) UnpureKillIndicatorAnimation();
+            });
+
             EventBus<OnPlayerHealthChanged>.Listen((data) =>
             {
                 if (!data.healthModule.isLocalPlayer) return;
                 if (data.newHealth >= data.oldHealth) return;
                 DamageIndicatorAnimation();
             });
-            EventBus<PureKillIndicatorRequest>.Listen((_) => PureKillIndicatorAnimation());
-            EventBus<UnpureKillIndicatorRequest>.Listen((_) => UnpureKillIndicatorAnimation());
 
             EventBus<RespawnEffectRequest>.Listen((_) => TriggerRespawnEffect());
         }

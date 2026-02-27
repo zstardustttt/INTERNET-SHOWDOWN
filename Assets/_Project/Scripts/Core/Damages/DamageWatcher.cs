@@ -31,14 +31,6 @@ namespace Game.Core.Damages
                 source.onDamage.Invoke(damageEvent);
                 target.onDamage.Invoke(damageEvent);
                 EventBus<DamageEvent>.Invoke(damageEvent);
-
-                // TODO: this is really bad
-                if (!sharingFamily)
-                {
-                    damage.author.TargetOnHit();
-                    if (damage.type == DamageType.Direct) damage.author.stats.directHits++;
-                    else if (damage.type == DamageType.Indirect) damage.author.stats.indirectHits++;
-                }
             }
         }
     }

@@ -2,12 +2,18 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.Core.Events;
 using Game.Core.Maps;
-using Game.Player;
 using Game.Player.Events;
 using UnityEngine;
 
-namespace Game.Systems
+namespace Game.Player
 {
+    public enum KillType
+    {
+        Pure,
+        Finishing,
+        Supporting
+    }
+
     public class PlayerDeathWatcher : MonoBehaviour
     {
         public float respawnDuration;
@@ -87,27 +93,22 @@ namespace Game.Systems
             var finishingDamage = player.healthModule.damageHistory.Peek();
             var killer = finishingDamage.author;
 
-            if (killer && killer != player && killer == supporter)
+            if (killer && killer != player)
             {
-                killer.stats.pureKills++;
-                killer.TargetOnKill(true);
-                killer.healthModule.Heal(damages[killer] / 2f);
-            }
-            else
-            {
-                if (killer && killer != player)
-                {
-                    killer.stats.finishingKills++;
-                    killer.TargetOnKill(false);
-                    killer.healthModule.Heal(damages[killer] / 2f);
-                }
+                killer.healthModule.Heal(damages[killer]);
 
-                if (supporter && supporter != player)
+                if (killer == supporter)
                 {
-                    supporter.stats.supportingKills++;
-                    supporter.TargetOnKill(false);
-                    supporter.healthModule.Heal(damages[supporter] / 2f);
+                    killer.ReportKill(KillType.Pure);
+                    return;
                 }
+                else killer.ReportKill(KillType.Finishing);
+            }
+
+            if (supporter && supporter != player)
+            {
+                supporter.healthModule.Heal(damages[supporter]);
+                supporter.ReportKill(KillType.Supporting);
             }
         }
     }

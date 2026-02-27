@@ -9,7 +9,7 @@ namespace Game.Damages
 
         public override Damage? EvaluateDamage(DamageTarget target)
         {
-            return new(author, damageType, damageAmount);
+            return new(author, damageType, damageAmount, family);
         }
     }
 }

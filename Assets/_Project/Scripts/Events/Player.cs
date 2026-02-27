@@ -8,9 +8,11 @@ namespace Game.Events.Player
         public string guid;
     }
 
-    public struct OnStatsChanged : IEvent
+    public struct OnPlayerStatsChanged : IEvent
     {
         public PlayerBase player;
+        public PlayerStats previous;
+        public PlayerStats current;
     }
 
     public struct OnServerOnlinePlayerInitialized : IEvent

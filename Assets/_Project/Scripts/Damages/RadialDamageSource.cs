@@ -21,10 +21,10 @@ namespace Game.Damages
             var center = transform.position + centerOffset;
             var distance = Vector3.Distance(target.hitEntity.Collider.bounds.center, center);
             if (distance <= innerRadius)
-                return new(author, damageType, innerDamageAmount);
+                return new(author, damageType, innerDamageAmount, family);
 
             var damageAmount = Mathf.Lerp(innerDamageAmount, outerDamageAmount, Mathf.InverseLerp(innerRadius, outerRadius, distance));
-            return new(author, damageType, damageAmount);
+            return new(author, damageType, damageAmount, family);
         }
 
         private void OnDrawGizmosSelected()

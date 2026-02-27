@@ -95,7 +95,6 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             _attached.onDeath.AddListener(Detach);
             _previousAttachedPosition = player.transform.position;
 
-            author.stats.directHits++;
             TargetSpawnVisual(_attached.netIdentity.connectionToClient);
             RpcPlayAttachAudio();
         }
@@ -166,7 +165,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
                 }
 
                 if (_collectedAttachedDelta >= detachTotalDelta) Detach();
-                else _attached.healthModule.ApplyDamage(new(author, DamageType.Indirect, holdDamage));
+                else _attached.healthModule.ApplyDamage(new(author, DamageType.Indirect, holdDamage, Guid.Empty));
 
                 return;
             }

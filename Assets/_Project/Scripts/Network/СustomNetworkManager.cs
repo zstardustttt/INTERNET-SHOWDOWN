@@ -85,8 +85,11 @@ namespace Game.Network
                 });
             });
 
-            EventBus<OnStatsChanged>.Listen((data) =>
+            EventBus<OnPlayerStatsChanged>.Listen((data) =>
             {
+                var currentScore = data.current.GetScore();
+                if (data.previous.activity == data.current.activity && data.previous.GetScore() == currentScore) return;
+
                 NetworkServer.SendToAll(new ServerChangeLeaderboardItem()
                 {
                     itemData = new()
@@ -95,8 +98,8 @@ namespace Game.Network
                         item = new()
                         {
                             name = data.player.playerName,
-                            activity = data.player.stats.activity,
-                            score = data.player.stats.GetScore()
+                            activity = data.current.activity,
+                            score = currentScore
                         }
                     }
                 });

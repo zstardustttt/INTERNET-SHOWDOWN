@@ -239,7 +239,7 @@ namespace Game.Player
 #if DEBUG
             if (NetworkServer.active && Input.GetKeyDown(KeyCode.F2))
             {
-                player.healthModule.ApplyDamage(new(player, DamageType.Indirect, 10f));
+                player.healthModule.ApplyDamage(new(player, DamageType.Indirect, 10f, Guid.Empty));
             }
 
             if (NetworkServer.active && Input.GetKeyDown(KeyCode.F3))
