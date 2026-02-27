@@ -19,6 +19,7 @@ namespace Game.Core.Hits
         public UnityEvent<HitEvent> onHit = new();
 
         [HideInInspector] public Guid guid;
+        [HideInInspector] public int hitLayerMask;
         [HideInInspector] public Vector3 previousObservedPosition;
         [HideInInspector] public Vector3 observedDelta;
         [HideInInspector] public bool completedSelfChecks;

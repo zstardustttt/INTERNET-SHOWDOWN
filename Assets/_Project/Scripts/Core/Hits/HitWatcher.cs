@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Game.Core.Events;
 using Game.Core.Hits.Events;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace Game.Core.Hits
         public const int QUERY_BUFFER_SIZE = 128;
 
         public float queryMargin;
+        public HitLayer[] layers;
 
         private Dictionary<Guid, HitEntity> _entities;
         private Stack<HitEntity> _freshEntities;
@@ -19,6 +21,14 @@ namespace Game.Core.Hits
         private Collider[] _queryCollidersBuffer;
         private RaycastHit[] _queryHitsBuffer;
         private LayerMask _queryMask;
+
+        private void OnValidate()
+        {
+            for (int i = 0; i < layers.Length; i++)
+            {
+                layers[i].cachedIndex = i;
+            }
+        }
 
         private void Awake()
         {
@@ -33,6 +43,21 @@ namespace Game.Core.Hits
             EventBus<OnHitEntityCreate>.Listen((data) =>
             {
                 data.entity.guid = Guid.NewGuid();
+
+                var hitLayerMask = 0;
+                foreach (var source in data.entity.sources)
+                {
+                    if (!source || !source.layer) continue;
+                    hitLayerMask |= 1 << source.layer.cachedIndex;
+                }
+
+                foreach (var target in data.entity.targets)
+                {
+                    if (!target || !target.layer) continue;
+                    hitLayerMask |= 1 << target.layer.cachedIndex;
+                }
+                data.entity.hitLayerMask = hitLayerMask;
+
                 _freshEntities.Push(data.entity);
             });
             EventBus<OnHitEntityDestroy>.Listen((data) => _outdatedEntities.Push(data.guid));
@@ -116,6 +141,9 @@ namespace Game.Core.Hits
                     if (!otherEntity.Active || !otherEntity.TargetsActive) continue;
                     if (otherEntity.completedSelfChecks) continue;
 
+                    // Check for overlap in hit layer masks
+                    if ((selfEntity.hitLayerMask & otherEntity.hitLayerMask) == 0) continue;
+
                     if (!EntityPairCheck(selfEntity, otherEntity, out var hitPoint)) continue;
                     InvokeHitEvents(selfEntity, otherEntity, hitPoint);
                     InvokeHitEvents(otherEntity, selfEntity, hitPoint); // Inversed
@@ -127,11 +155,12 @@ namespace Game.Core.Hits
         {
             foreach (var source in self.sources)
             {
-                if (!source.Active) continue;
+                if (!source.Active || !source.layer) continue;
 
                 foreach (var target in other.targets)
                 {
-                    if (!target.Active) continue;
+                    if (!target.Active || !target.layer) continue;
+                    if (source.layer.cachedIndex != target.layer.cachedIndex) continue;
 
                     var hitEvent = new HitEvent(source, self, target, other, point);
                     source.onHit.Invoke(hitEvent);

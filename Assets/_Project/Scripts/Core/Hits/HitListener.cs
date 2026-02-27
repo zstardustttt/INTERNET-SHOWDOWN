@@ -1,5 +1,6 @@
 using Game.Core.Hits.Events;
 using Mirror;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Game.Core.Hits
@@ -10,8 +11,9 @@ namespace Game.Core.Hits
 
         public HitEntity hitEntity;
         public bool active = true;
+        public HitLayer layer;
         public UnityEvent<HitEvent> onHit = new();
-        public UnityEvent beforeHitScan = new();
+        [HideInInspector] public UnityEvent beforeHitScan = new();
 
         public void UpdateActivity()
         {

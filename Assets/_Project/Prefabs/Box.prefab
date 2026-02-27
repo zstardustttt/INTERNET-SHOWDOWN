@@ -182,6 +182,7 @@ MonoBehaviour:
   syncInterval: 0
   hitEntity: {fileID: 6692163388603468775}
   active: 1
+  layer: {fileID: 11400000, guid: 4cd91094a9195d344a5f51aa6e49d70c, type: 2}
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -213,6 +214,7 @@ MonoBehaviour:
   onHit:
     m_PersistentCalls:
       m_Calls: []
+  hitLayerMask: 0
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   completedSelfChecks: 0
