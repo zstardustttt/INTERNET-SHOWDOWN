@@ -12,16 +12,18 @@ namespace Game.Core.Damages
     [Serializable]
     public struct Damage
     {
-        public PlayerBase author;
         public DamageType type;
         public float amount;
+        public PlayerBase author;
+        public Guid source;
         public Guid family;
 
-        public Damage(PlayerBase author, DamageType type, float amount, Guid family)
+        public Damage(DamageType type, float amount, PlayerBase author, Guid source, Guid family)
         {
-            this.author = author;
             this.type = type;
             this.amount = amount;
+            this.author = author;
+            this.source = source;
             this.family = family;
         }
     }

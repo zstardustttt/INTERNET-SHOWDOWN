@@ -7,9 +7,9 @@ namespace Game.Damages
         public DamageType damageType;
         public float damageAmount = 10f;
 
-        public override Damage? EvaluateDamage(DamageTarget target)
+        public override DamageEvaluation EvaluateDamage(DamageTarget target)
         {
-            return new(author, damageType, damageAmount, family);
+            return new(damageType, damageAmount);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Game.Core.Damages;
 using Game.Core.Events;
 using Game.Player.Events;
@@ -17,28 +18,24 @@ namespace Game.Player.Health
 
         [Header("Runtime")]
         [SyncVar(hook = nameof(OnHealthChange))] public float health;
-        public bool invincible;
+        public Dictionary<Guid, float> invincibilityTimers;
 
         [HideInInspector] public Stack<Damage> damageHistory;
-
-        private float _invincibleTimer;
-        private bool _wasHit;
+        private Stack<KeyValuePair<Guid, float>> _invincibilityRequests;
 
         [Server]
-        public void ForceRemoveInvincibility()
+        public void ClearInvincibility()
         {
-            _invincibleTimer = 0f;
-            invincible = false;
+            _invincibilityRequests.Clear();
+            invincibilityTimers.Clear();
         }
 
         [Server]
-        public void ActivateInvincibility(float duration)
+        public void RequestInvincibility(Guid source, float duration)
         {
-            _invincibleTimer = duration;
-            invincible = true;
+            _invincibilityRequests.Push(new(source, duration));
         }
 
-        // TODO: PlayerDamageTargetConfig
         public void ResetHealth()
         {
             damageHistory?.Clear();
@@ -47,23 +44,16 @@ namespace Game.Player.Health
 
         public override void OnStartServer()
         {
+            _invincibilityRequests = new();
+            invincibilityTimers = new();
+
             damageHistory = new();
             family = Guid.NewGuid();
         }
 
-        private void Update()
-        {
-            if (!player.dead)
-            {
-                _invincibleTimer -= Time.deltaTime;
-                if (_invincibleTimer <= 0f && invincible) invincible = false;
-            }
-        }
-
-        // TODO: smarter invincibility?
         public override bool ApplyDamage(Damage damage)
         {
-            if (invincible) return false;
+            if (invincibilityTimers.ContainsKey(damage.source)) return false;
 
             var sharingFamily = family != Guid.Empty && damage.family != Guid.Empty && family == damage.family;
             if (damage.author && !sharingFamily)
@@ -77,7 +67,7 @@ namespace Game.Player.Health
 
             damageHistory.Push(damage);
             health = Mathf.Clamp(health - damage.amount, 0f, config.maxHealth);
-            _wasHit = true;
+            RequestInvincibility(damage.source, config.invincibilityDuration);
             return true;
         }
 
@@ -94,7 +84,7 @@ namespace Game.Player.Health
                 differenceCounter += damage.amount;
 
                 if (differenceCounter <= difference) continue;
-                damageHistory.Push(new(damage.author, damage.type, differenceCounter - difference, damage.family));
+                damageHistory.Push(new(damage.type, differenceCounter - difference, damage.author, damage.source, damage.family));
                 break;
             }
 
@@ -113,8 +103,32 @@ namespace Game.Player.Health
 
         public override void BeforeHitScan()
         {
-            if (_wasHit) ActivateInvincibility(config.invincibilityDuration);
-            _wasHit = false;
+            if (player.dead) return;
+
+            while (_invincibilityRequests.Count > 0)
+            {
+                var request = _invincibilityRequests.Pop();
+                if (invincibilityTimers.TryAdd(request.Key, request.Value)) continue;
+                invincibilityTimers[request.Key] = request.Value;
+            }
+
+            var endedInvincibilities = new Stack<Guid>();
+            foreach (var (source, timer) in invincibilityTimers.ToList())
+            {
+                if (timer <= 0f)
+                {
+                    endedInvincibilities.Push(source);
+                    continue;
+                }
+
+                invincibilityTimers[source] -= Time.deltaTime;
+            }
+
+            while (endedInvincibilities.Count > 0)
+            {
+                var source = endedInvincibilities.Pop();
+                invincibilityTimers.Remove(source);
+            }
         }
     }
 }

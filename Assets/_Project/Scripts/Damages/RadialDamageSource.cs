@@ -16,15 +16,15 @@ namespace Game.Damages
         public float innerRadius;
         public float innerDamageAmount;
 
-        public override Damage? EvaluateDamage(DamageTarget target)
+        public override DamageEvaluation EvaluateDamage(DamageTarget target)
         {
             var center = transform.position + centerOffset;
             var distance = Vector3.Distance(target.hitEntity.Collider.bounds.center, center);
             if (distance <= innerRadius)
-                return new(author, damageType, innerDamageAmount, family);
+                return new(damageType, innerDamageAmount);
 
             var damageAmount = Mathf.Lerp(innerDamageAmount, outerDamageAmount, Mathf.InverseLerp(innerRadius, outerRadius, distance));
-            return new(author, damageType, damageAmount, family);
+            return new(damageType, damageAmount);
         }
 
         private void OnDrawGizmosSelected()

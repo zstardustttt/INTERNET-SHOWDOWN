@@ -57,9 +57,9 @@ namespace Game.Player
                     MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position :
                     Vector3.zero;
 
+            // TODO: respawn invincibility
             player.ServerMovePlayer(position);
             player.ResetPlayer();
-            player.healthModule.ActivateInvincibility(respawnInvincibilityDuration);
             player.motorLocks--;
             player.hitEntity.active = true;
         }

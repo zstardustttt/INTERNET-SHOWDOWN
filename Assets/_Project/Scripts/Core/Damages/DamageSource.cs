@@ -14,18 +14,39 @@ namespace Game.Core.Damages
         public PlayerBase author;
     }
 
+    public struct DamageEvaluation
+    {
+        public bool valid;
+        public DamageType type;
+        public float amount;
+
+        public DamageEvaluation(DamageType type, float amount)
+        {
+            valid = true;
+            this.type = type;
+            this.amount = amount;
+        }
+    }
+
     public class DamageSource : HitListener, IBroadcastReceiver<SetupDamageSourceBroadcast>
     {
+        public Guid Guid { get; private set; }
+
         public bool canDamageFamily;
         public UnityEvent<DamageEvent> onWishDamage;
         public UnityEvent<DamageEvent> onDamage;
 
-        [HideInInspector] public Guid family;
         [HideInInspector] public PlayerBase author;
+        [HideInInspector] public Guid family;
 
-        public virtual Damage? EvaluateDamage(DamageTarget target)
+        private void Awake()
         {
-            return null;
+            Guid = Guid.NewGuid();
+        }
+
+        public virtual DamageEvaluation EvaluateDamage(DamageTarget target)
+        {
+            return default;
         }
 
         public void Receive(SetupDamageSourceBroadcast broadcast)

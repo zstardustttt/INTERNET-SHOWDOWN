@@ -22,9 +22,9 @@ namespace Game.Core.Damages
             if (!sharingFamily || source.canDamageFamily)
             {
                 var evaluation = source.EvaluateDamage(target);
-                if (!evaluation.HasValue) return;
+                if (!evaluation.valid) return;
 
-                var damage = evaluation.Value;
+                var damage = new Damage(evaluation.type, evaluation.amount, source.author, source.Guid, source.family);
                 var damageEvent = new DamageEvent(source, target, damage);
 
                 source.onWishDamage.Invoke(damageEvent);

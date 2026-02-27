@@ -1,3 +1,4 @@
+using System;
 using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Damages.Events;
@@ -44,6 +45,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         // client
         private ShockGerenadeLocalVisual _localGerenadeVisual;
 
+        private Guid _holdDamageSourceGuid;
         private PlayerBase _attached;
         private Vector3 _previousAttachedPosition;
         private float _collectedAttachedDelta;
@@ -71,6 +73,8 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
         protected override void OnSpawned()
         {
+            _holdDamageSourceGuid = Guid.NewGuid();
+
             attachHitListener.onHit.AddListener(OnHit);
             damageTarget.onDamage.AddListener(OnDamage);
             collision.onCollision.AddListener(OnCollision);
@@ -217,7 +221,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
                 else
                 {
                     var damage = holdDamage * (explodeAfterPrimary / explodeAfter);
-                    _attached.healthModule.ApplyDamage(new(author, DamageType.Indirect, damage, author.healthModule.family));
+                    _attached.healthModule.ApplyDamage(new(DamageType.Indirect, damage, author, _holdDamageSourceGuid, author.healthModule.family));
                 }
 
                 return;
@@ -235,8 +239,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
                 _attached.onDeath.RemoveListener(OnAttachedDeath);
                 _attached.healthModule.onWishDamage.RemoveListener(OnDamage);
 
-                _attached.healthModule.ForceRemoveInvincibility();
-                _attached.healthModule.ApplyDamage(new(explosionAuthor, DamageType.Indirect, 100f, explosionAuthor.healthModule.family));
+                _attached.healthModule.ApplyDamage(new(DamageType.Indirect, 100f, explosionAuthor, Guid.NewGuid(), explosionAuthor.healthModule.family));
                 pos = _attached.motor.Capsule.bounds.center;
             }
             else pos = transform.position;
