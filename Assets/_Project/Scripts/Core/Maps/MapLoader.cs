@@ -75,8 +75,7 @@ namespace Game.Core.Maps
             if (go.TryGetComponent(out PlayerBase player))
             {
                 loadedMap.players.Add(player.playerGuid, player);
-                EventBus<OnAddPlayerOnMap>.Invoke(new() { player = player });
-                player.OnAddedToMap();
+                EventBus<OnAddPlayerToMap>.Invoke(new() { player = player });
             }
             return true;
         }

@@ -132,12 +132,6 @@ namespace Game.Player
         [HideInInspector] public Vector3 localTransientVelocity;
         private Vector3 _prevTransientPosition;
 
-        [Server]
-        public void OnAddedToMap()
-        {
-
-        }
-
         private void InnerSetGuid(string guid)
         {
             if (string.IsNullOrEmpty(guid) || _guidReceived) return;

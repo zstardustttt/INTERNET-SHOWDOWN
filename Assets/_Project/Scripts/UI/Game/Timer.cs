@@ -1,6 +1,7 @@
 using EasyTextEffects;
 using Game.Core.Events;
 using Game.Events.GameLoop;
+using Game.Player.Events;
 using Game.Systems;
 using TMPro;
 using UnityEngine;
@@ -26,7 +27,11 @@ namespace Game.UI.Game
         private void Awake()
         {
             _text = string.Empty;
+            voicelineAudioSource.mute = true;
+
             EventBus<OnGameStateChange>.Listen((data) => _gameState = data.state);
+            EventBus<OnLocalPlayerAddedToMap>.Listen((_) => voicelineAudioSource.mute = false);
+            EventBus<OnLocalPlayerRemovedFromMap>.Listen((_) => voicelineAudioSource.mute = true);
         }
 
         private void Update()

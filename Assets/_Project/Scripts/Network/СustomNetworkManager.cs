@@ -4,7 +4,6 @@ using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Events.GameLoop;
 using Game.Events.MapLoader;
-using Game.Events.MusicPlayer;
 using Game.Events.Player;
 using Game.Events.UI;
 using Game.Systems;
@@ -15,6 +14,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 using Random = UnityEngine.Random;
+using Game.Player.Events;
 
 namespace Game.Network
 {
@@ -44,7 +44,7 @@ namespace Game.Network
                 conn.Send(new SceneMessage() { sceneName = sceneName, sceneOperation = SceneOperation.LoadAdditive });
                 var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
                 conn.identity.GetComponent<PlayerBase>().ServerMovePlayer(position);
-                conn.Send<ServerConfirmPlayerEnteredMatch>(new());
+                conn.Send<ServerOnlinePlayerAddedToMap>(new());
             });
 
             EventBus<OnGameStateChange>.Listen((data) =>
@@ -55,7 +55,7 @@ namespace Game.Network
                 _gameState = data.state;
             });
 
-            EventBus<OnAddPlayerOnMap>.Listen((data) =>
+            EventBus<OnAddPlayerToMap>.Listen((data) =>
             {
                 if (_gameState.phase.type == GamePhaseType.Match)
                     data.player.itemModule.PickRandomItem();
@@ -108,6 +108,7 @@ namespace Game.Network
             EventBus<OnUnloadMap>.Listen((_) =>
             {
                 NetworkServer.SendToAll(new ServerClearLeaderboard());
+                NetworkServer.SendToAll(new ServerOnlinePlayerRemovedFromMap());
             });
 
             EventBus<OnServerOnlinePlayerInitialized>.Listen((data) =>
@@ -194,16 +195,19 @@ namespace Game.Network
                 EventBus<ChangeLeaderboardItem>.Invoke(new() { itemData = data.itemData });
             });
 
-            NetworkClient.RegisterHandler<ServerConfirmPlayerEnteredMatch>((data) =>
+            NetworkClient.RegisterHandler<ServerOnlinePlayerAddedToMap>((data) =>
             {
-                EventBus<RequestMatchMusic>.Invoke(new());
+                EventBus<OnLocalPlayerAddedToMap>.Invoke(new());
                 EventBus<RequestGameplayUI>.Invoke(new());
+            });
+
+            NetworkClient.RegisterHandler<ServerOnlinePlayerRemovedFromMap>((data) =>
+            {
+                EventBus<OnLocalPlayerRemovedFromMap>.Invoke(new());
             });
 
             EventBus<OnGameStateChange>.Listen((data) =>
             {
-                if (data.state.phase.type == GamePhaseType.Break) EventBus<StopMatchMusic>.Invoke(new());
-
                 if (!_portal) _portal = GameObject.FindGameObjectWithTag("Portal");
                 _portal.SetActive(data.state.phase.info.activatePortal);
                 // mirror for some reason automaticly disables mesh renderer

@@ -8,4 +8,7 @@ namespace Game.Player.Events
         public float oldHealth;
         public float newHealth;
     }
+
+    public struct OnLocalPlayerAddedToMap : IEvent { }
+    public struct OnLocalPlayerRemovedFromMap : IEvent { }
 }

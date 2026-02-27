@@ -4,7 +4,8 @@ using Mirror;
 namespace Game.Network.Messages
 {
     public struct ClientRequestMapLoad : NetworkMessage { }
-    public struct ServerConfirmPlayerEnteredMatch : NetworkMessage { }
+    public struct ServerOnlinePlayerAddedToMap : NetworkMessage { }
+    public struct ServerOnlinePlayerRemovedFromMap : NetworkMessage { }
 
     public struct ServerClearLeaderboard : NetworkMessage { }
 

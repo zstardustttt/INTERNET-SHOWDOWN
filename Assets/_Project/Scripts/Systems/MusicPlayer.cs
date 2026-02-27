@@ -1,7 +1,7 @@
 using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Events.GameLoop;
-using Game.Events.MusicPlayer;
+using Game.Player.Events;
 using UnityEngine;
 
 namespace Game.Systems
@@ -31,8 +31,8 @@ namespace Game.Systems
                 _soundtrack = MapPool.maps[_state.mapIndex].soundtracks[_state.soundtrackIndex];
                 _soundtrack.clip.LoadAudioData();
             });
-            EventBus<RequestMatchMusic>.Listen((_) => { _musicRequested = true; });
-            EventBus<StopMatchMusic>.Listen((_) => StopMatchMusic());
+            EventBus<OnLocalPlayerAddedToMap>.Listen((_) => { _musicRequested = true; });
+            EventBus<OnLocalPlayerRemovedFromMap>.Listen((_) => StopMatchMusic());
         }
 
         private void Update()
