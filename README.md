@@ -1,7 +1,7 @@
 <h1>INTERNET SHOWDOWN</h1>
 
 <h2>about</h2>
-штеуктуе ырщцвщцт
+I need to test webhook so i'm changing this lol
 
 <h2>building</h2>
 
