@@ -10,11 +10,12 @@ using UnityEngine;
 
 namespace Game.Projectiles.Psycheshock.TeslaCocktail
 {
-    public class TeslaCocktailProjectile : PredictableProjectile, IBroadcastReceiver<ProjectileCollisionBroadcast>
+    public class TeslaCocktailProjectile : PredictableProjectile
     {
         [Header("Objects")]
         public GameObject fieldPrefab;
         public GameObject playerFieldPrefab;
+        public ProjectileCollision collision;
         public HitListener hitListener;
 
         [Header("Properties")]
@@ -22,9 +23,57 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
         public float gravityAcceleration;
         public float activateGravityAfter;
 
-        public override void OnStartServer()
+        protected override void OnSpawned()
         {
+            collision.onCollision.AddListener(OnCollision);
             hitListener.onHit.AddListener(OnHit);
+
+            PredictSpawn(4, (previousPrediction, prediction) =>
+            {
+                collision.CheckCollisionBetweenTwoPoints(previousPrediction.position, prediction.position);
+            });
+        }
+
+        protected override void OnDestroyed()
+        {
+            collision.onCollision.RemoveAllListeners();
+            hitListener.onHit.RemoveAllListeners();
+        }
+
+        protected override void OnUpdate()
+        {
+            if (!NetworkServer.active) return;
+
+            if (lifetime <= activateGravityAfter) return;
+            rb.linearVelocity -= gravityAcceleration * Time.deltaTime * Vector3.up;
+        }
+
+        private void OnHit(HitEvent hitEvent)
+        {
+            if (!hitEvent.target.transform.root.TryGetComponent(out PlayerBase player)) return;
+            if (player == author) return;
+
+            var playerField = MapLoader.NetworkSpawnOnMap(playerFieldPrefab, player.transform.position, Quaternion.identity);
+            playerField.BroadcastOnChildren(new SetupDamageSourceBroadcast()
+            {
+                author = author,
+                family = author.healthModule.family,
+            });
+
+            playerField.GetComponent<TeslaCocktailPlayerField>().player = player;
+            DestroyProjectile();
+        }
+
+        private void OnCollision(Vector3 point, Vector3 normal, Collider other)
+        {
+            var field = MapLoader.NetworkSpawnOnMap(fieldPrefab, point, Quaternion.FromToRotation(Vector3.up, normal));
+            field.BroadcastOnChildren(new SetupDamageSourceBroadcast()
+            {
+                author = author,
+                family = author.healthModule.family
+            });
+
+            DestroyProjectile();
         }
 
         public override ProjectilePredictionData Predict(float timePassed)
@@ -43,41 +92,6 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
                 rotation = spawnRotation,
                 velocity = velocity
             };
-        }
-
-        private void OnHit(HitEvent hitEvent)
-        {
-            if (!hitEvent.target.TryGetComponent(out PlayerBase player)) return;
-            if (player == author) return;
-
-            var field = Instantiate(playerFieldPrefab, player.transform.position, Quaternion.identity, new InstantiateParameters()
-            {
-                scene = MapLoader.loadedMap.scene
-            });
-            field.GetComponent<DamageSource>().author = author;
-            field.GetComponent<TeslaCocktailPlayerField>().player = player;
-            NetworkServer.Spawn(field);
-            DestroyProjectile();
-        }
-
-        protected override void OnUpdate()
-        {
-            if (!NetworkServer.active) return;
-
-            if (lifetime <= activateGravityAfter) return;
-            rb.linearVelocity -= gravityAcceleration * Time.deltaTime * Vector3.up;
-        }
-
-        public void Receive(ProjectileCollisionBroadcast broadcast)
-        {
-            var field = Instantiate(fieldPrefab, broadcast.point, Quaternion.identity, new InstantiateParameters()
-            {
-                scene = MapLoader.loadedMap.scene
-            });
-            field.transform.up = broadcast.normal;
-            field.GetComponent<DamageSource>().author = author;
-            NetworkServer.Spawn(field);
-            NetworkServer.Destroy(gameObject);
         }
     }
 }

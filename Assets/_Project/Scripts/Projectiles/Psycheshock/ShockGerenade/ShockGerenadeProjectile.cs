@@ -114,7 +114,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             Explode(explosionAuthor);
         }
 
-        public void OnCollision(Vector3 point, Vector3 normal, Collider other)
+        private void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
             if (_attached) return;
             transform.position = point + normal * collisionRadius;

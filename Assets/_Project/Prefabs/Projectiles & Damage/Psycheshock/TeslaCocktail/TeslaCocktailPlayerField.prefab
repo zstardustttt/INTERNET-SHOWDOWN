@@ -41,7 +41,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2568193706723677161}
   serializedVersion: 8
-  lengthInSec: 2.5
+  lengthInSec: 3.5
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -4878,7 +4878,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3796690616897658699}
   serializedVersion: 8
-  lengthInSec: 2.75
+  lengthInSec: 3.75
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -9718,7 +9718,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3893669325702455142}
   serializedVersion: 8
-  lengthInSec: 3
+  lengthInSec: 4
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -14705,12 +14705,14 @@ GameObject:
   m_Component:
   - component: {fileID: 1087217858787890193}
   - component: {fileID: 7333610585879673598}
-  - component: {fileID: 4601800352319084863}
   - component: {fileID: 3139713581605469784}
   - component: {fileID: 153911033046051809}
   - component: {fileID: 886439168087892676}
   - component: {fileID: 6955821971460649701}
   - component: {fileID: 6277696499866666994}
+  - component: {fileID: 9119632397680258888}
+  - component: {fileID: 5018741123335928923}
+  - component: {fileID: 1045238188605205058}
   m_Layer: 9
   m_Name: TeslaCocktailPlayerField
   m_TagString: Untagged
@@ -14755,40 +14757,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 2
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4601800352319084863
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4751247832063731759}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54908c08bb3f98e4592d3b2e227e279a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Projectiles.RadialDamage
-  syncMethod: 0
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  previousObservedPosition: {x: 0, y: 0, z: 0}
-  observedDelta: {x: 0, y: 0, z: 0}
-  hitScanCount: 0
-  owner: {fileID: 0}
-  coll: {fileID: 7333610585879673598}
-  active: 1
-  damageType: 3
-  singleHitScan: 0
-  canDamageOwner: 1
-  knockbackForce: 0
-  OnHit:
-    m_PersistentCalls:
-      m_Calls: []
-  centerOffset: {x: 0, y: 0, z: 0}
-  outerRadius: 2
-  outerDamage: 6
-  innerRadius: 0
-  innerDamage: 6
 --- !u!114 &3139713581605469784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14874,7 +14842,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  time: 3
+  time: 4.25
   source: {fileID: 6277696499866666994}
   volume: 0.6
   volumeFalloffCurve:
@@ -15007,6 +14975,82 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &9119632397680258888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4751247832063731759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c39eb37d459a2f84cbb7eefbc65f9e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Hits.SphereHitEntity
+  active: 1
+  sources:
+  - {fileID: 5018741123335928923}
+  targets: []
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  hitLayerMask: 0
+  previousObservedPosition: {x: 0, y: 0, z: 0}
+  observedDelta: {x: 0, y: 0, z: 0}
+  sphereCollider: {fileID: 7333610585879673598}
+--- !u!114 &5018741123335928923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4751247832063731759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54908c08bb3f98e4592d3b2e227e279a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Damages.RadialDamageSource
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 9119632397680258888}
+  active: 1
+  layer: {fileID: 11400000, guid: 06165ca6f2cb1584fb040de7c828041d, type: 2}
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+  canDamageFamily: 0
+  onWishDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  author: {fileID: 0}
+  centerOffset: {x: 0, y: 0, z: 0}
+  damageType: 1
+  outerRadius: 2
+  outerDamageAmount: 5
+  innerRadius: 0
+  innerDamageAmount: 5
+--- !u!114 &1045238188605205058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4751247832063731759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eef81084b3dd3742b5117e5a584bdc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Hits.DeactivateHitListenerAfterTime
+  hitListener: {fileID: 5018741123335928923}
+  time: 4
 --- !u!1 &8450214336910538961
 GameObject:
   m_ObjectHideFlags: 0
@@ -15049,7 +15093,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8450214336910538961}
   serializedVersion: 8
-  lengthInSec: 2.7
+  lengthInSec: 3.7
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0

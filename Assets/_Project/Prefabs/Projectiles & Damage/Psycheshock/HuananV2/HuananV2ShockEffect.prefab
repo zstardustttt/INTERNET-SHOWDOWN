@@ -4946,6 +4946,7 @@ GameObject:
   - component: {fileID: 2423040992310831495}
   - component: {fileID: 5262067622161689008}
   - component: {fileID: 3063369220174135175}
+  - component: {fileID: 209917745689026509}
   m_Layer: 0
   m_Name: HuananV2ShockEffect
   m_TagString: Untagged
@@ -5003,3 +5004,18 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   time: 1
+--- !u!114 &209917745689026509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8596668877135600386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc606dc11acb7694ca9c69c3f9d9bcd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Player.CameraShaker
+  amplitude: 1
+  minDistance: 5
+  maxDistance: 20

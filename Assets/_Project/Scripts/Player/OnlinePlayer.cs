@@ -197,7 +197,7 @@ namespace Game.Player
                     amplitude *= shakeDistanceCurve.Evaluate(1f - distance01);
                 }
 
-                _shakeGenerator.Shake(amplitude, shakeFrequency, shakeFalloffSpeed);
+                _shakeGenerator.Shake(Mathf.Max(amplitude, _shakeGenerator.shakeAmplitude), shakeFrequency, shakeFalloffSpeed);
             });
         }
 

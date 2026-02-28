@@ -6,23 +6,21 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
     public class TeslaCocktailPlayerField : NetworkBehaviour
     {
         public PlayerBase player;
-        private bool _addedCallback;
+
+        public override void OnStartServer()
+        {
+            if (player) player.onDeath.AddListener(OnDeath);
+        }
 
         private void Update()
         {
             if (!NetworkServer.active || !player) return;
-
-            if (!_addedCallback)
-            {
-                player.onResetPlayer.AddListener(OnResetPlayer);
-                _addedCallback = true;
-            }
-
             transform.position = player.transform.position + player.motor.Capsule.center;
         }
 
-        private void OnResetPlayer()
+        private void OnDeath()
         {
+            player.onDeath.RemoveListener(OnDeath);
             NetworkServer.Destroy(gameObject);
         }
     }
