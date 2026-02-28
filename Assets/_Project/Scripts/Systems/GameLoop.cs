@@ -152,7 +152,7 @@ namespace Game.Systems
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
                 player.itemModule.PickRandomItem();
-                player.hitEntity.active = true;
+                player.locks.Unlock(PlayerLock.Hit);
             }
         }
 
