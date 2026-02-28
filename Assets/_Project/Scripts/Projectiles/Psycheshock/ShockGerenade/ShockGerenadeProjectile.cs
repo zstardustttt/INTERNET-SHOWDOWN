@@ -51,6 +51,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         private float _collectedAttachedDelta;
 
         private ShakeGenerator _shakeGenerator;
+        private PlayerBase _explosionRequestAuthor;
 
         [HideInInspector] public float flySpeed;
         [HideInInspector] public float explodeAfter;
@@ -138,7 +139,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
         private void Detach()
         {
-            attachHitListener.active = true;
+            // Can't be attached afterwards
             damageTarget.onDamage.AddListener(OnDamage);
 
             _attached.onDeath.RemoveListener(OnAttachedDeath);
@@ -195,36 +196,63 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
             if (!NetworkServer.active) return;
 
-            if (lifetime > explodeAfter)
+            if (_explosionRequestAuthor)
             {
-                Explode(author);
+                Vector3 pos;
+                if (_attached)
+                {
+                    _attached.onDeath.RemoveListener(OnAttachedDeath);
+                    _attached.healthModule.onWishDamage.RemoveListener(OnDamage);
+
+                    var damage = new Damage(DamageType.Indirect, 100f, _explosionRequestAuthor, Guid.NewGuid(), _explosionRequestAuthor.healthModule.family);
+                    _attached.healthModule.ApplyDamage(damage);
+                    pos = _attached.motor.Capsule.bounds.center;
+                }
+                else pos = transform.position;
+
+                var explosion = MapLoader.NetworkSpawnOnMap(explosionPrefab, pos, Quaternion.identity);
+                explosion.BroadcastOnChildren(new SetupDamageSourceBroadcast()
+                {
+                    family = _explosionRequestAuthor.healthModule.family,
+                    author = _explosionRequestAuthor
+                });
+
+                DestroyProjectile();
                 return;
             }
-
-            if (_attached)
+            else
             {
-                rb.linearVelocity = Vector3.zero;
-
-                if (_attached.transform.position != Vector3.zero)
+                if (lifetime > explodeAfter)
                 {
-                    var capsule = _attached.motor.Capsule;
-                    var yOffset = capsule.center.y * 1.1f * Vector3.up;
-                    rb.position = _attached.transform.position + yOffset + _attached.transform.forward * (capsule.radius + collisionRadius);
-
-                    var attachedDelta = _attached.transform.position - _previousAttachedPosition;
-                    _collectedAttachedDelta += attachedDelta.magnitude;
-
-                    _previousAttachedPosition = _attached.transform.position;
+                    Explode(author);
+                    return;
                 }
 
-                if (_collectedAttachedDelta >= detachTotalDelta) Detach();
-                else
+                if (_attached)
                 {
-                    var damage = holdDamage * (explodeAfterPrimary / explodeAfter);
-                    _attached.healthModule.ApplyDamage(new(DamageType.Indirect, damage, author, _holdDamageSourceGuid, author.healthModule.family));
-                }
+                    rb.linearVelocity = Vector3.zero;
 
-                return;
+                    if (_attached.transform.position != Vector3.zero)
+                    {
+                        var capsule = _attached.motor.Capsule;
+                        var yOffset = capsule.center.y * 1.1f * Vector3.up;
+                        rb.position = _attached.transform.position + yOffset + _attached.transform.forward * (capsule.radius + collisionRadius);
+
+                        var attachedDelta = _attached.transform.position - _previousAttachedPosition;
+                        _collectedAttachedDelta += attachedDelta.magnitude;
+
+                        _previousAttachedPosition = _attached.transform.position;
+                    }
+
+                    if (_collectedAttachedDelta >= detachTotalDelta) Detach();
+                    else
+                    {
+                        var damage = holdDamage * (explodeAfterPrimary / explodeAfter);
+                        _attached.healthModule.ApplyDamage(new(DamageType.Indirect, damage, author, _holdDamageSourceGuid, author.healthModule.family));
+                    }
+
+                    return;
+                }
             }
 
             if (lifetime <= activateGravityAfter) return;
@@ -233,25 +261,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
         private void Explode(PlayerBase explosionAuthor)
         {
-            Vector3 pos;
-            if (_attached)
-            {
-                _attached.onDeath.RemoveListener(OnAttachedDeath);
-                _attached.healthModule.onWishDamage.RemoveListener(OnDamage);
-
-                _attached.healthModule.ApplyDamage(new(DamageType.Indirect, 100f, explosionAuthor, Guid.NewGuid(), explosionAuthor.healthModule.family));
-                pos = _attached.motor.Capsule.bounds.center;
-            }
-            else pos = transform.position;
-
-            var explosion = MapLoader.NetworkSpawnOnMap(explosionPrefab, pos, Quaternion.identity);
-            explosion.BroadcastOnChildren(new SetupDamageSourceBroadcast()
-            {
-                family = explosionAuthor.healthModule.family,
-                author = explosionAuthor
-            });
-
-            DestroyProjectile();
+            _explosionRequestAuthor = explosionAuthor;
         }
 
         public override ProjectilePredictionData Predict(float timePassed)
