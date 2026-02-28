@@ -101,8 +101,8 @@ MonoBehaviour:
   tickAudioSource: {fileID: 65647630199678033}
   attachAudioSource: {fileID: 3981060045207202204}
   detachAudioSource: {fileID: 8324473391558815466}
-  speed: 70
-  secondarySpeed: 140
+  speed: 65
+  secondarySpeed: 130
   gravityAcceleration: 25
   activateGravityAfter: 0.15
   explodeAfterPrimary: 5
@@ -426,7 +426,6 @@ MonoBehaviour:
   hitLayerMask: 0
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
-  completedSelfChecks: 0
   sphereCollider: {fileID: 6595121199782008432}
 --- !u!114 &7040493596059717009
 MonoBehaviour:
@@ -476,6 +475,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+  onWishDamage:
     m_PersistentCalls:
       m_Calls: []
   onDamage:

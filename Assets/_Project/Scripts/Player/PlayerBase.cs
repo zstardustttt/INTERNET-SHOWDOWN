@@ -213,6 +213,7 @@ namespace Game.Player
         private void Update()
         {
             // Ascend if dead
+            // TODO: move to DeathWatcher?
             if (_handlingThisPlayer && dead)
             {
                 var distance = config.respawnAscendSpeed * Time.deltaTime;

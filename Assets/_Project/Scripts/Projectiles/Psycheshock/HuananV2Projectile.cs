@@ -10,6 +10,7 @@ namespace Game.Projectiles.Psycheshock
     {
         [Header("Objects")]
         public GameObject explosionPrefab;
+        public GameObject shockEffectPrefab;
         public Transform visual;
         public DamageSource mainDamage;
         public ProjectileCollision collision;
@@ -21,6 +22,12 @@ namespace Game.Projectiles.Psycheshock
         protected override void OnSpawned()
         {
             collision.onCollision.AddListener((point, _, _) => Explode(point));
+            mainDamage.onDamage.AddListener((damageEvent) =>
+            {
+                var position = damageEvent.target.hitEntity.Collider.bounds.center;
+                MapLoader.NetworkSpawnOnMap(shockEffectPrefab, position, Quaternion.identity);
+            });
+
             PredictSpawn(1, (previousPrediction, prediction) =>
             {
                 collision.CheckCollisionBetweenTwoPoints(previousPrediction.position, prediction.position);
@@ -30,6 +37,7 @@ namespace Game.Projectiles.Psycheshock
         protected override void OnDestroyed()
         {
             collision.onCollision.RemoveAllListeners();
+            mainDamage.onDamage.RemoveAllListeners();
         }
 
         protected override void OnUpdate()
