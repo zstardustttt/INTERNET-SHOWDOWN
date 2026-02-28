@@ -123,10 +123,6 @@ namespace Game.Core.Maps
                     sceneName = loadedMap.config.sceneName,
                     sceneOperation = SceneOperation.UnloadAdditive
                 });
-
-                player.ServerMovePlayer(Vector3.zero);
-                player.ResetPlayer();
-                player.dead = false;
             }
 
             EventBus<OnUnloadMap>.Invoke(new());

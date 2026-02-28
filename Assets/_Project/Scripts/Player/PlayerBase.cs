@@ -17,15 +17,19 @@ namespace Game.Player
     [RequireComponent(typeof(KinematicCharacterMotor))]
     public class PlayerBase : NetworkBehaviour, ICharacterController
     {
-        private bool _handlingThisPlayer;
+        public bool HandlingThisPlayer { get; private set; }
+
         public Bounds WorldHitbox => new(transform.position + config.hitbox.center, config.hitbox.size);
 
         public HitEntity hitEntity;
         public PlayerHealthModule healthModule;
         public PlayerItemModule itemModule;
+        public PlayerLocks locks;
         public PlayerConfig config;
         public IPlayerController controller;
         public KinematicCharacterMotor motor;
+
+        [Space(9)]
         public Transform horizontalOrientation;
         public Transform verticalOrientation;
 
@@ -96,28 +100,6 @@ namespace Game.Player
 
         [SyncVar(hook = nameof(OnDeathOrRespawn))] public bool dead;
         public float respawnTimer;
-
-        [SyncVar(hook = nameof(OnMotorLocksChanged))] public int motorLocks;
-        [SyncVar(hook = nameof(OnInputLocksChanged))] public int inputLocks;
-
-        private void OnMotorLocksChanged(int old, int _new)
-        {
-            if (_new < 0)
-            {
-                Debug.LogWarning($"Motor locks counter on player {gameObject.name} is less than zero ({_new})");
-            }
-
-            if (!_handlingThisPlayer) return;
-            motor.enabled = _new == 0;
-        }
-
-        private void OnInputLocksChanged(int old, int _new)
-        {
-            if (_new < 0)
-            {
-                Debug.LogWarning($"Input locks counter on player {gameObject.name} is less than zero ({_new})");
-            }
-        }
 
         private bool _guidReceived;
         [SyncVar] public string playerGuid;
@@ -196,6 +178,16 @@ namespace Game.Player
 
         public override void OnStartServer()
         {
+            locks.onLockStateChange.AddListener((plock, locked) =>
+            {
+                if (!HandlingThisPlayer) return;
+
+                if (plock == PlayerLock.Motor) motor.enabled = !locked;
+                else if (plock == PlayerLock.Hit) hitEntity.active = !locked;
+                else if (plock == PlayerLock.Damage) healthModule.active = !locked;
+            });
+
+            locks.Lock(PlayerLock.Hit);
             ResetPlayer();
         }
 
@@ -207,14 +199,14 @@ namespace Game.Player
             mainModel.SetActive(!_new);
             ghostModel.SetActive(_new);
 
-            if (_handlingThisPlayer) _additionalVelocity = Vector3.zero;
+            if (HandlingThisPlayer) _additionalVelocity = Vector3.zero;
         }
 
         private void Update()
         {
             // Ascend if dead
             // TODO: move to DeathWatcher?
-            if (_handlingThisPlayer && dead)
+            if (HandlingThisPlayer && dead)
             {
                 var distance = config.respawnAscendSpeed * Time.deltaTime;
                 if (!Physics.Raycast(transform.position, Vector3.up, motor.Capsule.height + distance, LayerMask.GetMask("Enviroment")))
@@ -287,7 +279,7 @@ namespace Game.Player
         {
             motor.enabled = true;
             motor.CharacterController = this;
-            _handlingThisPlayer = true;
+            HandlingThisPlayer = true;
         }
 
         protected override void OnValidate()
@@ -356,7 +348,7 @@ namespace Game.Player
 
             _prevWishJumping = inputs.wishJumping;
             _prevWishDashing = inputs.wishDashing;
-            inputs = inputLocks == 0 ? controller.GetInputs() : default;
+            inputs = locks.Locked(PlayerLock.Input) ? default : controller.GetInputs();
 
             if (!inputs.wishGroundSlam) _canGroundSlam = true;
             if (!motor.GroundingStatus.IsStableOnGround

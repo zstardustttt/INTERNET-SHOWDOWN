@@ -152,6 +152,7 @@ namespace Game.Systems
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
                 player.itemModule.PickRandomItem();
+                player.hitEntity.active = true;
             }
         }
 
@@ -162,8 +163,7 @@ namespace Game.Systems
 
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
-                player.inputLocks++;
-                player.hitEntity.active = false;
+                player.locks.Lock(PlayerLock.Input, PlayerLock.Hit);
                 player.healthModule.ClearInvincibility();
             }
         }
@@ -173,13 +173,15 @@ namespace Game.Systems
         {
             MapLoader.Unload();
 
+            // TODO: watahel
             // Reset player & player stats
             foreach (var player in FindObjectsByType<PlayerBase>(FindObjectsSortMode.None))
             {
                 player.ResetPlayer();
                 player.ResetStats();
-                player.inputLocks = 0;
-                player.hitEntity.active = true;
+                player.locks.Drop(PlayerLock.Input, PlayerLock.Motor, PlayerLock.Damage);
+                player.ServerMovePlayer(Vector3.zero);
+                player.dead = false;
             }
 
             state = new(new(GamePhaseType.Break, breakPhaseInfo), -1, -1, 0);

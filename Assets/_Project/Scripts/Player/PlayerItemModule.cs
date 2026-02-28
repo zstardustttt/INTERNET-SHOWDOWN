@@ -120,7 +120,7 @@ namespace Game.Player
 
         public void TryUseItem(bool secondary)
         {
-            if (itemData.itemIndex == -1 || player.inputLocks != 0 || player.dead) return;
+            if (itemData.itemIndex == -1 || player.locks.Locked(PlayerLock.Input)) return;
 
             var ctx = new ItemUseClientContext()
             {
@@ -149,7 +149,7 @@ namespace Game.Player
         [Server]
         private void UseItem(ItemUseClientContext context)
         {
-            if (!item || player.inputLocks != 0) return;
+            if (!item || player.locks.Locked(PlayerLock.Input)) return;
 
             if (item.Use(player, context))
             {

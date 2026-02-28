@@ -60,8 +60,7 @@ namespace Game.Player
             // TODO: respawn invincibility
             player.ServerMovePlayer(position);
             player.ResetPlayer();
-            player.motorLocks--;
-            player.hitEntity.active = true;
+            player.locks.Unlock(PlayerLocks.all);
         }
 
         public void RegisterDeath(PlayerBase player)
@@ -70,9 +69,8 @@ namespace Game.Player
             player.dead = true;
             player.respawnTimer = respawnDuration;
 
-            player.hitEntity.active = false;
             player.itemModule.itemData = PlayerItemData.Default();
-            player.motorLocks++;
+            player.locks.Lock(PlayerLocks.all);
 
             var damages = new Dictionary<PlayerBase, float>();
             foreach (var damage in player.healthModule.damageHistory)
