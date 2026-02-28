@@ -180,10 +180,7 @@ namespace Game.Player
         {
             locks.onLockStateChange.AddListener((plock, locked) =>
             {
-                if (!HandlingThisPlayer) return;
-
-                if (plock == PlayerLock.Motor) motor.enabled = !locked;
-                else if (plock == PlayerLock.Hit) hitEntity.active = !locked;
+                if (plock == PlayerLock.Hit) hitEntity.active = !locked;
                 else if (plock == PlayerLock.Damage) healthModule.active = !locked;
             });
 
@@ -208,9 +205,11 @@ namespace Game.Player
             // TODO: move to DeathWatcher?
             if (HandlingThisPlayer && dead)
             {
-                var distance = config.respawnAscendSpeed * Time.deltaTime;
-                if (!Physics.Raycast(transform.position, Vector3.up, motor.Capsule.height + distance, LayerMask.GetMask("Enviroment")))
-                    transform.position += distance * Vector3.up;
+                var delta = config.respawnAscendSpeed * Time.deltaTime;
+                var distance = motor.Capsule.height / 2f + delta;
+                var isCeiled = Physics.Raycast(motor.Capsule.bounds.center, Vector3.up, distance, LayerMask.GetMask("Enviroment"));
+
+                if (!isCeiled) transform.position += delta * Vector3.up;
             }
 
             if (!NetworkServer.active) return;
@@ -280,6 +279,11 @@ namespace Game.Player
             motor.enabled = true;
             motor.CharacterController = this;
             HandlingThisPlayer = true;
+
+            locks.onLockStateChange.AddListener((plock, locked) =>
+            {
+                if (plock == PlayerLock.Motor) motor.enabled = !locked;
+            });
         }
 
         protected override void OnValidate()

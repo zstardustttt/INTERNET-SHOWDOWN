@@ -32,20 +32,16 @@ namespace Game.Items.Psycheshock
 
         public override bool Use(PlayerBase user, ItemUseClientContext context)
         {
-            /*var proj = Projectile.Spawn(projectile, user, context.headPosition, context.visualPosition, context.visualRotation);
-            proj.damageMultiply = _parsedDamageMultiplier;
-            proj.returns = _parsedReturns;
+            Projectile.Spawn(projectile, user, context.headPosition, context.headRotation, context.useTime, (proj) =>
+            {
+                proj.damageMultiply = _parsedDamageMultiplier;
+                proj.returns = _parsedReturns;
 
-            var secondary = proj.returns > proj.maxReturns || context.secondary;
-            proj.secondary = secondary;
-            if (secondary)
-            {
-                proj.flyDirection = context.didCrosshairHit ?
-                    (context.crosshairHitPoint - context.visualPosition).normalized :
-                    context.headRotation * Vector3.forward;
-            }
-            else
-            {
+                var secondary = proj.returns > proj.maxReturns || context.secondary;
+                proj.secondary = secondary;
+
+                if (secondary) return;
+
                 // Get wish position
                 var projBounds = proj.collision.Collider.bounds;
                 var didBoxHit = Physics.BoxCast
@@ -65,9 +61,8 @@ namespace Game.Items.Psycheshock
 
                 proj.wishPositionDistance = wishPosDist;
                 proj.wishPosition = context.headPosition + proj.transform.forward * wishPosDist;
-            }
+            });
 
-            proj.SetupPrediction(context.useTime, 2);*/
             return true;
         }
     }

@@ -46,33 +46,31 @@ namespace Game.Player
             return _locks.ContainsKey(plock);
         }
 
+        [Server]
         public void Lock(params PlayerLock[] locks) => Modify(Modification.Lock, locks);
+
+        [Server]
         public void Unlock(params PlayerLock[] locks) => Modify(Modification.Unlock, locks);
+
+        [Server]
         public void Drop(params PlayerLock[] locks) => Modify(Modification.Drop, locks);
 
+        [Server]
         private void Modify(Modification modification, PlayerLock[] locks)
         {
-            if (NetworkServer.active)
-            {
-                ModifyInternal(modification, locks);
-                if (netIdentity.connectionToClient != null)
-                    TargetModify(modification, locks);
-            }
-            else if (isLocalPlayer)
-            {
-                ModifyInternal(modification, locks);
-                CmdModify(modification, locks);
-            }
-            else Debug.LogWarning("Attempted to modify locks not on local player");
+            ModifyInternal(modification, locks);
+
+            if (isLocalPlayer || netIdentity.connectionToClient == null) return;
+            TargetModify(modification, locks);
         }
 
-        [Command]
-        private void CmdModify(Modification modification, PlayerLock[] locks) => ModifyInternal(modification, locks);
         [TargetRpc]
         private void TargetModify(Modification modification, PlayerLock[] locks) => ModifyInternal(modification, locks);
 
         private void ModifyInternal(Modification modification, PlayerLock[] locks)
         {
+            Debug.Log($"{modification} on {player.playerName}: {string.Join(", ", locks)}");
+
             if (modification == Modification.Lock)
             {
                 foreach (var plock in locks)

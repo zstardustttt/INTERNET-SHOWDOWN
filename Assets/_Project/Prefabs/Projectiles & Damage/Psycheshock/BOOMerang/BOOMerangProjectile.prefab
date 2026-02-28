@@ -1,85 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &757575007531216999
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2298997567302975099}
-  - component: {fileID: 5446390781259671826}
-  - component: {fileID: 1316192804864265524}
-  m_Layer: 9
-  m_Name: GrabHitbox
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2298997567302975099
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 757575007531216999}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 262730139569086693}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &5446390781259671826
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 757575007531216999}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1.7, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1316192804864265524
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 757575007531216999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70b6ac8510fb386459347986532adcad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Damage.BasicDamage
-  previousObservedPosition: {x: 0, y: 0, z: 0}
-  observedDelta: {x: 0, y: 0, z: 0}
-  hitScanCount: 0
-  owner: {fileID: 0}
-  coll: {fileID: 5446390781259671826}
-  active: 1
-  damageType: 0
-  singleHitScan: 0
-  canDamageOwner: 1
-  knockbackForce: 0
-  onHit:
-    m_PersistentCalls:
-      m_Calls: []
-  baseDamage: 0
 --- !u!1 &1431205122097995472
 GameObject:
   m_ObjectHideFlags: 0
@@ -5000,7 +4920,6 @@ Transform:
   m_Children:
   - {fileID: 8005494515564343811}
   - {fileID: 6574292733849796694}
-  - {fileID: 2298997567302975099}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &5280419973176405639
@@ -5119,31 +5038,32 @@ MonoBehaviour:
   rb: {fileID: 5280419973176405639}
   netTransform: {fileID: 3908573425158528568}
   netRb: {fileID: 3361062869523565850}
-  collision: {fileID: 8848096384811915703}
-  damageDealers:
-  - {fileID: 724236280424678512}
-  - {fileID: 1316192804864265524}
+  author: {fileID: 0}
+  lifetime: 0
+  spawnPosition: {x: 0, y: 0, z: 0}
+  spawnRotation: {x: 0, y: 0, z: 0, w: 0}
+  spawnTime: 0
   predictionDebugIterations: 6
   predictionDebugTimePassed: 1
+  collision: {fileID: 8848096384811915703}
+  mainDamage: {fileID: 8509479452093179653}
+  grabHitListener: {fileID: 501852129072947031}
+  boomerangItem: {fileID: 11400000, guid: bf9c23e044b8f6949b63e31d208dd3bb, type: 2}
+  explosionPrefab: {fileID: 3101699681814522868, guid: 48b20d2e7f9da204fa7188006818e37d, type: 3}
+  visualToRotate: {fileID: 8005494515564343811}
   maxDistanceLoopDuration: 1.25
   maxWishPositionDistance: 100
   flySpeed: 200
-  damageHitBox: {fileID: 724236280424678512}
-  grabHitBox: {fileID: 1316192804864265524}
-  boomerangItem: {fileID: 11400000, guid: bf9c23e044b8f6949b63e31d208dd3bb, type: 2}
   directDamage: 25
   explosionDamage: 12.5
   damageMultiplyCap: 8
   maxReturns: 7
-  explosionPrefab: {fileID: 1959433415532568738, guid: 48b20d2e7f9da204fa7188006818e37d, type: 3}
-  visualToRotate: {fileID: 8005494515564343811}
   visualRotationSpeed: 1000
   secondary: 0
-  flyDirection: {x: 0, y: 0, z: 0}
-  wishPositionDistance: 0
   damageMultiply: 0
   returns: 0
   wishPosition: {x: 0, y: 0, z: 0}
+  wishPositionDistance: 0
 --- !u!114 &827340634276453444
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5199,7 +5119,7 @@ MonoBehaviour:
   collisionLayerMask:
     serializedVersion: 2
     m_Bits: 2048
-  collisionMethod: 0
+  collisionCase: 2
   onCollision:
     m_PersistentCalls:
       m_Calls: []
@@ -10254,9 +10174,11 @@ GameObject:
   m_Component:
   - component: {fileID: 6574292733849796694}
   - component: {fileID: 1945585768103449025}
-  - component: {fileID: 724236280424678512}
+  - component: {fileID: 5261606545025494546}
+  - component: {fileID: 501852129072947031}
+  - component: {fileID: 8509479452093179653}
   m_Layer: 9
-  m_Name: DamageDealer
+  m_Name: HitEntity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10298,7 +10220,56 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.2, y: 1, z: 1.5}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &724236280424678512
+--- !u!114 &5261606545025494546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8880477191828550972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 111bf47d517140946af6504a5ba6f8dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Hits.BoxHitEntity
+  active: 1
+  sources:
+  - {fileID: 8509479452093179653}
+  - {fileID: 501852129072947031}
+  targets: []
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  hitLayerMask: 0
+  previousObservedPosition: {x: 0, y: 0, z: 0}
+  observedDelta: {x: 0, y: 0, z: 0}
+  boxCollider: {fileID: 1945585768103449025}
+--- !u!114 &501852129072947031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8880477191828550972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d338db2b35244b48b6dd54bdec004f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Hits.HitListener
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 5261606545025494546}
+  active: 1
+  layer: {fileID: 11400000, guid: d9e26ebc23a17394384d7297bde67696, type: 2}
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &8509479452093179653
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10309,21 +10280,30 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70b6ac8510fb386459347986532adcad, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Damage.BasicDamage
-  previousObservedPosition: {x: 0, y: 0, z: 0}
-  observedDelta: {x: 0, y: 0, z: 0}
-  hitScanCount: 0
-  owner: {fileID: 0}
-  coll: {fileID: 1945585768103449025}
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Damages.BasicDamageSource
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 5261606545025494546}
   active: 1
-  damageType: 1
-  singleHitScan: 0
-  canDamageOwner: 0
-  knockbackForce: 0
+  layer: {fileID: 11400000, guid: 06165ca6f2cb1584fb040de7c828041d, type: 2}
   onHit:
     m_PersistentCalls:
       m_Calls: []
-  baseDamage: 10
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+  canDamageFamily: 0
+  onWishDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  author: {fileID: 0}
+  damageType: 0
+  damageAmount: 10
 --- !u!1001 &5295001781765669872
 PrefabInstance:
   m_ObjectHideFlags: 0
