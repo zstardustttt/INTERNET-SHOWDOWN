@@ -36,6 +36,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         public float activateGravityAfter;
         public float explodeAfterPrimary;
         public float explodeAfterSecondary;
+        public float explosionDelay;
         public float detachTotalDelta;
         public float collisionRadius;
         public float holdDamage;
@@ -52,6 +53,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
         private ShakeGenerator _shakeGenerator;
         private PlayerBase _explosionRequestAuthor;
+        private float _explosionTimer;
 
         [HideInInspector] public float flySpeed;
         [HideInInspector] public float explodeAfter;
@@ -198,26 +200,31 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
             if (_explosionRequestAuthor)
             {
-                Vector3 pos;
-                if (_attached)
+                _explosionTimer += Time.deltaTime;
+                if (_explosionTimer >= explosionDelay)
                 {
-                    _attached.onDeath.RemoveListener(OnAttachedDeath);
-                    _attached.healthModule.onWishDamage.RemoveListener(OnDamage);
+                    Vector3 pos;
+                    if (_attached)
+                    {
+                        _attached.onDeath.RemoveListener(OnAttachedDeath);
+                        _attached.healthModule.onWishDamage.RemoveListener(OnDamage);
 
-                    var damage = new Damage(DamageType.Indirect, 100f, _explosionRequestAuthor, Guid.NewGuid(), _explosionRequestAuthor.healthModule.family);
-                    _attached.healthModule.ApplyDamage(damage);
-                    pos = _attached.motor.Capsule.bounds.center;
+                        var damage = new Damage(DamageType.Indirect, 100f, _explosionRequestAuthor, Guid.NewGuid(), _explosionRequestAuthor.healthModule.family);
+                        _attached.healthModule.ApplyDamage(damage);
+                        pos = _attached.motor.Capsule.bounds.center;
+                    }
+                    else pos = transform.position;
+
+                    var explosion = MapLoader.NetworkSpawnOnMap(explosionPrefab, pos, Quaternion.identity);
+                    explosion.BroadcastOnChildren(new SetupDamageSourceBroadcast()
+                    {
+                        family = _explosionRequestAuthor.healthModule.family,
+                        author = _explosionRequestAuthor
+                    });
+
+                    DestroyProjectile();
                 }
-                else pos = transform.position;
 
-                var explosion = MapLoader.NetworkSpawnOnMap(explosionPrefab, pos, Quaternion.identity);
-                explosion.BroadcastOnChildren(new SetupDamageSourceBroadcast()
-                {
-                    family = _explosionRequestAuthor.healthModule.family,
-                    author = _explosionRequestAuthor
-                });
-
-                DestroyProjectile();
                 return;
             }
             else
