@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game.Boxes;
 using Game.Core.Damages;
 using Game.Core.Events;
 using Game.Core.Maps;
@@ -388,6 +389,11 @@ namespace Game.Player
             {
                 player.SetPosition(player.transform.position + Vector3.up * 10f);
             }
+
+            if (Input.GetKeyDown(KeyCode.F10))
+            {
+                CmdDestroyAllBoxes();
+            }
         }
 
         [Command]
@@ -411,6 +417,18 @@ namespace Game.Player
 
             var playerToTeleport = playerPool[UnityEngine.Random.Range(0, playerPool.Length)];
             playerToTeleport.ServerMovePlayer(playerToTeleport.transform.position + Vector3.up * 10f);
+        }
+
+        [Command]
+        private void CmdDestroyAllBoxes()
+        {
+            foreach (var box in FindObjectsByType<ItemBox>(FindObjectsSortMode.None))
+            {
+                NetworkServer.Destroy(box.gameObject);
+            }
+
+            var boxHandler = FindFirstObjectByType<BoxHandler>();
+            if (boxHandler) boxHandler.spawnedBoxesCounter = 0;
         }
 
         public PlayerInputs GetInputs()

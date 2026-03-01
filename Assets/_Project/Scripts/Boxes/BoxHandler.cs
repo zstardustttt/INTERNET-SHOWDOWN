@@ -28,8 +28,8 @@ namespace Game.Boxes
 
         private bool _active;
         private float _timer;
-        private int _spawnedBoxesCounter;
         private LayerMask _enviromentLayerMask;
+        [HideInInspector] public int spawnedBoxesCounter;
 
         private void Awake()
         {
@@ -41,8 +41,8 @@ namespace Game.Boxes
                 _active = data.state.phase.type == GamePhaseType.Match;
             });
 
-            EventBus<OnBoxSpawn>.Listen((_) => _spawnedBoxesCounter++);
-            EventBus<OnBoxDestroy>.Listen((_) => _spawnedBoxesCounter--);
+            EventBus<OnBoxSpawn>.Listen((_) => spawnedBoxesCounter++);
+            EventBus<OnBoxDestroy>.Listen((_) => spawnedBoxesCounter--);
 
             EventBus<HitEvent>.Listen(OnHit);
         }
@@ -76,7 +76,7 @@ namespace Game.Boxes
         private void HandleBoxSpawning()
         {
             var playerCount = MapLoader.loadedMap.players.Count;
-            if (_spawnedBoxesCounter >= maxBoxesPerPlayer * playerCount) return;
+            if (spawnedBoxesCounter >= maxBoxesPerPlayer * playerCount) return;
 
             if (_timer <= 0f)
             {
