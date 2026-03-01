@@ -1,4 +1,3 @@
-using Game.Core.Broadcast;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
 using Mirror;
@@ -7,15 +6,17 @@ using UnityEngine.Events;
 
 namespace Game.Projectiles.Psycheshock.LinkedShurikens
 {
-    public class LinkedShurikenProjectile : PredictableProjectile, IBroadcastReceiver<ProjectileCollisionBroadcast>
+    public class LinkedShurikenProjectile : PredictableProjectile
     {
         [Header("Objects")]
+        public ProjectileCollision collision;
         public Transform visualToRotate;
         public AudioSource flyAudioSource;
         public AudioSource collideAudioSource;
 
         [Header("Properties")]
-        public float flySpeed;
+        public float startFlySpeed;
+        public float minFlySpeed;
         public float maxLifetime;
         public float flyAudioCenterPitch;
         public float visualRotationFactor;
@@ -23,17 +24,62 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
 
         [HideInInspector, SyncVar] public float collideAudioPitch;
 
-        public override ProjectilePredictionData Predict(float timePassed)
-        {
-            var velocity = flySpeed * transform.forward;
-            var predictedPos = spawnPosition + velocity * timePassed;
+        private float _flySpeed;
+        private Vector3 _flyDirection;
 
-            return new()
+        protected override void OnSpawned()
+        {
+            _flySpeed = startFlySpeed;
+            _flyDirection = transform.forward;
+
+            collision.onCollision.AddListener(OnCollision);
+            PredictSpawn(1, (previous, current) =>
             {
-                position = predictedPos,
-                rotation = spawnRotation,
-                velocity = velocity,
-            };
+                collision.CheckCollisionBetweenTwoPoints(previous.position, current.position);
+            });
+        }
+
+        protected override void OnDestroyed()
+        {
+            collision.onCollision.RemoveAllListeners();
+        }
+
+        void OnDestroy()
+        {
+            if (!NetworkServer.active) return;
+            onDestroy.Invoke(this);
+        }
+
+        protected override void OnUpdate()
+        {
+            visualToRotate.Rotate(Vector3.up, rb.linearVelocity.magnitude * visualRotationFactor * Time.deltaTime);
+            flyAudioSource.pitch = _flySpeed / startFlySpeed * flyAudioCenterPitch;
+            if (!NetworkServer.active) return;
+
+            rb.linearVelocity = _flyDirection * _flySpeed;
+            if (lifetime >= maxLifetime) DestroyProjectile();
+        }
+
+        private void OnCollision(Vector3 point, Vector3 normal, Collider other)
+        {
+            var directionToClosest = Vector3.zero;
+            var closestDistance = 2000f;
+            foreach (var (_, player) in MapLoader.loadedMap.players)
+            {
+                if (player.dead || player == author) continue;
+                var distance = Vector3.Distance(player.transform.position, transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    directionToClosest = (player.transform.position - transform.position).normalized;
+                }
+            }
+
+            _flyDirection = (Vector3.Reflect(_flyDirection, normal) / 2f + directionToClosest).normalized;
+            _flySpeed = Mathf.Max(_flySpeed / 3f, minFlySpeed);
+
+            transform.forward = _flyDirection;
+            RpcPlayCollisionAudio();
         }
 
         [ClientRpc]
@@ -43,56 +89,17 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
             collideAudioSource.Play();
         }
 
-        protected override void OnUpdate()
+        public override ProjectilePredictionData Predict(float timePassed)
         {
-            visualToRotate.Rotate(Vector3.up, rb.linearVelocity.magnitude * visualRotationFactor * Time.deltaTime);
-            flyAudioSource.pitch = rb.linearVelocity.magnitude / flySpeed * flyAudioCenterPitch;
-            if (!NetworkServer.active) return;
-            if (lifetime >= maxLifetime) DestroyProjectile();
-        }
+            var velocity = _flySpeed * _flyDirection;
+            var predictedPos = spawnPosition + velocity * timePassed;
 
-        private void OnDestroy()
-        {
-            if (!NetworkServer.active) return;
-            onDestroy.Invoke(this);
-        }
-
-        public void Receive(ProjectileCollisionBroadcast broadcast)
-        {
-            var bounds = broadcast.collision.Collider.bounds;
-            var offset = new Vector3
-            (
-                broadcast.normal.x * bounds.extents.x,
-                broadcast.normal.y * bounds.extents.y,
-                broadcast.normal.z * bounds.extents.z
-            );
-            transform.position = broadcast.point + offset;
-
-            var newVelocity = Vector3.zero;
-            var closestDistance = 2000f;
-            foreach (var (_, player) in MapLoader.loadedMap.players)
+            return new()
             {
-                if (player.dead || player == author) continue;
-                var distance = Vector3.Distance(player.transform.position, transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    newVelocity = 0.25f * flySpeed * (player.transform.position - transform.position).normalized;
-                }
-            }
-
-            rb.linearVelocity = newVelocity;
-            if (newVelocity == Vector3.zero)
-            {
-                var dot = Vector3.Dot(transform.forward, broadcast.normal);
-                if (dot > -0.5f && dot < 0.5f)
-                {
-                    transform.forward = (transform.forward - broadcast.normal) / 2f;
-                }
-            }
-            else rb.rotation = Quaternion.LookRotation(newVelocity);
-
-            RpcPlayCollisionAudio();
+                position = predictedPos,
+                rotation = spawnRotation,
+                velocity = velocity,
+            };
         }
     }
 }

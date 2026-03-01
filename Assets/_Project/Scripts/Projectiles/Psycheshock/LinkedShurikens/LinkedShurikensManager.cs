@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Game.Player;
 using Mirror;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Game.Projectiles.Psycheshock.LinkedShurikens
 {
@@ -29,17 +32,26 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
 
         private void Awake()
         {
+            _projectiles = new();
             _shurikenLinks = new();
+
             for (int i = 0; i < maxLinksCount; i++)
             {
                 var link = Instantiate(shurikenLinkPrefab.gameObject, transform).GetComponent<ShurikenLink>();
                 link.lineRenderer.positionCount = linkSegmentsCount + 2;
                 _shurikenLinks.Add(link);
+
                 link.gameObject.SetActive(false);
             }
+        }
 
-            if (!NetworkServer.active) return;
-            _projectiles = new();
+        public void SetupAuthorAndFamily(PlayerBase author, Guid family)
+        {
+            foreach (var link in _shurikenLinks)
+            {
+                link.damageSource.author = author;
+                link.damageSource.family = family;
+            }
         }
 
         private void Update()
