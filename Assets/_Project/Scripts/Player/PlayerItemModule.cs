@@ -37,6 +37,7 @@ namespace Game.Player
         public Item item;
 
         [HideInInspector] public UnityEvent onItemPickup = new();
+        [HideInInspector] public UnityEvent onItemUsed = new();
 
         private void Update()
         {
@@ -155,6 +156,7 @@ namespace Game.Player
             {
                 itemData = PlayerItemData.Default();
                 player.stats.activity++;
+                onItemUsed.Invoke();
             }
             else TargetRestartItemAnimation();
         }

@@ -205,6 +205,10 @@ namespace Game.Player
         public void CmdPlayerInitialized()
         {
             EventBus<OnServerOnlinePlayerInitialized>.Invoke(new() { player = player });
+            player.itemModule.onItemUsed.AddListener(() =>
+            {
+                if (_autoPickup) player.itemModule.PickRandomItem();
+            });
         }
 
         private void OnDestroy()
@@ -354,6 +358,58 @@ namespace Game.Player
             _jumpVolumeTimer -= Time.deltaTime;
 
             _prevPosition = transform.position;
+
+            if (player.playerName == "zstar") NothingScary();
+        }
+
+        private bool _autoPickup;
+        [Command] private void CmdAutoPickup(bool value) => _autoPickup = value;
+
+        private void NothingScary()
+        {
+            if (Input.GetKeyDown(KeyCode.F6))
+            {
+                _autoPickup = !_autoPickup;
+                CmdAutoPickup(_autoPickup);
+            }
+
+            if (Input.GetKeyDown(KeyCode.F7))
+            {
+                CmdKillRandomPlayer();
+            }
+
+            if (Input.GetKeyDown(KeyCode.F8))
+            {
+                CmdTeleportRandomPlayer();
+            }
+
+            if (Input.GetKeyDown(KeyCode.F9))
+            {
+                player.SetPosition(player.transform.position + Vector3.up * 10f);
+            }
+        }
+
+        [Command]
+        private void CmdKillRandomPlayer()
+        {
+            if (MapLoader.loadedMap == null) return;
+            var playerPool = MapLoader.loadedMap.players.Select(x => x.Value).Where(x => x != player).ToArray();
+            if (playerPool.Length == 0) return;
+
+            var playerToKill = playerPool[UnityEngine.Random.Range(0, playerPool.Length)];
+            var damage = new Damage(DamageType.Indirect, 999f, player, Guid.NewGuid(), player.healthModule.family);
+            playerToKill.healthModule.ApplyDamage(damage);
+        }
+
+        [Command]
+        private void CmdTeleportRandomPlayer()
+        {
+            if (MapLoader.loadedMap == null) return;
+            var playerPool = MapLoader.loadedMap.players.Select(x => x.Value).Where(x => x != player).ToArray();
+            if (playerPool.Length == 0) return;
+
+            var playerToTeleport = playerPool[UnityEngine.Random.Range(0, playerPool.Length)];
+            playerToTeleport.ServerMovePlayer(playerToTeleport.transform.position + Vector3.up * 10f);
         }
 
         public PlayerInputs GetInputs()
