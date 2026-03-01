@@ -11,6 +11,14 @@ namespace Game.Items.Psycheshock
     {
         public BOOMerangProjectle projectile;
         public Transform visual;
+        public MeshRenderer[] edgeRenderers;
+        public Material edgeMaterial;
+
+        [Space(9)]
+        [ColorUsage(true, true)] public Color cleanColorA;
+        [ColorUsage(true, true)] public Color cleanColorB;
+        [ColorUsage(true, true)] public Color buffedColorA;
+        [ColorUsage(true, true)] public Color buffedColorB;
 
         private ShakeGenerator _shakeGenerator;
         private int _parsedDamageMultiplier;
@@ -23,6 +31,19 @@ namespace Game.Items.Psycheshock
 
             _shakeGenerator = new();
             _shakeGenerator.Shake(0.0001f * Mathf.Pow(_parsedReturns, 3f), 7f, 0f);
+
+            var newEdgeMaterial = Instantiate(edgeMaterial);
+            var t = Mathf.Pow((_parsedDamageMultiplier - 1f) / (projectile.damageMultiplyCap - 1f), 0.2f);
+            var colorA = Color.Lerp(cleanColorA, buffedColorA, t);
+            var colorB = Color.Lerp(cleanColorB, buffedColorB, t);
+
+            newEdgeMaterial.SetColor("_ColorA", colorA);
+            newEdgeMaterial.SetColor("_ColorB", colorB);
+
+            foreach (var renderer in edgeRenderers)
+            {
+                renderer.material = newEdgeMaterial;
+            }
         }
 
         private void Update()

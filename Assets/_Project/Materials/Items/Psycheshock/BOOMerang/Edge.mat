@@ -136,7 +136,7 @@ Material:
     - _BaseColor: {r: 1, g: 0.53949636, b: 0, a: 1}
     - _Color: {r: 1, g: 0.5394963, b: 0, a: 1}
     - _ColorA: {r: 1, g: 0.8, b: 0, a: 1}
-    - _ColorB: {r: 1, g: 0.3, b: 0, a: 1}
+    - _ColorB: {r: 1, g: 0.29803923, b: 0, a: 1}
     - _EmissionColor: {r: 1024, g: 1024, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _Tiling: {r: 1, g: 1, b: 0, a: 0}

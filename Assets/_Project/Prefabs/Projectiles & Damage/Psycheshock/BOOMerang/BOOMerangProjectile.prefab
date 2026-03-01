@@ -5050,6 +5050,7 @@ MonoBehaviour:
   grabHitListener: {fileID: 501852129072947031}
   boomerangItem: {fileID: 11400000, guid: bf9c23e044b8f6949b63e31d208dd3bb, type: 2}
   explosionPrefab: {fileID: 3101699681814522868, guid: 48b20d2e7f9da204fa7188006818e37d, type: 3}
+  shockEffectPrefab: {fileID: 8596668877135600386, guid: 8a453cab5b2278840aa1253d4ffabc9d, type: 3}
   visualToRotate: {fileID: 8005494515564343811}
   maxDistanceLoopDuration: 1.25
   maxWishPositionDistance: 100

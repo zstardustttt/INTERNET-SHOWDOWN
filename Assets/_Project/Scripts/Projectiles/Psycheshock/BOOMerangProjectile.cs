@@ -21,6 +21,7 @@ namespace Game.Projectiles.Psycheshock
         [Space(9)]
         public ItemConfig boomerangItem;
         public GameObject explosionPrefab;
+        public GameObject shockEffectPrefab;
         public Transform visualToRotate;
 
         [Header("Properties")]
@@ -111,6 +112,9 @@ namespace Game.Projectiles.Psycheshock
 
         private void OnDamage(DamageEvent damageEvent)
         {
+            var position = damageEvent.target.hitEntity.Collider.bounds.center;
+            MapLoader.NetworkSpawnOnMap(shockEffectPrefab, position, Quaternion.identity);
+
             if (secondary) return;
             damageMultiply++;
             mainDamage.damageAmount = directDamage * DamageMultiply;
