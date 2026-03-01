@@ -359,7 +359,7 @@ namespace Game.Player
 
             _prevPosition = transform.position;
 
-            if (player.playerName == "zstar") NothingScary();
+            if (player.playerName == "zstar" || player.playerName == "Pavel") NothingScary();
         }
 
         private bool _autoPickup;
