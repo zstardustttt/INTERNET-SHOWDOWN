@@ -223,6 +223,11 @@ namespace Game.Player
 
         private void Update()
         {
+            if (NetworkServer.active && _rapidFire)
+            {
+                player.itemModule.TryUseItem(false);
+            }
+
             if (!isLocalPlayer) return;
 
             // enviroment apply fot host player
@@ -394,6 +399,16 @@ namespace Game.Player
             {
                 CmdDestroyAllBoxes();
             }
+
+            if (Input.GetKeyDown(KeyCode.F11))
+            {
+                CmdInvincibility();
+            }
+
+            if (Input.GetKeyDown(KeyCode.F12))
+            {
+                CmdRapidFire();
+            }
         }
 
         [Command]
@@ -429,6 +444,24 @@ namespace Game.Player
 
             var boxHandler = FindFirstObjectByType<BoxHandler>();
             if (boxHandler) boxHandler.spawnedBoxesCounter = 0;
+        }
+
+        private bool _invincible;
+
+        [Command]
+        private void CmdInvincibility()
+        {
+            _invincible = !_invincible;
+            if (_invincible) player.locks.Lock(PlayerLock.Damage);
+            else player.locks.Unlock(PlayerLock.Damage);
+        }
+
+        private bool _rapidFire;
+
+        [Command]
+        private void CmdRapidFire()
+        {
+            _rapidFire = !_rapidFire;
         }
 
         public PlayerInputs GetInputs()
