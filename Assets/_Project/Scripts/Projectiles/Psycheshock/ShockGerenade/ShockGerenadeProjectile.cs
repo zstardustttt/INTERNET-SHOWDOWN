@@ -29,6 +29,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         public AudioSource attachAudioSource;
         public AudioSource detachAudioSource;
         public AudioSource explosionTriggerAudioSource;
+        public ParticleSystem explosionTriggerParticle;
 
         [Header("Properties")]
         public float speed;
@@ -274,13 +275,14 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
             _explosionTriggerVelocity = rb.linearVelocity;
             _explosionRequestAuthor = explosionAuthor;
-            RpcPlayExplosionTriggerAudio();
+            RpcPlayExplosionTrigger();
         }
 
         [ClientRpc]
-        private void RpcPlayExplosionTriggerAudio()
+        private void RpcPlayExplosionTrigger()
         {
             explosionTriggerAudioSource.Play();
+            explosionTriggerParticle.Play();
         }
 
         public override ProjectilePredictionData Predict(float timePassed)
