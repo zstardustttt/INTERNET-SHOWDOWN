@@ -82,6 +82,7 @@ namespace Game.Player
         private bool _prevWalled;
         private RaycastHit _wallHitInfo;
         private bool _jumpingFromGround;
+        private bool _jumpingFromJumpPad;
 
         // other
         public PlayerInputs inputs;
@@ -408,8 +409,9 @@ namespace Game.Player
                 _jumpTimer = 0f;
                 _currentJumpHeight = 0f;
 
-                if (_bufferTimer <= config.bufferTime) BeginJump();
+                if (_bufferTimer <= config.bufferTime && !_jumpingFromJumpPad) BeginJump();
             }
+            else if (_jumpingFromJumpPad) _jumpingFromJumpPad = false;
 
             var currentY = transform.position.y - _currentJumpHeight;
             if (!inputs.wishJumping)
@@ -490,11 +492,16 @@ namespace Game.Player
             {
                 _jumping = false;
                 _endingJump = false;
+                _additionalVelocity.y = Mathf.Min(0f, _additionalVelocity.y);
+                _gravityVelocity = Mathf.Min(0f, _gravityVelocity);
             }
 
             if (hitCollider.TryGetComponent(out JumpPad jumpPad))
             {
                 _additionalVelocity.y = jumpPad.jumpForce;
+                _gravityVelocity = 0f;
+                _jumpingFromJumpPad = true;
+                _coyoteTimer = 0f;
             }
         }
 

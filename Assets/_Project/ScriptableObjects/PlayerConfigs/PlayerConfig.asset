@@ -209,8 +209,3 @@ MonoBehaviour:
   gravityClamp: -40
   groundAdditionalVelocityDrag: 7
   airAdditionalVelocityDrag: 1.8
-  maxHealth: 100
-  damageInvincibilityDuration: 0.35
-  deathInvincibilityDuration: 2
-  respawnDuration: 5
-  respawnAscendSpeed: 5
