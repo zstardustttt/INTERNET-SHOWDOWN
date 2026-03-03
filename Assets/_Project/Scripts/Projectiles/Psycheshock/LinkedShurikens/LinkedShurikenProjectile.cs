@@ -1,3 +1,4 @@
+using Game.Core.Damages;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
 using Mirror;
@@ -10,15 +11,20 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
     {
         [Header("Objects")]
         public ProjectileCollision collision;
+        public DamageSource mainDamage;
         public Transform visualToRotate;
         public AudioSource flyAudioSource;
         public AudioSource collideAudioSource;
+        public AudioSource collideShockAudioSource;
+        public ParticleSystem collideParticleEffect;
+        public GameObject shockEffectPrefab;
 
         [Header("Properties")]
         public float startFlySpeed;
         public float minFlySpeed;
         public float maxLifetime;
         public float flyAudioCenterPitch;
+        public float flyAudioInitialVolume;
         public float visualRotationFactor;
         public UnityEvent<LinkedShurikenProjectile> onDestroy = new();
 
@@ -33,6 +39,12 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
             _flyDirection = transform.forward;
 
             collision.onCollision.AddListener(OnCollision);
+            mainDamage.onDamage.AddListener((damageEvent) =>
+            {
+                var position = damageEvent.target.hitEntity.Collider.bounds.center;
+                MapLoader.NetworkSpawnOnMap(shockEffectPrefab, position, Quaternion.identity);
+            });
+
             PredictSpawn(1, (previous, current) =>
             {
                 collision.CheckCollisionBetweenTwoPoints(previous.position, current.position);
@@ -42,6 +54,7 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
         protected override void OnDestroyed()
         {
             collision.onCollision.RemoveAllListeners();
+            mainDamage.onDamage.RemoveAllListeners();
         }
 
         void OnDestroy()
@@ -53,7 +66,10 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
         protected override void OnUpdate()
         {
             visualToRotate.Rotate(Vector3.up, rb.linearVelocity.magnitude * visualRotationFactor * Time.deltaTime);
-            flyAudioSource.pitch = _flySpeed / startFlySpeed * flyAudioCenterPitch;
+
+            flyAudioSource.pitch = Mathf.Max(flyAudioCenterPitch / 2f, _flySpeed / startFlySpeed * flyAudioCenterPitch);
+            flyAudioSource.volume = _flySpeed / startFlySpeed * flyAudioInitialVolume;
+
             if (!NetworkServer.active) return;
 
             rb.linearVelocity = _flyDirection * _flySpeed;
@@ -76,17 +92,20 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
             }
 
             _flyDirection = (Vector3.Reflect(_flyDirection, normal) / 2f + directionToClosest).normalized;
-            _flySpeed = Mathf.Max(_flySpeed / 3f, minFlySpeed);
+            _flySpeed = Mathf.Max(_flySpeed / Random.Range(3.5f, 5f), minFlySpeed);
 
             transform.forward = _flyDirection;
-            RpcPlayCollisionAudio();
+            transform.position = point + normal * 0.1f;
+            RpcOnCollide();
         }
 
         [ClientRpc]
-        public void RpcPlayCollisionAudio()
+        public void RpcOnCollide()
         {
             collideAudioSource.pitch = collideAudioPitch;
             collideAudioSource.Play();
+            collideShockAudioSource.Play();
+            collideParticleEffect.Play();
         }
 
         public override ProjectilePredictionData Predict(float timePassed)

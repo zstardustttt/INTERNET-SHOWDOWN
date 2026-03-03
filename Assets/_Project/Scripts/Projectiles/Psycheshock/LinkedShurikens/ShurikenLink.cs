@@ -10,5 +10,11 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
         public AudioSource audioSource;
         public CapsuleHitEntity hitEntity;
         public DamageSource damageSource;
+
+        [HideInInspector] public LinkedShurikenProjectile startProj;
+        [HideInInspector] public LinkedShurikenProjectile endProj;
+
+        [HideInInspector] public Vector3 startPos;
+        [HideInInspector] public Vector3 endPos;
     }
 }

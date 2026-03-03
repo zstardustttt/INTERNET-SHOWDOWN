@@ -9843,7 +9843,7 @@ GameObject:
   - component: {fileID: 3063369220174135175}
   - component: {fileID: 209917745689026509}
   m_Layer: 0
-  m_Name: HuananV2ShockEffect
+  m_Name: SharedShockEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

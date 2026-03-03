@@ -28,6 +28,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         public AudioSource tickAudioSource;
         public AudioSource attachAudioSource;
         public AudioSource detachAudioSource;
+        public AudioSource explosionTriggerAudioSource;
 
         [Header("Properties")]
         public float speed;
@@ -54,6 +55,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         private ShakeGenerator _shakeGenerator;
         private PlayerBase _explosionRequestAuthor;
         private float _explosionTimer;
+        private Vector3 _explosionTriggerVelocity;
 
         [HideInInspector] public float flySpeed;
         [HideInInspector] public float explodeAfter;
@@ -201,6 +203,8 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             if (_explosionRequestAuthor)
             {
                 _explosionTimer += Time.deltaTime;
+                rb.linearVelocity = Vector3.Lerp(_explosionTriggerVelocity, Vector3.zero, _explosionTimer / explosionDelay);
+
                 if (_explosionTimer >= explosionDelay)
                 {
                     Vector3 pos;
@@ -227,39 +231,37 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
                 return;
             }
-            else
+
+            if (lifetime > explodeAfter)
             {
-                if (lifetime > explodeAfter)
+                Explode(author);
+                return;
+            }
+
+            if (_attached)
+            {
+                rb.linearVelocity = Vector3.zero;
+
+                if (_attached.transform.position != Vector3.zero)
                 {
-                    Explode(author);
-                    return;
+                    var capsule = _attached.motor.Capsule;
+                    var yOffset = capsule.center.y * 1.1f * Vector3.up;
+                    rb.position = _attached.transform.position + yOffset + _attached.transform.forward * (capsule.radius + collisionRadius);
+
+                    var attachedDelta = _attached.transform.position - _previousAttachedPosition;
+                    _collectedAttachedDelta += attachedDelta.magnitude;
+
+                    _previousAttachedPosition = _attached.transform.position;
                 }
 
-                if (_attached)
+                if (_collectedAttachedDelta >= detachTotalDelta) Detach();
+                else
                 {
-                    rb.linearVelocity = Vector3.zero;
-
-                    if (_attached.transform.position != Vector3.zero)
-                    {
-                        var capsule = _attached.motor.Capsule;
-                        var yOffset = capsule.center.y * 1.1f * Vector3.up;
-                        rb.position = _attached.transform.position + yOffset + _attached.transform.forward * (capsule.radius + collisionRadius);
-
-                        var attachedDelta = _attached.transform.position - _previousAttachedPosition;
-                        _collectedAttachedDelta += attachedDelta.magnitude;
-
-                        _previousAttachedPosition = _attached.transform.position;
-                    }
-
-                    if (_collectedAttachedDelta >= detachTotalDelta) Detach();
-                    else
-                    {
-                        var damage = holdDamage * (explodeAfterPrimary / explodeAfter);
-                        _attached.healthModule.ApplyDamage(new(DamageType.Indirect, damage, author, _holdDamageSourceGuid, author.healthModule.family));
-                    }
-
-                    return;
+                    var damage = holdDamage * (explodeAfterPrimary / explodeAfter);
+                    _attached.healthModule.ApplyDamage(new(DamageType.Indirect, damage, author, _holdDamageSourceGuid, author.healthModule.family));
                 }
+
+                return;
             }
 
             if (lifetime <= activateGravityAfter) return;
@@ -268,7 +270,17 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
         private void Explode(PlayerBase explosionAuthor)
         {
+            if (_explosionRequestAuthor) return;
+
+            _explosionTriggerVelocity = rb.linearVelocity;
             _explosionRequestAuthor = explosionAuthor;
+            RpcPlayExplosionTriggerAudio();
+        }
+
+        [ClientRpc]
+        private void RpcPlayExplosionTriggerAudio()
+        {
+            explosionTriggerAudioSource.Play();
         }
 
         public override ProjectilePredictionData Predict(float timePassed)

@@ -186,6 +186,8 @@ MonoBehaviour:
   audioSource: {fileID: 6721214265687877222}
   hitEntity: {fileID: 3860378417001154337}
   damageSource: {fileID: 3646660236376352543}
+  startProj: {fileID: 0}
+  endProj: {fileID: 0}
 --- !u!120 &8668921467422308858
 LineRenderer:
   serializedVersion: 3
@@ -358,9 +360,9 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 56fb5ef1001b06746b3cfc3f16d05b48, type: 3}
+  m_Resource: {fileID: 8300000, guid: ae023543687bb7e4988a1e2c7a746953, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.4
+  m_Volume: 0.3
   m_Pitch: 1
   Loop: 1
   Mute: 0

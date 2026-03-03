@@ -14,8 +14,8 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
         public ShurikenLink shurikenLinkPrefab;
 
         [Header("Properties")]
+        public float pointsPerUnit;
         public int maxLinksCount;
-        public int linkSegmentsCount;
 
         private List<LinkedShurikenProjectile> _projectiles;
         private List<ShurikenLink> _shurikenLinks;
@@ -38,7 +38,7 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
             for (int i = 0; i < maxLinksCount; i++)
             {
                 var link = Instantiate(shurikenLinkPrefab.gameObject, transform).GetComponent<ShurikenLink>();
-                link.lineRenderer.positionCount = linkSegmentsCount + 2;
+                link.lineRenderer.positionCount = 2;
                 _shurikenLinks.Add(link);
 
                 link.gameObject.SetActive(false);
@@ -51,6 +51,16 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
             {
                 link.damageSource.author = author;
                 link.damageSource.family = family;
+                link.damageSource.beforeHitScan.AddListener(() =>
+                {
+                    if (!link.startProj || !link.endProj) return;
+                    var start = link.startPos;
+                    var end = link.endPos;
+
+                    link.hitEntity.transform.position = (start + end) / 2f;
+                    link.hitEntity.transform.up = (start - end).normalized;
+                    link.hitEntity.capsuleCollider.height = (start - end).magnitude;
+                });
             }
         }
 
@@ -63,20 +73,25 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
                 if (!link.gameObject.activeInHierarchy) continue;
 
                 // Electricity effect
-                var start = link.lineRenderer.GetPosition(0);
-                var end = link.lineRenderer.GetPosition(linkSegmentsCount + 1);
-                for (int i = 1; i <= linkSegmentsCount; i++)
+                var projectileDistance = Vector3.Distance(link.startPos, link.endPos);
+                var pointsCount = Mathf.Max(Mathf.CeilToInt(projectileDistance * pointsPerUnit), 2);
+
+                link.lineRenderer.positionCount = pointsCount;
+                link.lineRenderer.SetPosition(0, link.startPos);
+                link.lineRenderer.SetPosition(pointsCount - 1, link.endPos);
+
+                for (int i = 1; i < pointsCount - 1; i++)
                 {
-                    Vector3 pointOnLine = Vector3.Lerp(start, end, (float)i / (linkSegmentsCount + 1));
-                    Vector3 offset = Random.insideUnitSphere * 0.5f;
+                    var pointOnLine = Vector3.Lerp(link.startPos, link.endPos, (float)i / pointsCount);
+                    var offset = Random.insideUnitSphere * 0.5f;
                     link.lineRenderer.SetPosition(i, pointOnLine + offset);
                 }
 
                 // Move audio source
-                var middlePoint = (end + start) / 2f;
-                var lineDirection = (end - start).normalized;
+                var middlePoint = (link.endPos + link.startPos) / 2f;
+                var lineDirection = (link.endPos - link.startPos).normalized;
                 var targetDirection = localPlayerTransform.position - middlePoint;
-                var projection = Vector3.ClampMagnitude(Vector3.Project(targetDirection, lineDirection), (end - start).magnitude / 2f);
+                var projection = Vector3.ClampMagnitude(Vector3.Project(targetDirection, lineDirection), (link.endPos - link.startPos).magnitude / 2f);
                 link.audioSource.transform.position = middlePoint + projection;
             }
 
@@ -96,9 +111,10 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
                 ends.Add(end);
 
                 var link = _shurikenLinks[i];
-                link.hitEntity.transform.position = (start + end) / 2f;
-                link.hitEntity.transform.up = (start - end).normalized;
-                link.hitEntity.capsuleCollider.height = (start - end).magnitude;
+                link.startProj = previousProjectile;
+                link.endProj = projectile;
+                link.startPos = start;
+                link.endPos = end;
 
                 previousProjectile = projectile;
             }
@@ -119,8 +135,8 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
             for (int i = 0; i < starts.Length; i++)
             {
                 var link = _shurikenLinks[i];
-                link.lineRenderer.SetPosition(0, starts[i]);
-                link.lineRenderer.SetPosition(linkSegmentsCount + 1, ends[i]);
+                link.startPos = starts[i];
+                link.endPos = ends[i];
             }
         }
 

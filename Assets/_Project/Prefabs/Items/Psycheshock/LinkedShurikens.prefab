@@ -80,7 +80,7 @@ MonoBehaviour:
   offset: {x: -0.05, y: 0, z: 0}
   projectilePrefab: {fileID: 467756603654952479, guid: 943cb9da5caf905429507add91ee3256, type: 3}
   managerPrefab: {fileID: 6429577698095104541, guid: 1d80bce56ecef1d41b2f615fa66ab1f6, type: 3}
-  initialPitch: 0.85
+  initialPitch: 1
   pitchIncrease: 0.05
   maxUses: 5
 --- !u!1001 &3281367531667040023

@@ -50,8 +50,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   shurikenLinkPrefab: {fileID: 1065079299924172763, guid: de452677ff4b8a846a7186b90ebb24ad, type: 3}
+  pointsPerUnit: 1.5
   maxLinksCount: 5
-  linkSegmentsCount: 20
   activeLinksCount: 0
 --- !u!114 &5550771384461221273
 MonoBehaviour:

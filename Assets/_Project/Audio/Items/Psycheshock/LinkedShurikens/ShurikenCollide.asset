@@ -6,8 +6,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ShurikenCollide2_{-7592602325524468220}
-  m_AudioClip: {fileID: 8300000, guid: 43172a7e2422c9d49a49803893084de5, type: 3}
+  m_Name: ShurikenCollision2_{-7592602325524468220}
+  m_AudioClip: {fileID: 8300000, guid: 62a5c939c30fcbf4abd299b41a9ade06, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1233149941 &-5110343769421777000
@@ -16,8 +16,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ShurikenCollide3_{-5110343769421777000}
-  m_AudioClip: {fileID: 8300000, guid: d8366dfe64689694b8786a0e576214c8, type: 3}
+  m_Name: ShurikenCollision3_{-5110343769421777000}
+  m_AudioClip: {fileID: 8300000, guid: 089459e9ba6eb984e8426342d39ffba0, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1233149941 &-3450633915040790596
@@ -26,8 +26,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ShurikenCollide1_{-3450633915040790596}
-  m_AudioClip: {fileID: 8300000, guid: 22d7977766beeb0498d14e530fab1f66, type: 3}
+  m_Name: ShurikenCollision1_{-3450633915040790596}
+  m_AudioClip: {fileID: 8300000, guid: ed426f72b0f3b1240a4d815597880cb9, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1233149941 &4188017699324725861
@@ -36,18 +36,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ShurikenCollide4_{4188017699324725861}
-  m_AudioClip: {fileID: 8300000, guid: 34ab0661d1c6e7c4a9bf2a3b0c26c5a1, type: 3}
-  m_Volume: 0
-  m_Enabled: 1
---- !u!1233149941 &6412072832902020539
-AudioContainerElement:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: ShurikenCollide5_{6412072832902020539}
-  m_AudioClip: {fileID: 8300000, guid: 20be60151a9ac8649a9b0bfa04f3768f, type: 3}
+  m_Name: ShurikenCollision4_{4188017699324725861}
+  m_AudioClip: {fileID: 8300000, guid: dc22f3923b09efd42a7812993238bc88, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1307931743 &6418180475301049370
@@ -70,8 +60,7 @@ AudioRandomContainer:
   - {fileID: -7592602325524468220}
   - {fileID: -5110343769421777000}
   - {fileID: 4188017699324725861}
-  - {fileID: 6412072832902020539}
-  m_AvoidRepeatingLast: 1
+  m_AvoidRepeatingLast: 0
   m_PlaybackMode: 1
   m_TriggerMode: 0
   m_AutomaticTriggerMode: 1
