@@ -1,4 +1,3 @@
-using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Damages.Events;
 using Game.Core.Maps;
@@ -8,13 +7,16 @@ using UnityEngine;
 
 namespace Game.Projectiles.Crystalline
 {
-    public class AcophystProjectile : PredictableProjectile, IBroadcastReceiver<ProjectileCollisionBroadcast>
+    public class AcophystProjectile : PredictableProjectile
     {
         [Header("Objects")]
         public AcophystProjectile projectileToSpawnOnHit;
+        public ProjectileCollision collision;
         public DamageSource mainDamage;
 
         [Header("Properties")]
+        public float resolveRadius;
+        public float enableDamageAfter;
         public float flySpeed;
         public float beginMaxDot;
         public float continueMaxDot;
@@ -31,30 +33,68 @@ namespace Game.Projectiles.Crystalline
         private float _gravityTimer;
         private Vector3 _wishVelocity;
 
-        private void Start()
+        protected override void OnSpawned()
         {
             _direction = transform.forward;
-            _wishVelocity = rb.linearVelocity;
 
+            collision.onCollision.AddListener(OnCollision);
             mainDamage.onDamage.AddListener(OnDamage);
-            mainDamage.author = author;
+
+            if (enableDamageAfter != 0f) mainDamage.active = false;
+
+            PredictSpawn(1, (previous, current) =>
+            {
+                collision.CheckCollisionBetweenTwoPoints(previous.position, current.position);
+            });
+            _wishVelocity = rb.linearVelocity;
         }
 
-        public override ProjectilePredictionData Predict(float timePassed)
+        protected override void OnDestroyed()
         {
-            var timePassedSinceStartedAccelerating = Mathf.Max(timePassed - activateGravityAfter, 0f);
+            collision.onCollision.RemoveAllListeners();
+            mainDamage.onDamage.RemoveAllListeners();
+        }
 
-            var flyingVelocity = flySpeed * transform.forward;
-            var gravityVelocity = gravityAcceleration * timePassedSinceStartedAccelerating * Vector3.down;
-            var velocity = flyingVelocity + gravityVelocity;
-            var predictedPos = spawnPosition + flyingVelocity * timePassed + 0.5f * timePassedSinceStartedAccelerating * gravityVelocity;
+        protected override void OnUpdate()
+        {
+            if (!NetworkServer.active) return;
 
-            return new()
+            _wishVelocity = _direction * flySpeed - _gravityTimer * gravityAcceleration * Vector3.up;
+            rb.linearVelocity = _wishVelocity;
+
+            if (lifetime > activateGravityAfter) _gravityTimer += Time.deltaTime;
+            if (lifetime > maxLifetime)
             {
-                position = predictedPos,
-                velocity = velocity,
-                rotation = spawnRotation
-            };
+                DestroyProjectile();
+                return;
+            }
+
+            if (enableDamageAfter != 0f && lifetime > enableDamageAfter && !mainDamage.active) mainDamage.active = true;
+        }
+
+        private void OnCollision(Vector3 point, Vector3 normal, Collider other)
+        {
+            if (lifetime > desroyOnBounceAfter) DestroyProjectile();
+            else
+            {
+                Bounce(point, normal);
+                _previousNormal = normal;
+                _previousPoint = point;
+            }
+        }
+
+        private void OnDamage(DamageEvent _)
+        {
+            if (!projectileToSpawnOnHit) return;
+
+            var axisEuler = transform.up * 90f;
+            var rotation1 = Quaternion.Euler(axisEuler);
+            var rotation2 = Quaternion.Euler(-axisEuler);
+
+            Spawn(projectileToSpawnOnHit, author, transform.position, rotation1, NetworkTime.time);
+            Spawn(projectileToSpawnOnHit, author, transform.position, rotation2, NetworkTime.time);
+
+            DestroyProjectile();
         }
 
         private void Bounce(Vector3 point, Vector3 normal)
@@ -82,42 +122,25 @@ namespace Game.Projectiles.Crystalline
             _direction = (Vector3.Reflect(movementDirection, normal) + directionToClosest * autoAimOnClosestFactor).normalized;
             _wishVelocity = _direction * flySpeed;
             transform.forward = _direction;
+            transform.position = point + normal * resolveRadius;
             _gravityTimer = 0f;
         }
 
-        private void OnDamage(DamageEvent _)
+        public override ProjectilePredictionData Predict(float timePassed)
         {
-            if (!projectileToSpawnOnHit) return;
+            var timePassedSinceStartedAccelerating = Mathf.Max(timePassed - activateGravityAfter, 0f);
 
-            var axisEuler = transform.up * 90f;
-            var rotation1 = Quaternion.Euler(axisEuler);
-            var rotation2 = Quaternion.Euler(-axisEuler);
+            var flyingVelocity = flySpeed * transform.forward;
+            var gravityVelocity = gravityAcceleration * timePassedSinceStartedAccelerating * Vector3.down;
+            var velocity = flyingVelocity + gravityVelocity;
+            var predictedPos = spawnPosition + flyingVelocity * timePassed + 0.5f * timePassedSinceStartedAccelerating * gravityVelocity;
 
-            Spawn(projectileToSpawnOnHit, author, transform.position, rotation1, NetworkTime.time);
-            Spawn(projectileToSpawnOnHit, author, transform.position, rotation2, NetworkTime.time);
-
-            DestroyProjectile();
-        }
-
-        protected override void OnUpdate()
-        {
-            if (!NetworkServer.active) return;
-
-            _wishVelocity = _direction * flySpeed - _gravityTimer * gravityAcceleration * Vector3.up;
-            rb.linearVelocity = _wishVelocity;
-            if (lifetime > activateGravityAfter) _gravityTimer += Time.deltaTime;
-            if (lifetime > maxLifetime) DestroyProjectile();
-        }
-
-        public void Receive(ProjectileCollisionBroadcast broadcast)
-        {
-            if (lifetime > desroyOnBounceAfter) DestroyProjectile();
-            else
+            return new()
             {
-                Bounce(broadcast.point, broadcast.normal);
-                _previousNormal = broadcast.normal;
-                _previousPoint = broadcast.point;
-            }
+                position = predictedPos,
+                velocity = velocity,
+                rotation = spawnRotation
+            };
         }
     }
 }

@@ -91,21 +91,27 @@ MonoBehaviour:
   rb: {fileID: 1289744956753037696}
   netTransform: {fileID: 1943222080262355107}
   netRb: {fileID: 1458376385741237078}
-  collision: {fileID: 2762855302227303365}
-  damageDealers:
-  - {fileID: 113712607117291513}
+  author: {fileID: 0}
+  lifetime: 0
+  spawnPosition: {x: 0, y: 0, z: 0}
+  spawnRotation: {x: 0, y: 0, z: 0, w: 0}
+  spawnTime: 0
   predictionDebugIterations: 20
   predictionDebugTimePassed: 3
+  projectileToSpawnOnHit: {fileID: 2592644571071647292, guid: 7d63421fd271fc04fabc8c5ee766e551, type: 3}
+  collision: {fileID: 2762855302227303365}
+  mainDamage: {fileID: 3731423238218036663}
+  resolveRadius: 1.25
+  enableDamageAfter: 0
   flySpeed: 100
   beginMaxDot: -0.2
   continueMaxDot: 0.2
   beginMaxDotDuration: 1
-  desroyOnBounceAfter: 5
+  desroyOnBounceAfter: 0
   maxLifetime: 10
   gravityAcceleration: 50
   activateGravityAfter: 0.2
   autoAimOnClosestFactor: 0.2
-  projectileToSpawnOnHit: {fileID: 2592644571071647292, guid: 7d63421fd271fc04fabc8c5ee766e551, type: 3}
 --- !u!54 &1289744956753037696
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -241,7 +247,7 @@ MonoBehaviour:
   collisionLayerMask:
     serializedVersion: 2
     m_Bits: 2048
-  collisionMethod: 1
+  collisionCase: 2
   onCollision:
     m_PersistentCalls:
       m_Calls: []
@@ -363,9 +369,10 @@ GameObject:
   m_Component:
   - component: {fileID: 742565480169299372}
   - component: {fileID: 8255508435612688206}
-  - component: {fileID: 113712607117291513}
+  - component: {fileID: 7894231152723272588}
+  - component: {fileID: 3731423238218036663}
   m_Layer: 9
-  m_Name: Damage
+  m_Name: HitEntity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -407,7 +414,32 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3.5, y: 3.5, z: 3.5}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &113712607117291513
+--- !u!114 &7894231152723272588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9048372009265710625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 111bf47d517140946af6504a5ba6f8dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Hits.BoxHitEntity
+  active: 1
+  sources:
+  - {fileID: 3731423238218036663}
+  targets: []
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  hitLayerMask: 0
+  observedPosition: {x: 0, y: 0, z: 0}
+  previousObservedPosition: {x: 0, y: 0, z: 0}
+  observedDelta: {x: 0, y: 0, z: 0}
+  skipObservationUpdate: 0
+  boxCollider: {fileID: 8255508435612688206}
+--- !u!114 &3731423238218036663
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -418,18 +450,27 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70b6ac8510fb386459347986532adcad, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Damage.BasicDamage
-  previousObservedPosition: {x: 0, y: 0, z: 0}
-  observedDelta: {x: 0, y: 0, z: 0}
-  hitScanCount: 0
-  owner: {fileID: 0}
-  coll: {fileID: 8255508435612688206}
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Damages.BasicDamageSource
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 7894231152723272588}
   active: 1
-  damageType: 1
-  singleHitScan: 0
-  canDamageOwner: 0
-  knockbackForce: 0
+  layer: {fileID: 11400000, guid: 06165ca6f2cb1584fb040de7c828041d, type: 2}
   onHit:
     m_PersistentCalls:
       m_Calls: []
-  baseDamage: 20
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+  canDamageFamily: 0
+  onWishDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  author: {fileID: 0}
+  damageType: 0
+  damageAmount: 30
