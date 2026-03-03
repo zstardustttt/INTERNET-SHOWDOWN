@@ -9,7 +9,6 @@ using UnityEngine;
 
 namespace Game.Player.Health
 {
-    // TODO: ServerMovePlayer resets observed position?
     public class PlayerHealthModule : DamageTarget
     {
         [Header("Objects")]
@@ -49,10 +48,13 @@ namespace Game.Player.Health
 
             damageHistory = new();
             family = Guid.NewGuid();
+
+            ResetHealth();
         }
 
         public override bool ApplyDamage(Damage damage)
         {
+            if (player.locks.Locked(PlayerLock.Health)) return false;
             if (invincibilityTimers.ContainsKey(damage.source)) return false;
 
             var sharingFamily = family != Guid.Empty && damage.family != Guid.Empty && family == damage.family;
@@ -74,6 +76,7 @@ namespace Game.Player.Health
         [Server]
         public void Heal(float value)
         {
+            if (player.locks.Locked(PlayerLock.Health)) return;
             var targetHealth = Mathf.Clamp(health + value, 0f, config.maxHealth);
             var difference = targetHealth - health;
 
@@ -103,7 +106,7 @@ namespace Game.Player.Health
 
         public override void BeforeHitScan()
         {
-            if (player.dead) return;
+            if (player.deathModule.Dead) return;
 
             while (_invincibilityRequests.Count > 0)
             {

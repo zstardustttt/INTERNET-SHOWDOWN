@@ -4,6 +4,7 @@ using Game.Core.Hits;
 using Game.Core.Maps;
 using Game.Events.Player;
 using Game.Maps;
+using Game.Player.Death;
 using Game.Player.Health;
 using KinematicCharacterController;
 using Mirror;
@@ -24,6 +25,7 @@ namespace Game.Player
         public HitEntity hitEntity;
         public PlayerHealthModule healthModule;
         public PlayerItemModule itemModule;
+        public PlayerDeathModule deathModule;
         public PlayerLocks locks;
         public PlayerConfig config;
         public IPlayerController controller;
@@ -36,7 +38,6 @@ namespace Game.Player
         [Space(9)]
         public GameObject modelContainer;
         public GameObject mainModel;
-        public GameObject ghostModel;
 
         // movement
         private float _targetSpeed;
@@ -94,12 +95,6 @@ namespace Game.Player
         [HideInInspector] public UnityEvent onDash = new();
         [HideInInspector] public UnityEvent<bool> onEndDash = new();
         [HideInInspector] public UnityEvent<Collider> onCollide = new();
-        [HideInInspector] public UnityEvent onResetPlayer = new();
-        [HideInInspector] public UnityEvent onDeath = new();
-        [HideInInspector] public UnityEvent onRespawn = new();
-
-        [SyncVar(hook = nameof(OnDeathOrRespawn))] public bool dead;
-        public float respawnTimer;
 
         private bool _guidReceived;
         [SyncVar] public string playerGuid;
@@ -107,9 +102,6 @@ namespace Game.Player
 
         public PlayerStats stats;
         private PlayerStats _previousStats;
-
-        [HideInInspector] public Vector3 boxSpawnerPreviousObservedPosition;
-        [HideInInspector] public Vector3 boxSpawnerObservedDelta;
 
         [HideInInspector] public Vector3 localTransientVelocity;
         private Vector3 _prevTransientPosition;
@@ -148,26 +140,14 @@ namespace Game.Player
         [Server]
         public void ServerMovePlayer(Vector3 position)
         {
-            boxSpawnerPreviousObservedPosition = position;
-            boxSpawnerObservedDelta = Vector3.zero;
-
             TargetMovePlayer(position);
+            hitEntity.MoveEntityObservation(position);
         }
 
         [TargetRpc]
         private void TargetMovePlayer(Vector3 position)
         {
             SetPosition(position);
-        }
-
-        // TODO: split this function
-        [Server]
-        public void ResetPlayer()
-        {
-            healthModule.ResetHealth();
-            itemModule.itemData = PlayerItemData.Default();
-            dead = false;
-            onResetPlayer.Invoke();
         }
 
         [Server]
@@ -181,37 +161,12 @@ namespace Game.Player
             locks.onLockStateChange.AddListener((plock, locked) =>
             {
                 if (plock == PlayerLock.Hit) hitEntity.active = !locked;
-                else if (plock == PlayerLock.Damage) healthModule.active = !locked;
+                else if (plock == PlayerLock.Health) healthModule.active = !locked;
             });
-
-            locks.Lock(PlayerLock.Hit);
-            ResetPlayer();
-        }
-
-        private void OnDeathOrRespawn(bool old, bool _new)
-        {
-            if (_new) onDeath.Invoke();
-            else onRespawn.Invoke();
-
-            mainModel.SetActive(!_new);
-            ghostModel.SetActive(_new);
-
-            if (HandlingThisPlayer) _additionalVelocity = Vector3.zero;
         }
 
         private void Update()
         {
-            // Ascend if dead
-            // TODO: move to DeathWatcher?
-            if (HandlingThisPlayer && dead)
-            {
-                var delta = config.respawnAscendSpeed * Time.deltaTime;
-                var distance = motor.Capsule.height / 2f + delta;
-                var isCeiled = Physics.Raycast(motor.Capsule.bounds.center, Vector3.up, distance, LayerMask.GetMask("Enviroment"));
-
-                if (!isCeiled) transform.position += delta * Vector3.up;
-            }
-
             if (!NetworkServer.active) return;
             // Teleport back if clipped out of bounds
             if (MapLoader.IsPlayerOnMap(this) && transform.position.y < MapLoader.loadedMap.info.boundsMin.y)

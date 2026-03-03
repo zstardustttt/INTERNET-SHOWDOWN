@@ -70,7 +70,7 @@ namespace Game.Projectiles.Crystalline
             var closestDistance = 2000f;
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
-                if (player.dead || player == author) continue;
+                if (player.deathModule.Dead || player == author) continue;
                 var distance = Vector3.Distance(player.transform.position, transform.position);
                 if (distance < closestDistance)
                 {

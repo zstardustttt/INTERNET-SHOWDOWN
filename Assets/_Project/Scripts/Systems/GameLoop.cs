@@ -51,17 +51,14 @@ namespace Game.Systems
         public GamePhase phase;
         public int mapIndex;
         public int soundtrackIndex;
-        public double soundtrackBeginTime;
+        public float soundtrackOffset;
 
-        // why tf are getters can be made readonly
-        public readonly float SecondsSinceSoundtrackStarted => (float)(NetworkTime.time - soundtrackBeginTime);
-
-        public GameState(GamePhase phase, int mapIndex, int soundtrackIndex, double soundtrackBeginTime)
+        public GameState(GamePhase phase, int mapIndex, int soundtrackIndex, float soundtrackOffset)
         {
             this.phase = phase;
             this.mapIndex = mapIndex;
             this.soundtrackIndex = soundtrackIndex;
-            this.soundtrackBeginTime = soundtrackBeginTime;
+            this.soundtrackOffset = soundtrackOffset;
         }
 
         public readonly override string ToString()
@@ -88,7 +85,7 @@ namespace Game.Systems
         private void Start()
         {
             if (!isServer) return;
-            state = new(new(GamePhaseType.Break, breakPhaseInfo), -1, -1, 0);
+            state = new(new(GamePhaseType.Break, breakPhaseInfo), -1, -1, 0f);
         }
 
         private void Update()
@@ -141,29 +138,28 @@ namespace Game.Systems
                 _lastSoundtrackIndexForMap.Add(mapIdx, soundtrackIdx);
             }
 
-            state = new(new(GamePhaseType.Preparation, preparationPhaseInfo), mapIdx, soundtrackIdx, NetworkTime.time);
+            state = new(new(GamePhaseType.Preparation, preparationPhaseInfo), mapIdx, soundtrackIdx, 0f);
         }
 
         [Server]
         private void EnterMatch()
         {
-            state = new(new(GamePhaseType.Match, matchPhaseInfo), state.mapIndex, state.soundtrackIndex, state.soundtrackBeginTime);
+            state = new(new(GamePhaseType.Match, matchPhaseInfo), state.mapIndex, state.soundtrackIndex, preparationPhaseInfo.duration);
 
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
                 player.itemModule.PickRandomItem();
-                player.locks.Unlock(PlayerLock.Hit);
             }
         }
 
         [Server]
         private void EnterFinish()
         {
-            state = new(new(GamePhaseType.Finish, finishPhaseInfo), state.mapIndex, state.soundtrackIndex, state.soundtrackBeginTime);
+            state = new(new(GamePhaseType.Finish, finishPhaseInfo), state.mapIndex, state.soundtrackIndex, preparationPhaseInfo.duration + matchPhaseInfo.duration);
 
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
-                player.locks.Lock(PlayerLock.Input, PlayerLock.Hit);
+                player.locks.Lock(PlayerLock.Input, PlayerLock.Hit, PlayerLock.Health);
                 player.healthModule.ClearInvincibility();
             }
         }
@@ -171,20 +167,27 @@ namespace Game.Systems
         [Server]
         private void EnterBreak()
         {
-            MapLoader.Unload();
+            MapLoader.Unload().completed += (_) =>
+            {
+                // Unlock everything only once assured that every object from the map has been destroyed
+                foreach (var player in FindObjectsByType<PlayerBase>(FindObjectsSortMode.None))
+                {
+                    player.locks.Drop(PlayerLocks.all);
+                }
+            };
 
-            // TODO: watahel
             // Reset player & player stats
             foreach (var player in FindObjectsByType<PlayerBase>(FindObjectsSortMode.None))
             {
-                player.ResetPlayer();
-                player.ResetStats();
-                player.locks.Drop(PlayerLock.Input, PlayerLock.Motor, PlayerLock.Damage);
                 player.ServerMovePlayer(Vector3.zero);
-                player.dead = false;
+
+                player.healthModule.ResetHealth();
+                player.itemModule.ResetItem();
+                player.deathModule.Respawn();
+                player.ResetStats();
             }
 
-            state = new(new(GamePhaseType.Break, breakPhaseInfo), -1, -1, 0);
+            state = new(new(GamePhaseType.Break, breakPhaseInfo), -1, -1, 0f);
         }
     }
 }

@@ -61,7 +61,7 @@ namespace Game.Player.Effects
 
             player.onWalled.AddListener(OnWalled);
             player.onUnwalled.AddListener(OnUnwalled);
-            player.onRespawn.AddListener(OnRespawn);
+            player.deathModule.onRespawn.AddListener(OnRespawn);
 
             if (isOwned) _respawnAudioSource.spatialBlend = 0f;
         }

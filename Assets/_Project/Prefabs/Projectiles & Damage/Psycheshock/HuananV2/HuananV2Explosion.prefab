@@ -24742,9 +24742,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   hitLayerMask: 0
+  observedPosition: {x: 0, y: 0, z: 0}
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
-  completedSelfChecks: 0
+  skipObservationUpdate: 0
   sphereCollider: {fileID: 5563388409014675495}
 --- !u!114 &697191921998550392
 MonoBehaviour:
@@ -24772,6 +24773,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   canDamageFamily: 0
+  onWishDamage:
+    m_PersistentCalls:
+      m_Calls: []
   onDamage:
     m_PersistentCalls:
       m_Calls: []

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Game.Core.Events;
 using Game.Core.Hits.Events;
 using UnityEngine;
@@ -119,8 +118,16 @@ namespace Game.Core.Hits
 
                 entity.UpdateActivity(sourcesActive, targetsActive);
 
-                entity.observedDelta = entity.transform.position - entity.previousObservedPosition;
-                entity.previousObservedPosition = entity.transform.position;
+                if (entity.skipObservationUpdate)
+                {
+                    entity.skipObservationUpdate = false;
+                }
+                else
+                {
+                    entity.observedPosition = entity.transform.position;
+                    entity.observedDelta = entity.observedPosition - entity.previousObservedPosition;
+                    entity.previousObservedPosition = entity.observedPosition;
+                }
             }
         }
 
@@ -169,12 +176,7 @@ namespace Game.Core.Hits
 
         public bool EntityPairCheck(HitEntity self, HitEntity other, out Vector3 point)
         {
-            // Cast from current position backwards
-            var relativeDelta = other.observedDelta - self.observedDelta;
-
-            var queryOrigin = self.transform.position;
-            var queryDirection = relativeDelta.normalized;
-            var queryLength = relativeDelta.magnitude + queryMargin;
+            var queryOrigin = self.observedPosition;
 
             var hitsCount = self.OverlapNonAlloc(queryOrigin, _queryMask, _queryCollidersBuffer, QueryTriggerInteraction.Collide);
             for (int i = 0; i < hitsCount; i++)
@@ -182,10 +184,15 @@ namespace Game.Core.Hits
                 var collider = _queryCollidersBuffer[i];
                 if (collider == other.Collider)
                 {
-                    point = (self.transform.position + other.transform.position) / 2f;
+                    point = (self.observedPosition + other.observedPosition) / 2f;
                     return true;
                 }
             }
+
+            // Cast from current position backwards
+            var relativeDelta = other.observedDelta - self.observedDelta;
+            var queryDirection = relativeDelta.normalized;
+            var queryLength = relativeDelta.magnitude + queryMargin;
 
             if (queryLength == queryMargin)
             {
@@ -201,8 +208,8 @@ namespace Game.Core.Hits
                 {
                     point = Vector3.Lerp
                     (
-                        self.transform.position,
-                        self.transform.position - self.observedDelta,
+                        self.observedPosition,
+                        self.observedPosition - self.observedDelta,
                         hit.distance / queryLength
                     );
 

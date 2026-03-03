@@ -95,7 +95,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
             if (_attached)
             {
-                _attached.onDeath.RemoveListener(OnAttachedDeath);
+                _attached.deathModule.onDeath.RemoveListener(OnAttachedDeath);
                 _attached.healthModule.onWishDamage.RemoveListener(OnDamage);
             }
         }
@@ -129,7 +129,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             damageTarget.onDamage.RemoveAllListeners();
 
             _attached = player;
-            _attached.onDeath.AddListener(OnAttachedDeath);
+            _attached.deathModule.onDeath.AddListener(OnAttachedDeath);
             _attached.healthModule.onWishDamage.AddListener(OnDamage);
             _previousAttachedPosition = player.transform.position;
 
@@ -144,7 +144,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             // Can't be attached afterwards
             damageTarget.onDamage.AddListener(OnDamage);
 
-            _attached.onDeath.RemoveListener(OnAttachedDeath);
+            _attached.deathModule.onDeath.RemoveListener(OnAttachedDeath);
             _attached.healthModule.onWishDamage.RemoveListener(OnDamage);
 
             if (_attached.netIdentity.connectionToClient != null)
@@ -206,7 +206,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
                     Vector3 pos;
                     if (_attached)
                     {
-                        _attached.onDeath.RemoveListener(OnAttachedDeath);
+                        _attached.deathModule.onDeath.RemoveListener(OnAttachedDeath);
                         _attached.healthModule.onWishDamage.RemoveListener(OnDamage);
 
                         var damage = new Damage(DamageType.Indirect, 100f, _explosionRequestAuthor, Guid.NewGuid(), _explosionRequestAuthor.healthModule.family);

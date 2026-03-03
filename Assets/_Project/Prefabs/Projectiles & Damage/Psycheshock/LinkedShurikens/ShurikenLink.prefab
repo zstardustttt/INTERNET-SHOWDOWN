@@ -95,8 +95,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   hitLayerMask: 0
+  observedPosition: {x: 0, y: 0, z: 0}
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
+  skipObservationUpdate: 0
   capsuleCollider: {fileID: 3762621573933854340}
 --- !u!114 &3646660236376352543
 MonoBehaviour:

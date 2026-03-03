@@ -275,6 +275,7 @@ GameObject:
   - component: {fileID: 2462157491766292911}
   - component: {fileID: 4075737330760207556}
   - component: {fileID: 1976138601191644980}
+  - component: {fileID: 9142073372359770434}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -470,9 +471,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  shakeFrequency: 7
+  shakeFrequency: 8
   shakeFalloffSpeed: 9
-  groundSlamCameraShakeMultiplier: 0.06
+  groundSlamCameraShakeMultiplier: 0.085
   maxGroundSlamCameraShake: 3
 --- !u!136 &241399185085964307
 CapsuleCollider:
@@ -516,6 +517,7 @@ MonoBehaviour:
   hitEntity: {fileID: 8243380858814391041}
   healthModule: {fileID: 5880631188279301956}
   itemModule: {fileID: 7304304024719944416}
+  deathModule: {fileID: 9142073372359770434}
   locks: {fileID: 1976138601191644980}
   config: {fileID: 11400000, guid: 6557f4f69351e73429465a2a5dfea442, type: 2}
   motor: {fileID: 3085756864833092725}
@@ -523,7 +525,6 @@ MonoBehaviour:
   verticalOrientation: {fileID: 9199459176827721078}
   modelContainer: {fileID: 6485277279108889857}
   mainModel: {fileID: 7050680160326592069}
-  ghostModel: {fileID: 7006930605099416351}
   onGroundSlamLanded:
     m_PersistentCalls:
       m_Calls: []
@@ -545,21 +546,8 @@ MonoBehaviour:
   onCollide:
     m_PersistentCalls:
       m_Calls: []
-  onResetPlayer:
-    m_PersistentCalls:
-      m_Calls: []
-  onDeath:
-    m_PersistentCalls:
-      m_Calls: []
-  onRespawn:
-    m_PersistentCalls:
-      m_Calls: []
-  dead: 0
-  respawnTimer: 0
   playerGuid: 
   playerName: 
-  boxSpawnerPreviousObservedPosition: {x: 0, y: 0, z: 0}
-  boxSpawnerObservedDelta: {x: 0, y: 0, z: 0}
   localTransientVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &131148445153040676
 MonoBehaviour:
@@ -695,6 +683,32 @@ MonoBehaviour:
   onLockStateChange:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &9142073372359770434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635209751978783220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9ec5706dd4939347a22fac44175f035, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Player.Death.PlayerDeathModule
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  player: {fileID: 6754057132338759635}
+  config: {fileID: 11400000, guid: 3cb526ad745f02144862fecd5c07d756, type: 2}
+  ghostModel: {fileID: 7006930605099416351}
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  onRespawn:
+    m_PersistentCalls:
+      m_Calls: []
+  respawnTimer: 0
 --- !u!1 &1977572232203292389
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,8 +792,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   hitLayerMask: 0
+  observedPosition: {x: 0, y: 0, z: 0}
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
+  skipObservationUpdate: 0
   capsuleCollider: {fileID: 6144822228631900321}
 --- !u!114 &5880631188279301956
 MonoBehaviour:
@@ -887,6 +903,9 @@ MonoBehaviour:
     itemIndex: 0
   item: {fileID: 0}
   onItemPickup:
+    m_PersistentCalls:
+      m_Calls: []
+  onItemUsed:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &2706654681915954732

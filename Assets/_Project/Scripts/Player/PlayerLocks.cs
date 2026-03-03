@@ -9,7 +9,7 @@ namespace Game.Player
     {
         Input,
         Motor,
-        Damage,
+        Health,
         Hit,
     }
 
@@ -26,7 +26,7 @@ namespace Game.Player
         {
             PlayerLock.Input,
             PlayerLock.Motor,
-            PlayerLock.Damage,
+            PlayerLock.Health,
             PlayerLock.Hit
         };
 

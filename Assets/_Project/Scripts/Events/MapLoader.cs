@@ -9,4 +9,5 @@ namespace Game.Events.MapLoader
     }
 
     public struct OnUnloadMap : IEvent { }
+    public struct OnMapUnloaded : IEvent { }
 }

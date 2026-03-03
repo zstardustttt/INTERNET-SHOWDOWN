@@ -9,7 +9,7 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
 
         public override void OnStartServer()
         {
-            if (player) player.onDeath.AddListener(OnDeath);
+            if (player) player.deathModule.onDeath.AddListener(OnDeath);
         }
 
         private void Update()
@@ -20,7 +20,7 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
 
         private void OnDeath()
         {
-            player.onDeath.RemoveListener(OnDeath);
+            player.deathModule.onDeath.RemoveListener(OnDeath);
             NetworkServer.Destroy(gameObject);
         }
     }

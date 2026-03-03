@@ -5,7 +5,7 @@ using Game.Core.Maps;
 using Game.Player.Events;
 using UnityEngine;
 
-namespace Game.Player
+namespace Game.Player.Death
 {
     public enum KillType
     {
@@ -30,15 +30,15 @@ namespace Game.Player
 
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
-                if (!player.dead) continue;
+                if (!player.deathModule.Dead) continue;
 
-                if (player.respawnTimer <= 0f)
+                if (player.deathModule.respawnTimer <= 0f)
                 {
                     RespawnPlayer(player);
                     continue;
                 }
 
-                player.respawnTimer -= Time.deltaTime;
+                player.deathModule.respawnTimer -= Time.deltaTime;
             }
         }
 
@@ -49,28 +49,20 @@ namespace Game.Player
 
         public void RespawnPlayer(PlayerBase player)
         {
-            if (!player.dead) return;
-            player.dead = false;
-            player.respawnTimer = 0f;
-
             var position = MapLoader.IsPlayerOnMap(player) ?
                     MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position :
                     Vector3.zero;
 
-            // TODO: respawn invincibility
             player.ServerMovePlayer(position);
-            player.ResetPlayer();
-            player.locks.Unlock(PlayerLocks.all);
+
+            // TODO: respawn invincibility
+            player.deathModule.Respawn();
         }
 
         public void RegisterDeath(PlayerBase player)
         {
-            if (player.dead) return;
-            player.dead = true;
-            player.respawnTimer = respawnDuration;
-
-            player.itemModule.itemData = PlayerItemData.Default();
-            player.locks.Lock(PlayerLocks.all);
+            player.deathModule.Die();
+            player.deathModule.respawnTimer = respawnDuration;
 
             var damages = new Dictionary<PlayerBase, float>();
             foreach (var damage in player.healthModule.damageHistory)

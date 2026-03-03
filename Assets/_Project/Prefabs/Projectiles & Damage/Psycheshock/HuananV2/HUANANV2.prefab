@@ -341,7 +341,7 @@ GameObject:
   - component: {fileID: 8598069386974656610}
   - component: {fileID: 1638724938105410804}
   m_Layer: 9
-  m_Name: MainDamage
+  m_Name: HitEntity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -403,8 +403,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   hitLayerMask: 0
+  observedPosition: {x: 0, y: 0, z: 0}
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
+  skipObservationUpdate: 0
   boxCollider: {fileID: 6480257299289842357}
 --- !u!114 &1638724938105410804
 MonoBehaviour:

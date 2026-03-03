@@ -13,8 +13,10 @@ namespace Game.Systems
         [Range(0f, 1f)] public float volume;
 
         private Soundtrack _soundtrack;
-        private GameState _state;
+        private GameState _currentState;
+        private GameState _previousState;
         private bool _musicRequested;
+        private float _soundtrackOffset;
 
         private void OnValidate()
         {
@@ -25,11 +27,26 @@ namespace Game.Systems
         {
             EventBus<OnGameStateChange>.Listen((data) =>
             {
-                _state = data.state;
+                var state = data.state;
+                _currentState = data.state;
 
-                if (_state.mapIndex == -1 || _state.soundtrackIndex == -1) return;
-                _soundtrack = MapPool.maps[_state.mapIndex].soundtracks[_state.soundtrackIndex];
-                _soundtrack.clip.LoadAudioData();
+                if (state.mapIndex != -1 && state.soundtrackIndex != -1)
+                {
+                    if (state.soundtrackIndex == _previousState.soundtrackIndex)
+                    {
+                        _soundtrackOffset = state.soundtrackOffset;
+                        if (source.clip == _soundtrack.clip)
+                            source.time = _currentState.phase.SecondsSinceEntered + _soundtrackOffset;
+                    }
+                    else
+                    {
+                        _soundtrack = MapPool.maps[state.mapIndex].soundtracks[state.soundtrackIndex];
+                        _soundtrack.clip.LoadAudioData();
+                        _soundtrackOffset = state.soundtrackOffset;
+                    }
+                }
+
+                _previousState = data.state;
             });
             EventBus<OnLocalPlayerAddedToMap>.Listen((_) => { _musicRequested = true; });
             EventBus<OnLocalPlayerRemovedFromMap>.Listen((_) => StopMatchMusic());
@@ -42,7 +59,7 @@ namespace Game.Systems
             source.clip = _soundtrack.clip;
             source.volume = _soundtrack.volume * volume;
             source.Play();
-            source.time = _state.SecondsSinceSoundtrackStarted;
+            source.time = _currentState.phase.SecondsSinceEntered + _soundtrackOffset;
 
             _musicRequested = false;
         }

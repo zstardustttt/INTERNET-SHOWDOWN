@@ -106,12 +106,12 @@ namespace Game.Core.Maps
         }
 
         [Server]
-        public static void Unload()
+        public static AsyncOperation Unload()
         {
             if (loadedMap == null || !loadedMap.scene.IsValid())
             {
                 Debug.LogError("Map is already unloaded");
-                return;
+                return null;
             }
 
             // Move every player back to lobby
@@ -127,8 +127,11 @@ namespace Game.Core.Maps
 
             EventBus<OnUnloadMap>.Invoke(new());
 
-            SceneManager.UnloadSceneAsync(loadedMap.scene);
+            var op = SceneManager.UnloadSceneAsync(loadedMap.scene);
+            op.completed += (_) => EventBus<OnMapUnloaded>.Invoke(new());
+
             loadedMap = null;
+            return op;
         }
 
         [Server]

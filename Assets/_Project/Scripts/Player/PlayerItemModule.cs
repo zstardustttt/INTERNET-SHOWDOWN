@@ -15,7 +15,7 @@ namespace Game.Player
         public int itemIndex;
         public ItemArgument[] arguments;
 
-        public static PlayerItemData Default()
+        public static PlayerItemData Empty()
         {
             return new()
             {
@@ -44,6 +44,17 @@ namespace Game.Player
             if (!isLocalPlayer || !item) return;
             item.transform.localPosition = Vector3.Lerp(item.transform.localPosition, item.offset, Time.deltaTime * 15f);
             itemHolder.localScale = Vector3.Lerp(itemHolder.localScale, Vector3.one, Time.deltaTime * 30f);
+        }
+
+        [Server]
+        public void ResetItem()
+        {
+            itemData = PlayerItemData.Empty();
+        }
+
+        public override void OnStartServer()
+        {
+            ResetItem();
         }
 
         [Server]
@@ -141,8 +152,6 @@ namespace Game.Player
         [Command]
         private void CmdUseItem(ItemUseClientContext context)
         {
-            if (player.dead) return;
-
             // TODO: Validate context
             UseItem(context);
         }
@@ -154,7 +163,7 @@ namespace Game.Player
 
             if (item.Use(player, context))
             {
-                itemData = PlayerItemData.Default();
+                ResetItem();
                 player.stats.activity++;
                 onItemUsed.Invoke();
             }

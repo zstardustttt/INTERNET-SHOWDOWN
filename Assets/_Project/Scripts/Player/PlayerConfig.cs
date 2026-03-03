@@ -68,6 +68,5 @@ namespace Game.Player
         [Header("Other")]
         public float groundAdditionalVelocityDrag;
         public float airAdditionalVelocityDrag;
-        public float respawnAscendSpeed;
     }
 }

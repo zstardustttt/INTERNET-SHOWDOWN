@@ -173,7 +173,7 @@ namespace Game.Player
                 });
             });
 
-            player.onRespawn.AddListener(() =>
+            player.deathModule.onRespawn.AddListener(() =>
             {
                 EventBus<RespawnEffectRequest>.Invoke(new());
             });
