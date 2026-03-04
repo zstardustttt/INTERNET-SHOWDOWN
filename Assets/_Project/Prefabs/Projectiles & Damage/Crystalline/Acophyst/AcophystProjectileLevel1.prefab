@@ -98,12 +98,13 @@ MonoBehaviour:
   spawnTime: 0
   predictionDebugIterations: 1
   predictionDebugTimePassed: 0
-  projectileToSpawnOnHit: {fileID: 0}
   collision: {fileID: 2762855302227303365}
   mainDamage: {fileID: 814893563799546294}
   visual: {fileID: 4561008472793558394}
   subVisual: {fileID: 7182600843868342691}
   model: {fileID: 8814570585158194538}
+  projectileToSpawnOnHit: {fileID: 0}
+  breakEffectPrefab: {fileID: 1831284123782927888, guid: 3196082f7103275489bf785e919b7b35, type: 3}
   destroyDelay: 1
   visualRotationSpeed: 540
   resolveRadius: 0.5

@@ -1,3 +1,4 @@
+using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Damages.Events;
 using Game.Core.Maps;
@@ -10,12 +11,15 @@ namespace Game.Projectiles.Crystalline
     public class AcophystProjectile : PredictableProjectile
     {
         [Header("Objects")]
-        public AcophystProjectile projectileToSpawnOnHit;
         public ProjectileCollision collision;
         public DamageSource mainDamage;
         public Transform visual;
         public Transform subVisual;
         public Transform model;
+
+        [Space(9)]
+        public AcophystProjectile projectileToSpawnOnHit;
+        public GameObject breakEffectPrefab;
 
         [Header("Properties")]
         public float destroyDelay;
@@ -86,7 +90,7 @@ namespace Game.Projectiles.Crystalline
             if (lifetime > activateGravityAfter) _gravityTimer += Time.deltaTime;
             if (lifetime > maxLifetime)
             {
-                Break();
+                Break(false, transform.position, Vector3.up);
                 return;
             }
 
@@ -95,7 +99,7 @@ namespace Game.Projectiles.Crystalline
 
         private void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
-            if (lifetime > desroyOnBounceAfter) Break();
+            if (lifetime > desroyOnBounceAfter) Break(false, point, normal);
             else
             {
                 Bounce(point, normal);
@@ -115,7 +119,7 @@ namespace Game.Projectiles.Crystalline
             Spawn(projectileToSpawnOnHit, author, transform.position, rotation1, NetworkTime.time);
             Spawn(projectileToSpawnOnHit, author, transform.position, rotation2, NetworkTime.time);
 
-            Break();
+            Break(true, Vector3.zero, Vector3.up);
         }
 
         private void Bounce(Vector3 point, Vector3 normal)
@@ -148,7 +152,7 @@ namespace Game.Projectiles.Crystalline
         }
 
         [Server]
-        private void Break()
+        private void Break(bool split, Vector3 effectPoint, Vector3 effectUp)
         {
             if (_broken) return;
 
@@ -157,6 +161,21 @@ namespace Game.Projectiles.Crystalline
             collision.active = false;
             collision.Collider.isTrigger = true;
             _broken = true;
+
+
+            if (split)
+            {
+                // TODO: split effect
+            }
+            else
+            {
+                var breakEffect = MapLoader.NetworkSpawnOnMap(breakEffectPrefab, effectPoint, Quaternion.FromToRotation(Vector3.up, effectUp));
+                breakEffect.BroadcastOnChildren(new SetupDamageSourceBroadcast()
+                {
+                    author = author,
+                    family = author.healthModule.family,
+                });
+            }
 
             RpcBreak();
         }

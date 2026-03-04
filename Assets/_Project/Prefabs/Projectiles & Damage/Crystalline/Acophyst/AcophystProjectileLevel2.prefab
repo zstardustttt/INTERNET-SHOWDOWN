@@ -98,12 +98,13 @@ MonoBehaviour:
   spawnTime: 0
   predictionDebugIterations: 1
   predictionDebugTimePassed: 0
-  projectileToSpawnOnHit: {fileID: 2592644571071647292, guid: 27f6c048ee75b4a45b10e3e3f9a4f2b6, type: 3}
   collision: {fileID: 2762855302227303365}
   mainDamage: {fileID: 2433473995355313201}
   visual: {fileID: 4561008472793558394}
   subVisual: {fileID: 8994930949743120644}
   model: {fileID: 6443853325787237505}
+  projectileToSpawnOnHit: {fileID: 2592644571071647292, guid: 27f6c048ee75b4a45b10e3e3f9a4f2b6, type: 3}
+  breakEffectPrefab: {fileID: 1831284123782927888, guid: 94c575a686c2bf84b81d823fe4019175, type: 3}
   destroyDelay: 1
   visualRotationSpeed: 540
   resolveRadius: 0.825
