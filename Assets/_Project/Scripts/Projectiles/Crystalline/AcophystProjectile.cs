@@ -13,8 +13,13 @@ namespace Game.Projectiles.Crystalline
         public AcophystProjectile projectileToSpawnOnHit;
         public ProjectileCollision collision;
         public DamageSource mainDamage;
+        public Transform visual;
+        public Transform subVisual;
+        public Transform model;
 
         [Header("Properties")]
+        public float destroyDelay;
+        public float visualRotationSpeed;
         public float resolveRadius;
         public float enableDamageAfter;
         public float flySpeed;
@@ -32,6 +37,9 @@ namespace Game.Projectiles.Crystalline
         private Vector3 _previousPoint;
         private float _gravityTimer;
         private Vector3 _wishVelocity;
+
+        private bool _broken;
+        private float _breakTimer;
 
         protected override void OnSpawned()
         {
@@ -57,6 +65,19 @@ namespace Game.Projectiles.Crystalline
 
         protected override void OnUpdate()
         {
+            if (_broken)
+            {
+                _breakTimer += Time.deltaTime;
+                if (NetworkServer.active && _breakTimer >= destroyDelay)
+                {
+                    DestroyProjectile();
+                }
+
+                return;
+            }
+
+            visual.up = _wishVelocity.normalized;
+            subVisual.Rotate(Vector3.up, visualRotationSpeed * Time.deltaTime, Space.Self);
             if (!NetworkServer.active) return;
 
             _wishVelocity = _direction * flySpeed - _gravityTimer * gravityAcceleration * Vector3.up;
@@ -65,7 +86,7 @@ namespace Game.Projectiles.Crystalline
             if (lifetime > activateGravityAfter) _gravityTimer += Time.deltaTime;
             if (lifetime > maxLifetime)
             {
-                DestroyProjectile();
+                Break();
                 return;
             }
 
@@ -74,7 +95,7 @@ namespace Game.Projectiles.Crystalline
 
         private void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
-            if (lifetime > desroyOnBounceAfter) DestroyProjectile();
+            if (lifetime > desroyOnBounceAfter) Break();
             else
             {
                 Bounce(point, normal);
@@ -94,7 +115,7 @@ namespace Game.Projectiles.Crystalline
             Spawn(projectileToSpawnOnHit, author, transform.position, rotation1, NetworkTime.time);
             Spawn(projectileToSpawnOnHit, author, transform.position, rotation2, NetworkTime.time);
 
-            DestroyProjectile();
+            Break();
         }
 
         private void Bounce(Vector3 point, Vector3 normal)
@@ -124,6 +145,27 @@ namespace Game.Projectiles.Crystalline
             transform.forward = _direction;
             transform.position = point + normal * resolveRadius;
             _gravityTimer = 0f;
+        }
+
+        [Server]
+        private void Break()
+        {
+            if (_broken) return;
+
+            rb.linearVelocity = Vector3.zero;
+            mainDamage.active = false;
+            collision.active = false;
+            collision.Collider.isTrigger = true;
+            _broken = true;
+
+            RpcBreak();
+        }
+
+        [ClientRpc]
+        private void RpcBreak()
+        {
+            _broken = true;
+            model.gameObject.SetActive(false);
         }
 
         public override ProjectilePredictionData Predict(float timePassed)
