@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1233149941 &-8776053858998131870
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AcophystBreak1_{-8776053858998131870}
+  m_AudioClip: {fileID: 8300000, guid: e8be4563addd7c74b8709d821dd83dad, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &-8446963542035072438
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AcophystBreak6_{-8446963542035072438}
+  m_AudioClip: {fileID: 8300000, guid: 60c2b87fe2fe32943a2b58c3625b3253, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &-4841535179464845548
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AcophystBreak4_{-4841535179464845548}
+  m_AudioClip: {fileID: 8300000, guid: 83f19bdcf8b81c841abace31f49ee5d6, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &-4573069063833010903
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AcophystBreak2_{-4573069063833010903}
+  m_AudioClip: {fileID: 8300000, guid: a687015fa1054394da15df35cace61cc, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &-2433864722603790463
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AcophystBreak5_{-2433864722603790463}
+  m_AudioClip: {fileID: 8300000, guid: cd50abc9447ce424f8173c6142400b94, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &-2014549565887586451
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AcophystBreak3_{-2014549565887586451}
+  m_AudioClip: {fileID: 8300000, guid: a98909f79aebc1b4ab1bb6b223a7369e, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1307931743 &6418180475301049370
+AudioRandomContainer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AcophystBreak
+  m_Volume: 0
+  m_Pitch: 0
+  m_AutomaticTriggerTime: 0
+  m_LoopCount: 1
+  m_VolumeRandomizationRange: {x: 0, y: 0}
+  m_PitchRandomizationRange: {x: -50, y: 50}
+  m_AutomaticTriggerTimeRandomizationRange: {x: 0, y: 0}
+  m_LoopCountRandomizationRange: {x: 0, y: 0}
+  m_Elements:
+  - {fileID: -8776053858998131870}
+  - {fileID: -4573069063833010903}
+  - {fileID: -2014549565887586451}
+  - {fileID: -4841535179464845548}
+  - {fileID: -2433864722603790463}
+  - {fileID: -8446963542035072438}
+  m_AvoidRepeatingLast: 0
+  m_PlaybackMode: 1
+  m_TriggerMode: 0
+  m_AutomaticTriggerMode: 1
+  m_LoopMode: 2
+  m_VolumeRandomizationEnabled: 0
+  m_PitchRandomizationEnabled: 1
+  m_AutomaticTriggerTimeRandomizationEnabled: 0
+  m_LoopCountRandomizationEnabled: 0
