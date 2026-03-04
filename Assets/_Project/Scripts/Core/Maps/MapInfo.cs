@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Game.Core.Maps
 {
@@ -51,6 +52,8 @@ namespace Game.Core.Maps
             boundsMax.y = Mathf.Max(boundsMax.y, 0f);
             boundsMax.z = Mathf.Max(boundsMax.z, 0f);
         }
+
+        public Vector3 GetRandomSpawnPoint() => spawnPoints[Random.Range(0, spawnPoints.Length)].position;
 
         private void Awake()
         {

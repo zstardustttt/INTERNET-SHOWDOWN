@@ -9,6 +9,7 @@ using System.Linq;
 using Random = UnityEngine.Random;
 using System.Collections.Generic;
 using Game.GameLoop.Events;
+using Game.Core.Lobby;
 
 namespace Game.GameLoop
 {
@@ -69,6 +70,9 @@ namespace Game.GameLoop
 
     public class GameLoop : NetworkBehaviour
     {
+        public LobbyInfo lobbyInfo;
+
+        [Space(9)]
         public GamePhaseInfo breakPhaseInfo;
         public GamePhaseInfo preparationPhaseInfo;
         public GamePhaseInfo matchPhaseInfo;
@@ -167,6 +171,17 @@ namespace Game.GameLoop
         [Server]
         private void EnterBreak()
         {
+            // Reset player & player stats
+            foreach (var (_, player) in MapLoader.loadedMap.players)
+            {
+                player.ServerMovePlayer(lobbyInfo.spawnArea.RandomSampleArea(Space.World));
+
+                player.healthModule.ResetHealth();
+                player.itemModule.ResetItem();
+                player.deathModule.Respawn();
+                player.ResetStats();
+            }
+
             MapLoader.Unload().completed += (_) =>
             {
                 // Unlock everything only once assured that every object from the map has been destroyed
@@ -175,17 +190,6 @@ namespace Game.GameLoop
                     player.locks.Drop(PlayerLocks.all);
                 }
             };
-
-            // Reset player & player stats
-            foreach (var player in FindObjectsByType<PlayerBase>(FindObjectsSortMode.None))
-            {
-                player.ServerMovePlayer(Vector3.zero);
-
-                player.healthModule.ResetHealth();
-                player.itemModule.ResetItem();
-                player.deathModule.Respawn();
-                player.ResetStats();
-            }
 
             state = new(new(GamePhaseType.Break, breakPhaseInfo), -1, -1, 0f);
         }

@@ -9,11 +9,11 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-using Random = UnityEngine.Random;
 using Game.Player.Events;
 using Game.GameLoop;
 using Game.GameLoop.Events;
 using Game.Maps.Events;
+using Game.Core.Lobby;
 
 namespace Game.Network
 {
@@ -41,8 +41,7 @@ namespace Game.Network
 
                 var sceneName = MapLoader.loadedMap.config.sceneName;
                 conn.Send(new SceneMessage() { sceneName = sceneName, sceneOperation = SceneOperation.LoadAdditive });
-                var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
-                conn.identity.GetComponent<PlayerBase>().ServerMovePlayer(position);
+                conn.identity.GetComponent<PlayerBase>().ServerMovePlayer(MapLoader.loadedMap.info.GetRandomSpawnPoint());
                 conn.Send<ServerOnlinePlayerAddedToMap>(new());
             });
 
@@ -76,7 +75,7 @@ namespace Game.Network
                 });
             });
 
-            EventBus<OnDestroyPlayer>.Listen((data) =>
+            EventBus<OnPlayerDestroy>.Listen((data) =>
             {
                 if (!NetworkServer.active) return;
 
@@ -112,7 +111,7 @@ namespace Game.Network
                 NetworkServer.SendToAll(new ServerOnlinePlayerRemovedFromMap());
             });
 
-            EventBus<OnServerOnlinePlayerInitialized>.Listen((data) =>
+            EventBus<OnPlayerInitialized>.Listen((data) =>
             {
                 if (!_gameState.phase.info.loadStats) return;
 
@@ -139,6 +138,14 @@ namespace Game.Network
 
             // base destroys connection's player
             base.OnServerDisconnect(conn);
+        }
+
+        public override void OnServerAddPlayer(NetworkConnectionToClient conn)
+        {
+            var position = LobbyInfo.Singleton.spawnArea.RandomSampleArea(Space.World);
+            var player = Instantiate(playerPrefab, position, Quaternion.identity);
+            player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
+            NetworkServer.AddPlayerForConnection(conn, player);
         }
 
         public override void OnServerReady(NetworkConnectionToClient conn)

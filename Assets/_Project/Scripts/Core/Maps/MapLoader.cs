@@ -36,7 +36,7 @@ namespace Game.Core.Maps
         public static void Init()
         {
             SceneManager.sceneLoaded += SceneLoaded;
-            _onDestroyPlayerListenerGuid = EventBus<OnDestroyPlayer>.Listen((data) =>
+            _onDestroyPlayerListenerGuid = EventBus<OnPlayerDestroy>.Listen((data) =>
             {
                 if (loadedMap == null) return;
                 loadedMap.players.Remove(data.guid);
@@ -47,7 +47,7 @@ namespace Game.Core.Maps
         public static void Stop()
         {
             SceneManager.sceneLoaded -= SceneLoaded;
-            EventBus<OnDestroyPlayer>.TryCancel(_onDestroyPlayerListenerGuid);
+            EventBus<OnPlayerDestroy>.TryCancel(_onDestroyPlayerListenerGuid);
             loadedMap = null;
         }
 

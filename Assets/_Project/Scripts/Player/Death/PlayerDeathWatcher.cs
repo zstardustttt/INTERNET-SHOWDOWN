@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Game.Core.Events;
+using Game.Core.Lobby;
 using Game.Core.Maps;
 using Game.Player.Events;
 using UnityEngine;
@@ -16,6 +17,7 @@ namespace Game.Player.Death
 
     public class PlayerDeathWatcher : MonoBehaviour
     {
+        public LobbyInfo lobbyInfo;
         public float respawnDuration;
         public float respawnInvincibilityDuration;
 
@@ -49,11 +51,9 @@ namespace Game.Player.Death
 
         public void RespawnPlayer(PlayerBase player)
         {
-            var position = MapLoader.IsPlayerOnMap(player) ?
-                    MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position :
-                    Vector3.zero;
-
-            player.ServerMovePlayer(position);
+            if (MapLoader.IsPlayerOnMap(player))
+                player.ServerMovePlayer(MapLoader.loadedMap.info.GetRandomSpawnPoint());
+            else player.ServerMovePlayer(lobbyInfo.spawnArea.RandomSampleArea(Space.World));
 
             // TODO: respawn invincibility
             player.deathModule.Respawn();

@@ -1,3 +1,4 @@
+using System;
 using Game.Core.Damages;
 using Game.Core.Events;
 using Game.Core.Hits;
@@ -11,13 +12,12 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 
-using Random = UnityEngine.Random;
-
 namespace Game.Player
 {
     [RequireComponent(typeof(KinematicCharacterMotor))]
     public class PlayerBase : NetworkBehaviour, ICharacterController
     {
+        public bool Initialized { get; private set; }
         public bool HandlingThisPlayer { get; private set; }
 
         public Bounds WorldHitbox => new(transform.position + config.hitbox.center, config.hitbox.size);
@@ -97,7 +97,6 @@ namespace Game.Player
         [HideInInspector] public UnityEvent<bool> onEndDash = new();
         [HideInInspector] public UnityEvent<Collider> onCollide = new();
 
-        private bool _guidReceived;
         [SyncVar] public string playerGuid;
         [SyncVar] public string playerName;
 
@@ -106,37 +105,6 @@ namespace Game.Player
 
         [HideInInspector] public Vector3 localTransientVelocity;
         private Vector3 _prevTransientPosition;
-
-        private void InnerSetGuid(string guid)
-        {
-            if (string.IsNullOrEmpty(guid) || _guidReceived) return;
-            playerGuid = guid;
-            _guidReceived = true;
-        }
-
-        [Command]
-        private void CmdSetGUID(string guid)
-        {
-            InnerSetGuid(guid);
-        }
-
-        public void SetGUID(string guid)
-        {
-            if (NetworkServer.active) InnerSetGuid(guid);
-            else CmdSetGUID(guid);
-        }
-
-        [Command]
-        private void CmdSetPlayerName(string name)
-        {
-            playerName = name;
-        }
-
-        public void SetPlayerName(string name)
-        {
-            if (NetworkServer.active) playerName = name;
-            else CmdSetPlayerName(name);
-        }
 
         [Server]
         public void ServerMovePlayer(Vector3 position)
@@ -169,16 +137,6 @@ namespace Game.Player
         private void Update()
         {
             if (!NetworkServer.active) return;
-            // Teleport back if clipped out of bounds
-            if (MapLoader.IsPlayerOnMap(this) && transform.position.y < MapLoader.loadedMap.info.boundsMin.y)
-            {
-                var position = MapLoader.loadedMap.info.spawnPoints[Random.Range(0, MapLoader.loadedMap.info.spawnPoints.Length)].position;
-                ServerMovePlayer(position);
-            }
-            else if (transform.position.y < -50f)
-            {
-                ServerMovePlayer(Vector3.zero);
-            }
 
             if (!_previousStats.Equals(stats))
             {
@@ -227,10 +185,10 @@ namespace Game.Player
 
         private void OnDestroy()
         {
-            EventBus<OnDestroyPlayer>.Invoke(new() { guid = playerGuid });
+            EventBus<OnPlayerDestroy>.Invoke(new() { guid = playerGuid });
         }
 
-        public void HandleThisPlayer()
+        public void HandleThisPlayer(string name, string guid)
         {
             motor.enabled = true;
             motor.CharacterController = this;
@@ -240,6 +198,25 @@ namespace Game.Player
             {
                 if (plock == PlayerLock.Motor) motor.enabled = !locked;
             });
+
+            if (NetworkServer.active) Initialize(name, guid);
+            else CmdInitialize(name, guid);
+        }
+
+        private void CmdInitialize(string name, string guid) => Initialize(name, guid);
+
+        [Server]
+        private void Initialize(string name, string guid)
+        {
+            if (Initialized)
+            {
+                Debug.LogError($"Player {playerName} is already initialized!");
+                return;
+            }
+
+            playerName = name;
+            playerGuid = guid;
+            EventBus<OnPlayerInitialized>.Invoke(new() { player = this });
         }
 
         protected override void OnValidate()

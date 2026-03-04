@@ -180,11 +180,7 @@ namespace Game.Player
             player.controller = this;
             _actions.Enable();
 
-            player.HandleThisPlayer();
-
-            player.SetPlayerName(Environment.UserName);
-            player.SetGUID(OnlinePlayerGuid.Guid);
-            CmdPlayerInitialized();
+            player.HandleThisPlayer(Environment.UserName, OnlinePlayerGuid.Guid);
 
             EventBus<OnCameraShakerSpawn>.Listen((data) =>
             {
@@ -199,12 +195,6 @@ namespace Game.Player
 
                 _shakeGenerator.Shake(Mathf.Max(amplitude, _shakeGenerator.shakeAmplitude), shakeFrequency, shakeFalloffSpeed);
             });
-        }
-
-        [Command]
-        public void CmdPlayerInitialized()
-        {
-            EventBus<OnServerOnlinePlayerInitialized>.Invoke(new() { player = player });
         }
 
         private void OnDestroy()
