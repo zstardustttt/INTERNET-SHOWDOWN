@@ -2,11 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.Core.Events;
 using Game.Core.Maps;
-using Game.Events.GameLoop;
-using Game.Events.MapLoader;
-using Game.Events.Player;
 using Game.Events.UI;
-using Game.Systems;
 using Game.Network.Messages;
 using Game.Player;
 using Mirror;
@@ -15,6 +11,9 @@ using UnityEngine.SceneManagement;
 
 using Random = UnityEngine.Random;
 using Game.Player.Events;
+using Game.GameLoop;
+using Game.GameLoop.Events;
+using Game.Maps.Events;
 
 namespace Game.Network
 {

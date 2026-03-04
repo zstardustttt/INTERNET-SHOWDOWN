@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Game.Core.Events;
-using Game.Events.MapLoader;
-using Game.Events.Player;
+using Game.Maps.Events;
 using Game.Player;
+using Game.Player.Events;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;

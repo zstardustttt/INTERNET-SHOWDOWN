@@ -1,6 +1,7 @@
 using Game.Core.Events;
 using Game.Core.Maps;
-using Game.Events.GameLoop;
+using Game.GameLoop;
+using Game.GameLoop.Events;
 using Game.Player.Events;
 using UnityEngine;
 

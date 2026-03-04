@@ -1,7 +1,6 @@
 using System;
 using Game.Core.Events;
 using Game.Core.Maps;
-using Game.Events.GameLoop;
 using Mirror;
 using UnityEngine;
 using Game.Player;
@@ -9,8 +8,9 @@ using System.Linq;
 
 using Random = UnityEngine.Random;
 using System.Collections.Generic;
+using Game.GameLoop.Events;
 
-namespace Game.Systems
+namespace Game.GameLoop
 {
     [Serializable]
     public struct GamePhaseInfo

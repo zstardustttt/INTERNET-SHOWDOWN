@@ -12,4 +12,38 @@ namespace Game.Player.Events
 
     public struct OnLocalPlayerAddedToMap : IEvent { }
     public struct OnLocalPlayerRemovedFromMap : IEvent { }
+
+    public struct OnDestroyPlayer : IEvent
+    {
+        public string guid;
+    }
+
+    public struct OnPlayerStatsChanged : IEvent
+    {
+        public PlayerBase player;
+        public PlayerStats previous;
+        public PlayerStats current;
+    }
+
+    public struct OnServerOnlinePlayerInitialized : IEvent
+    {
+        public PlayerBase player;
+    }
+
+    public struct OnCameraShakerSpawn : IEvent
+    {
+        public CameraShaker shaker;
+    }
+
+    public struct OnDash : IEvent
+    {
+        public PlayerBase player;
+        public float cooldown;
+    }
+
+    public struct OnEndDash : IEvent
+    {
+        public PlayerBase player;
+        public bool reset;
+    }
 }

@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Game.Boxes;
 using Game.Core.Damages;
 using Game.Core.Events;
 using Game.Core.Maps;
-using Game.Events.Player;
 using Game.Events.UI;
 using Game.Inputs;
 using Game.Network.Messages;
 using Game.Other;
+using Game.Player.Events;
 using Mirror;
 using UnityEngine;
 

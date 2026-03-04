@@ -1,7 +1,7 @@
 using Game.Core.Events;
 using Game.Player;
 
-namespace Game.Events.MapLoader
+namespace Game.Maps.Events
 {
     public struct OnAddPlayerToMap : IEvent
     {

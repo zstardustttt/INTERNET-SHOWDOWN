@@ -1,10 +1,9 @@
 using System.Collections;
 using Game.Core.Events;
-using Game.Events.GameLoop;
-using Game.Events.Player;
 using Game.Events.UI;
+using Game.GameLoop;
+using Game.GameLoop.Events;
 using Game.Player.Events;
-using Game.Systems;
 using UnityEngine;
 using UnityEngine.UI;
 

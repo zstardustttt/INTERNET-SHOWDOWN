@@ -1,6 +1,7 @@
 using Game.Core.Events;
 using Game.UI.Game;
 
+// TODO: ts is bad
 namespace Game.Events.UI
 {
     public struct RequestGameplayUI : IEvent { }

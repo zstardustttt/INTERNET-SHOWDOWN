@@ -1,8 +1,8 @@
 using EasyTextEffects;
 using Game.Core.Events;
-using Game.Events.GameLoop;
+using Game.GameLoop;
+using Game.GameLoop.Events;
 using Game.Player.Events;
-using Game.Systems;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;

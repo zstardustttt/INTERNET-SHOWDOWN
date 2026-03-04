@@ -1,7 +1,6 @@
 using Game.Core.Events;
-using Game.Systems;
 
-namespace Game.Events.GameLoop
+namespace Game.GameLoop.Events
 {
     public struct OnGameStateChange : IEvent
     {

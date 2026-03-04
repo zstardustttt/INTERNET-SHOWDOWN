@@ -4,9 +4,9 @@ using Game.Core.Events;
 using Game.Core.Hits;
 using Game.Core.Hits.Events;
 using Game.Core.Maps;
-using Game.Events.GameLoop;
+using Game.GameLoop;
+using Game.GameLoop.Events;
 using Game.Player;
-using Game.Systems;
 using Mirror;
 using UnityEngine;
 
