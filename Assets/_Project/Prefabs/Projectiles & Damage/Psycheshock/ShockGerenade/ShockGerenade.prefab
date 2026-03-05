@@ -96,6 +96,7 @@ MonoBehaviour:
   visual: {fileID: 6539476148835066508}
   localGerenadeVisualPrefab: {fileID: 8905043781987494722, guid: 4bd9b2a3092f793469e0538dc506de48, type: 3}
   shakee: {fileID: 6290191911296125310}
+  hitEntity: {fileID: 833443915890373196}
   attachHitListener: {fileID: 7040493596059717009}
   damageTarget: {fileID: 1186501378575783335}
   collision: {fileID: 8328632736421125881}

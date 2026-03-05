@@ -21,6 +21,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         public GameObject localGerenadeVisualPrefab;
         public Transform shakee;
 
+        public HitEntity hitEntity;
         public HitListener attachHitListener;
         public DamageTarget damageTarget;
         public ProjectileCollision collision;
@@ -273,6 +274,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         {
             if (_explosionRequestAuthor) return;
 
+            hitEntity.active = false;
             _explosionTriggerVelocity = rb.linearVelocity;
             _explosionRequestAuthor = explosionAuthor;
             RpcPlayExplosionTrigger();

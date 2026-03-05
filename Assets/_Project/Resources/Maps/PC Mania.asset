@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ce15dac8d66e044cac774326a7a88e0, type: 3}
+  m_Name: PC Mania
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Maps.MapConfig
+  sceneName: Assets/_Project/Scenes/Maps/PC Mania.unity
+  displayName: PC Mania
+  soundtracks:
+  - {fileID: 11400000, guid: d38e7b9ea68ccce4c917fb3f037778d2, type: 2}
+  - {fileID: 11400000, guid: 34265aa1a6f5f5049a5b8a8bf4087b69, type: 2}
+  - {fileID: 11400000, guid: eabe8fb7627378249b2c11fce0b2d515, type: 2}
+  - {fileID: 11400000, guid: acf96bccbff9b8f4d8fa8b888dcafcc1, type: 2}
