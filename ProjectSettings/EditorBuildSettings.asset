@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/_Project/Scenes/Lobby.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/_Project/Scenes/TestMap.unity
+    path: Assets/_Project/Scenes/Observatory.unity
     guid: 043012960b69da444b066897f5484e21
   - enabled: 1
     path: Assets/_Project/Scenes/SkyIslandMap.unity

@@ -80,6 +80,7 @@ namespace Game.GameLoop
 
         [SyncVar(hook = nameof(OnStateChanged)), ReadOnly] public GameState state;
         private readonly Dictionary<int, int> _lastSoundtrackIndexForMap = new();
+        private int _mapIdx;
 
         private void OnStateChanged(GameState old, GameState _new)
         {
@@ -89,6 +90,7 @@ namespace Game.GameLoop
         private void Start()
         {
             if (!isServer) return;
+            _mapIdx = -1;
             state = new(new(GamePhaseType.Break, breakPhaseInfo), -1, -1, 0f);
         }
 
@@ -125,24 +127,30 @@ namespace Game.GameLoop
         [Server]
         private void EnterPreparation()
         {
-            var mapIdx = Random.Range(0, MapPool.maps.Length);
-            var conf = MapPool.maps[mapIdx];
+            if (_mapIdx == -1) _mapIdx = Random.Range(0, MapPool.maps.Length);
+            else
+            {
+                var newMapPool = MapPool.maps.Where((_, idx) => idx != _mapIdx).ToArray();
+                _mapIdx = Array.IndexOf(MapPool.maps, newMapPool[Random.Range(0, newMapPool.Length)]);
+            }
+
+            var conf = MapPool.maps[_mapIdx];
             MapLoader.Load(conf);
 
             int soundtrackIdx;
-            if (_lastSoundtrackIndexForMap.TryGetValue(mapIdx, out var lastSoundtrackIndex))
+            if (_lastSoundtrackIndexForMap.TryGetValue(_mapIdx, out var lastSoundtrackIndex))
             {
                 var newSoundtrackPool = conf.soundtracks.Where((_, idx) => idx != lastSoundtrackIndex).ToArray();
                 soundtrackIdx = Array.IndexOf(conf.soundtracks, newSoundtrackPool[Random.Range(0, newSoundtrackPool.Length)]);
-                _lastSoundtrackIndexForMap[mapIdx] = soundtrackIdx;
+                _lastSoundtrackIndexForMap[_mapIdx] = soundtrackIdx;
             }
             else
             {
                 soundtrackIdx = Random.Range(0, conf.soundtracks.Length);
-                _lastSoundtrackIndexForMap.Add(mapIdx, soundtrackIdx);
+                _lastSoundtrackIndexForMap.Add(_mapIdx, soundtrackIdx);
             }
 
-            state = new(new(GamePhaseType.Preparation, preparationPhaseInfo), mapIdx, soundtrackIdx, 0f);
+            state = new(new(GamePhaseType.Preparation, preparationPhaseInfo), _mapIdx, soundtrackIdx, 0f);
         }
 
         [Server]

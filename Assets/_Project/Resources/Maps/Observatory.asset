@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ce15dac8d66e044cac774326a7a88e0, type: 3}
-  m_Name: TestMap
+  m_Name: Observatory
   m_EditorClassIdentifier: 
-  sceneName: Assets/_Project/Scenes/TestMap.unity
-  displayName: Test Map
+  sceneName: Assets/_Project/Scenes/Observatory.unity
+  displayName: Observatory
   soundtracks:
   - {fileID: 11400000, guid: eabe8fb7627378249b2c11fce0b2d515, type: 2}
   - {fileID: 11400000, guid: d38e7b9ea68ccce4c917fb3f037778d2, type: 2}
