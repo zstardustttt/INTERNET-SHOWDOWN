@@ -1,8 +1,10 @@
 using System;
+using DG.Tweening;
 using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Damages.Events;
 using Game.Core.Projectiles;
+using Game.Other;
 using Game.Player;
 using Mirror;
 using UnityEngine;
@@ -13,14 +15,24 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
     public class EmeraldGeode : NetworkBehaviour, IBroadcastReceiver<SetupDamageSourceBroadcast>
     {
         [Header("Objects")]
+        public Transform spawnPointsContainer;
+        public Transform visual;
         public DamageTarget damageTarget;
         public EmeraldGeodeProjectile projectile;
 
         [Header("Spawning Properties")]
+        public float groupSpawnTimeInterval;
         public float spawnTimeInterval;
         public int initSpawnCount;
         public Vector3 radiusScale;
         public float spawnUpOffset;
+
+        [Header("Damage Shake")]
+        public float damageShakeAmplitude;
+        public float damageShakeFrequency;
+        public float damageShakeFalloffSpeed;
+
+        private ShakeGenerator _shakeGenerator;
 
         private Vector3[] _spawnPoints;
         private int _spawnCount;
@@ -37,46 +49,73 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
             SetSpawnCount(initSpawnCount, 0f);
         }
 
+        private void Awake()
+        {
+            _shakeGenerator = new();
+        }
+
         public override void OnStartServer()
         {
             SetSpawnCount(initSpawnCount, 0f);
             damageTarget.onDamage.AddListener(OnDamage);
         }
 
+        private void OnDestroy()
+        {
+            foreach (Transform spawnPoint in spawnPointsContainer)
+            {
+                spawnPoint.transform.DOKill();
+            }
+        }
+
         private void Update()
         {
+            visual.localPosition = _shakeGenerator.GetShake();
             if (!NetworkServer.active || _spawnPoints == null) return;
-
-            if (_groupSpawnTimer <= 0f)
-            {
-                SetSpawnCount(_spawnCount, Random.value * Mathf.PI * 2f);
-                _spawnCounter = _spawnCount;
-                _groupSpawnTimer = spawnTimeInterval;
-            }
-            else _groupSpawnTimer -= Time.deltaTime;
 
             if (_spawnCounter > 0)
             {
                 if (_spawnTimer <= 0f)
                 {
-                    SpawnProjectile(_spawnCounter - 1);
                     _spawnCounter--;
+                    SpawnProjectile(_spawnCounter);
+
+                    _spawnTimer = spawnTimeInterval;
                 }
-                else _spawnTimer = spawnTimeInterval / _spawnCount;
+                else _spawnTimer -= Time.deltaTime;
             }
+
+            if (_groupSpawnTimer <= 0f)
+            {
+                SetSpawnCount(_spawnCount, Random.value * Mathf.PI * 2f);
+                _spawnCounter = _spawnCount;
+                _groupSpawnTimer = groupSpawnTimeInterval;
+                _spawnTimer = spawnTimeInterval;
+            }
+            else _groupSpawnTimer -= Time.deltaTime;
         }
 
+        [Server]
         private void SpawnProjectile(int idx)
         {
-            var position = transform.TransformPoint(_spawnPoints[idx]);
+            var loopedIdx = idx % _spawnPoints.Length;
+            var position = transform.TransformPoint(_spawnPoints[loopedIdx]);
             var rotation = Quaternion.FromToRotation(Vector3.forward, (position - transform.position).normalized);
 
-            Projectile.Spawn(projectile, _author, position + transform.up * spawnUpOffset, rotation, NetworkTime.time);
+            Projectile.Spawn(projectile, _author, position, rotation, NetworkTime.time);
+            RpcOnProjectileSpawn(idx, position);
         }
 
         private void OnDamage(DamageEvent _)
         {
             SetSpawnCount(_spawnCount - 1, Random.value * Mathf.PI * 2f);
+            RpcOnDamage();
+        }
+
+        [ClientRpc]
+        private void RpcOnDamage()
+        {
+            _shakeGenerator.Shake(damageShakeAmplitude, damageShakeFrequency, damageShakeFalloffSpeed);
         }
 
         private void SetSpawnCount(int count, float spin)
@@ -89,6 +128,36 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
 
             _spawnCount = count;
             _spawnPoints = UniformDistribute(count, spin);
+            if (NetworkServer.active) RpcUpdateSpawnPointVisuals(_spawnPoints);
+        }
+
+        [ClientRpc]
+        private void RpcUpdateSpawnPointVisuals(Vector3[] spawnPoints)
+        {
+            var idx = 0;
+            foreach (Transform spawnPoint in spawnPointsContainer)
+            {
+                if (idx < spawnPoints.Length)
+                {
+                    spawnPoint.gameObject.SetActive(true);
+                    spawnPoint.transform.localPosition = spawnPoints[idx];
+
+                    spawnPoint.transform.DOKill();
+                    spawnPoint.transform.localScale = Vector3.zero;
+                    spawnPoint.transform.DOScale(Vector3.one * Random.Range(0.75f, 1.2f), 0.045f * idx);
+                }
+                else spawnPoint.gameObject.SetActive(false);
+
+                idx++;
+            }
+        }
+
+        [ClientRpc]
+        private void RpcOnProjectileSpawn(int idx, Vector3 position)
+        {
+            var spawnPoint = spawnPointsContainer.GetChild(idx);
+            spawnPoint.DOKill();
+            spawnPoint.gameObject.SetActive(false);
         }
 
         private void DestroyGeode()
@@ -111,7 +180,7 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
                 var x = Mathf.Cos(spin + goldenRatioI) * radius;
                 var z = Mathf.Sin(spin + goldenRatioI) * radius;
 
-                output[i] = new(x * radiusScale.x, y * radiusScale.y, z * radiusScale.z);
+                output[i] = new(x * radiusScale.x, y * radiusScale.y + spawnUpOffset, z * radiusScale.z);
             }
 
             return output;

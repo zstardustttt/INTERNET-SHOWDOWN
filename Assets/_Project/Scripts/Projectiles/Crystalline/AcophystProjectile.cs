@@ -40,7 +40,7 @@ namespace Game.Projectiles.Crystalline
         private Vector3 _previousNormal;
         private Vector3 _previousPoint;
         private float _gravityTimer;
-        private Vector3 _wishVelocity;
+        [SyncVar] private Vector3 _wishVelocity;
 
         private bool _broken;
         private float _breakTimer;

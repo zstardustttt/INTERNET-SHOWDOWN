@@ -11,7 +11,7 @@ namespace Game.Items.Crystalline
 
         public override bool Use(PlayerBase user, ItemUseClientContext context)
         {
-            var proj = Projectile.Spawn(projectile, user, context.headPosition, context.headRotation, context.useTime);
+            Projectile.Spawn(projectile, user, context.headPosition, context.headRotation, context.useTime);
             return true;
         }
     }

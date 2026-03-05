@@ -2,6 +2,7 @@ using Game.Core.Items;
 using Game.Core.Projectiles;
 using Game.Player;
 using Game.Projectiles.Crystalline.EmeraldGeode;
+using UnityEngine;
 
 namespace Game.Items.Crystalline
 {
@@ -11,7 +12,8 @@ namespace Game.Items.Crystalline
 
         public override bool Use(PlayerBase user, ItemUseClientContext context)
         {
-            Projectile.Spawn(projectile, user, context.headPosition, context.headRotation, context.useTime);
+            var forwardOffset = context.headRotation * Vector3.forward * 0.5f;
+            Projectile.Spawn(projectile, user, context.headPosition + forwardOffset, context.headRotation, context.useTime);
             return true;
         }
     }

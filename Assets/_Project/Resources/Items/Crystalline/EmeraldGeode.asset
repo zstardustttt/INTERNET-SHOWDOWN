@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Items.ItemConfig
   include: 1
   prefab: {fileID: 3249145290353018548, guid: 5f6d7da9aa89ff441ae29330c2ffc1e7, type: 3}
-  rarity: {fileID: 11400000, guid: 8e1dbfb413df3c64f8d873040f92b762, type: 2}
+  rarity: {fileID: 11400000, guid: 728896c93a1299e468e7f7c259067434, type: 2}
   displayName: Emerald Geode
   series: {fileID: 11400000, guid: 03ec467e87f3b8448b2b43086ccea3bc, type: 2}
   description: 
