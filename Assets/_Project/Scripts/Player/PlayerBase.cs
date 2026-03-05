@@ -203,6 +203,7 @@ namespace Game.Player
             else CmdInitialize(name, guid);
         }
 
+        [Command]
         private void CmdInitialize(string name, string guid) => Initialize(name, guid);
 
         [Server]
