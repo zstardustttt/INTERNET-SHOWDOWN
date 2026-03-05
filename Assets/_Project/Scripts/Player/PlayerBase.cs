@@ -165,6 +165,7 @@ namespace Game.Player
 
         public void SetPosition(Vector3 position)
         {
+            _additionalVelocity = Vector3.zero;
             if (_dashing)
             {
                 _dashing = false;
