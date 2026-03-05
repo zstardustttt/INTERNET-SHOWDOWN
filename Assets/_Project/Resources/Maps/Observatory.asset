@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ce15dac8d66e044cac774326a7a88e0, type: 3}
   m_Name: Observatory
   m_EditorClassIdentifier: 
-  sceneName: Assets/_Project/Scenes/Observatory.unity
+  sceneName: Assets/_Project/Scenes/Maps/Observatory.unity
   displayName: Observatory
   soundtracks:
   - {fileID: 11400000, guid: eabe8fb7627378249b2c11fce0b2d515, type: 2}
