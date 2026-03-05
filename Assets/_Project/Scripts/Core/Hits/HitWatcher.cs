@@ -144,6 +144,9 @@ namespace Game.Core.Hits
                     if (!otherEntity.Active || !otherEntity.TargetsActive) continue;
                     if (selfGuid == otherGuid) continue;
 
+                    // skip if sharing family
+                    if (selfEntity.family != Guid.Empty && otherEntity.family != Guid.Empty && selfEntity.family == otherEntity.family) continue;
+
                     // Check for overlap in hit layer masks
                     if ((selfEntity.hitLayerMask & otherEntity.hitLayerMask) == 0) continue;
 

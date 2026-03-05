@@ -3,6 +3,8 @@ using DG.Tweening;
 using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Damages.Events;
+using Game.Core.Hits;
+using Game.Core.Maps;
 using Game.Core.Projectiles;
 using Game.Other;
 using Game.Player;
@@ -17,8 +19,14 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
         [Header("Objects")]
         public Transform spawnPointsContainer;
         public Transform visual;
+        public HitEntity hitEntity;
         public DamageTarget damageTarget;
         public EmeraldGeodeProjectile projectile;
+        public ParticleSystem[] spawnEffects;
+        public GameObject breakEffect;
+
+        [Header("Properties")]
+        public float maxLifetime;
 
         [Header("Spawning Properties")]
         public float groupSpawnTimeInterval;
@@ -40,6 +48,8 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
         private float _groupSpawnTimer;
         private float _spawnTimer;
 
+        private float _lifetime;
+
         private PlayerBase _author;
         private Guid _family;
 
@@ -58,6 +68,7 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
         {
             SetSpawnCount(initSpawnCount, 0f);
             damageTarget.onDamage.AddListener(OnDamage);
+            hitEntity.family = Guid.NewGuid();
         }
 
         private void OnDestroy()
@@ -93,6 +104,9 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
                 _spawnTimer = spawnTimeInterval;
             }
             else _groupSpawnTimer -= Time.deltaTime;
+
+            if (_lifetime >= maxLifetime) DestroyGeode();
+            else _lifetime += Time.deltaTime;
         }
 
         [Server]
@@ -102,7 +116,11 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
             var position = transform.TransformPoint(_spawnPoints[loopedIdx]);
             var rotation = Quaternion.FromToRotation(Vector3.forward, (position - transform.position).normalized);
 
-            Projectile.Spawn(projectile, _author, position, rotation, NetworkTime.time);
+            var proj = Projectile.Spawn(projectile, _author, position, rotation, NetworkTime.time, (proj) =>
+            {
+                proj.hitEntity.family = hitEntity.family;
+            });
+
             RpcOnProjectileSpawn(idx, position);
         }
 
@@ -158,10 +176,15 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
             var spawnPoint = spawnPointsContainer.GetChild(idx);
             spawnPoint.DOKill();
             spawnPoint.gameObject.SetActive(false);
+
+            var spawnEffect = spawnEffects[idx];
+            spawnEffect.transform.position = position;
+            spawnEffect.Play(true);
         }
 
         private void DestroyGeode()
         {
+            MapLoader.NetworkSpawnOnMap(breakEffect, transform.position, transform.rotation);
             damageTarget.onDamage.RemoveAllListeners();
             NetworkServer.Destroy(gameObject);
         }

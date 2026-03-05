@@ -18,6 +18,8 @@ namespace Game.Core.Hits
         public HitListener[] targets;
         public UnityEvent<HitEvent> onHit = new();
 
+        public Guid family;
+
         [HideInInspector] public Guid guid;
         [HideInInspector] public int hitLayerMask;
         [HideInInspector] public Vector3 observedPosition;

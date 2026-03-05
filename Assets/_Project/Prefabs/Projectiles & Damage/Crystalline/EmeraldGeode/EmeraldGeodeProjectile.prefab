@@ -227,6 +227,7 @@ MonoBehaviour:
   predictionDebugIterations: 1
   predictionDebugTimePassed: 0
   collision: {fileID: 7443579952667858573}
+  hitEntity: {fileID: 7544397017928256807}
   visual: {fileID: 2343244983301001862}
   maxLifetime: 10
   flySpeed: 50

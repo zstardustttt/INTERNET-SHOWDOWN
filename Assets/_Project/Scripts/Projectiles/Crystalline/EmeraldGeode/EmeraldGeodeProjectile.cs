@@ -1,3 +1,4 @@
+using Game.Core.Hits;
 using Game.Core.Projectiles;
 using Mirror;
 using UnityEngine;
@@ -8,6 +9,7 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
     {
         [Header("Objects")]
         public ProjectileCollision collision;
+        public HitEntity hitEntity;
         public Transform visual;
 
         [Header("Properties")]
