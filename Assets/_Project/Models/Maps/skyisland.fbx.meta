@@ -27,6 +27,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: star
+    second: {fileID: 2100000, guid: baf1c3e3cb3918a4c914b39a4994668d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: water
     second: {fileID: 2100000, guid: 32f7a655037368541a3bdaed7c98ccd4, type: 2}
   - first:
@@ -91,18 +96,18 @@ ModelImporter:
     maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
-    secondaryUVAngleDistortion: 7
-    secondaryUVAreaDistortion: 13
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15
     secondaryUVHardAngle: 88
     secondaryUVMarginMethod: 1
     secondaryUVMinLightmapResolution: 40
-    secondaryUVMinObjectScale: 0.1
+    secondaryUVMinObjectScale: 0.04
     secondaryUVPackMargin: 4
     useFileScale: 1
     strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
-    normalImportMode: 1
+    normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
