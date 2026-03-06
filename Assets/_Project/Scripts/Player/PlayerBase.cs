@@ -1,8 +1,6 @@
-using System;
 using Game.Core.Damages;
 using Game.Core.Events;
 using Game.Core.Hits;
-using Game.Core.Maps;
 using Game.Maps;
 using Game.Player.Death;
 using Game.Player.Events;
@@ -17,6 +15,8 @@ namespace Game.Player
     [RequireComponent(typeof(KinematicCharacterMotor))]
     public class PlayerBase : NetworkBehaviour, ICharacterController
     {
+        public const int LOCAL_OVERLAPS_CHECK_BUFFER_SIZE = 128;
+
         public bool Initialized { get; private set; }
         public bool HandlingThisPlayer { get; private set; }
 
@@ -106,6 +106,9 @@ namespace Game.Player
         [HideInInspector] public Vector3 localTransientVelocity;
         private Vector3 _prevTransientPosition;
 
+        private Collider[] _localOverlapsCheckBuffer;
+        private bool _touchingDashOrb;
+
         [Server]
         public void ServerMovePlayer(Vector3 position)
         {
@@ -136,8 +139,30 @@ namespace Game.Player
 
         private void Update()
         {
-            if (!NetworkServer.active) return;
+            if (HandlingThisPlayer)
+                LocalUpdate();
 
+            if (NetworkServer.active)
+                ServerUpdate();
+        }
+
+        private void LocalUpdate()
+        {
+            var point1 = transform.position + Vector3.up * motor.Capsule.radius;
+            var point2 = transform.position + Vector3.up * (motor.Capsule.height - motor.Capsule.radius);
+            var count = Physics.OverlapCapsuleNonAlloc(point1, point2, motor.Capsule.radius, _localOverlapsCheckBuffer, motor.StableGroundLayers, QueryTriggerInteraction.Collide);
+
+            _touchingDashOrb = false;
+            for (int i = 0; i < count; i++)
+            {
+                var other = _localOverlapsCheckBuffer[i];
+                if (other.CompareTag("DashOrb"))
+                    _touchingDashOrb = true;
+            }
+        }
+
+        private void ServerUpdate()
+        {
             if (!_previousStats.Equals(stats))
             {
                 EventBus<OnPlayerStatsChanged>.Invoke(new()
@@ -191,6 +216,8 @@ namespace Game.Player
 
         public void HandleThisPlayer(string name, string guid)
         {
+            _localOverlapsCheckBuffer = new Collider[LOCAL_OVERLAPS_CHECK_BUFFER_SIZE];
+
             motor.enabled = true;
             motor.CharacterController = this;
             HandlingThisPlayer = true;
@@ -376,10 +403,14 @@ namespace Game.Player
 
             _dashCooldownTimer -= deltaTime;
 
-            if (motor.GroundingStatus.IsStableOnGround || _dashing || _walled)
+            if (motor.GroundingStatus.IsStableOnGround || _dashing || _walled || _touchingDashOrb)
             {
                 _coyoteTimer = 0f;
-                if (!inputs.wishDashing) _canDash = true;
+                if (!inputs.wishDashing)
+                {
+                    _canDash = true;
+                    if (_touchingDashOrb) _dashCooldownTimer = 0f;
+                }
             }
             else _coyoteTimer += deltaTime;
 
@@ -581,6 +612,11 @@ namespace Game.Player
             if (_groundSlamming)
             {
                 _groundSlamming = false;
+
+                _canDash = true;
+                _dashCooldownTimer = 0f;
+                onEndDash.Invoke(true);
+
                 onGroundSlamLanded?.Invoke(_groundSlamDistance);
             }
         }
