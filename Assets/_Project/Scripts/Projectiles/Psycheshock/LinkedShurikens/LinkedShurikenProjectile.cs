@@ -1,6 +1,7 @@
 using Game.Core.Damages;
 using Game.Core.Maps;
 using Game.Core.Projectiles;
+using Game.Damages;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
@@ -11,7 +12,7 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
     {
         [Header("Objects")]
         public ProjectileCollision collision;
-        public DamageSource mainDamage;
+        public BasicDamageSource mainDamage;
         public Transform visualToRotate;
         public AudioSource flyAudioSource;
         public AudioSource collideAudioSource;
@@ -96,6 +97,8 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
 
             transform.forward = _flyDirection;
             transform.position = point + normal * 0.1f;
+
+            mainDamage.damageType = DamageType.Indirect;
             RpcOnCollide();
         }
 

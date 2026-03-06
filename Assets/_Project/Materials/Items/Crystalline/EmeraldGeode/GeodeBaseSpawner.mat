@@ -105,7 +105,7 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _MaxRadius: 0.6
-    - _Metallic: 0.2
+    - _Metallic: 0.5
     - _MinRadius: 0.56
     - _OcclusionStrength: 1
     - _Parallax: 0.005
@@ -113,7 +113,7 @@ Material:
     - _QueueOffset: 0
     - _RandomRadiusScale: 25
     - _ReceiveShadows: 1
-    - _Smoothness: 0.25
+    - _Smoothness: 0.33
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

@@ -17,7 +17,6 @@ namespace Game.UI.Game
         public float respawnEffectDuration;
 
         [Header("Indicators")]
-        public CanvasGroup hitIndicator;
         public CanvasGroup damageIndicator;
         public CanvasGroup pureKillIndicator;
         public CanvasGroup unpureKillIndicator;
@@ -50,9 +49,6 @@ namespace Game.UI.Game
             EventBus<OnPlayerStatsChanged>.Listen((data) =>
             {
                 if (!data.player.isLocalPlayer) return;
-
-                if (data.previous.directHits != data.current.directHits) HitIndicatorAnimation();
-                else if (data.previous.indirectHits != data.current.indirectHits) HitIndicatorAnimation();
 
                 if (data.previous.pureKills != data.current.pureKills) PureKillIndicatorAnimation();
                 else if (data.previous.finishingKills != data.current.finishingKills) UnpureKillIndicatorAnimation();
@@ -91,16 +87,9 @@ namespace Game.UI.Game
             respawnEffect.gameObject.SetActive(false);
         }
 
-        private Coroutine _hitIndicatorCoroutine;
         private Coroutine _damageIndicatorCoroutine;
         private Coroutine _pureKillIndicatorCoroutine;
         private Coroutine _unpureKillIndicatorCoroutine;
-
-        private void HitIndicatorAnimation()
-        {
-            if (_hitIndicatorCoroutine != null) StopCoroutine(_hitIndicatorCoroutine);
-            _hitIndicatorCoroutine = StartCoroutine(CO_IndicatorAnimation(hitIndicator, 0.5f));
-        }
 
         private void DamageIndicatorAnimation()
         {
