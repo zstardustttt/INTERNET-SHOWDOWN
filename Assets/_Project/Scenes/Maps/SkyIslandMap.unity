@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.007
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.7657398, g: 0.79443663, b: 1.0083033, a: 1}
+  m_AmbientSkyColor: {r: 0.6181685, g: 0.64133495, b: 0.81398576, a: 1}
   m_AmbientEquatorColor: {r: 0.70073116, g: 0.8001, b: 0.9883373, a: 1}
   m_AmbientGroundColor: {r: 0.4551446, g: 0.41811043, b: 0.3070079, a: 1}
   m_AmbientIntensity: 0.88
@@ -1038,7 +1038,7 @@ MonoBehaviour:
     e10: 0
     e11: 1
     e12: 0
-    e13: 4.901764
+    e13: 4.19355
     e20: 0
     e21: 0
     e22: 1
@@ -1047,7 +1047,7 @@ MonoBehaviour:
     e31: 0
     e32: 0
     e33: 1
-  cachedHashCode: -1813492491
+  cachedHashCode: -326817415
   fillEmptySpaces: 0
   version: 2
   globalVolume: 0
@@ -1497,8 +1497,8 @@ MonoBehaviour:
   sun: {fileID: 610682495}
   subtractiveShadowColor: {r: 0.64379805, g: 0.61960787, b: 0.85882354, a: 1}
   ambientMode: 3
-  ambientLight: {r: 0.7657398, g: 0.79443663, b: 1.0083033, a: 1}
-  ambientSkyColor: {r: 0.7657398, g: 0.79443663, b: 1.0083033, a: 1}
+  ambientLight: {r: 0.6181685, g: 0.64133495, b: 0.81398576, a: 1}
+  ambientSkyColor: {r: 0.6181685, g: 0.64133495, b: 0.81398576, a: 1}
   ambientEquatorColor: {r: 0.70073116, g: 0.8001, b: 0.9883373, a: 1}
   ambientGroundColor: {r: 0.4551446, g: 0.41811043, b: 0.3070079, a: 1}
   ambientIntensity: 0.88
