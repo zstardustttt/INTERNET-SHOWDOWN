@@ -7,6 +7,7 @@ using Game.Core.Maps;
 using Game.GameLoop;
 using Game.GameLoop.Events;
 using Game.Player;
+using Game.Player.Events;
 using Mirror;
 using UnityEngine;
 
@@ -17,11 +18,17 @@ namespace Game.Boxes
     {
         public GameObject boxPrefab;
         public HitLayer boxesLayer;
-        public float spawnRate;
+
+        [Header("Ambient Spawning")]
+        public int maxAmbientSpawnFails;
+        public float ambientSpawnRate;
         public int maxBoxesPerPlayer;
 
+        [Header("Need Spawning")]
+        public int maxNeedSpawnFails;
+        public float offsetTowardsPlayerFactor;
+
         [Header("Box spawning settings")]
-        public int maxSpawnFails;
         public float maxGroundAngle;
         public float spawnMargin;
         public float spawnYOffset;
@@ -45,6 +52,8 @@ namespace Game.Boxes
             EventBus<OnBoxDestroy>.Listen((_) => _spawnedBoxesCounter--);
 
             EventBus<HitEvent>.Listen(OnHit);
+
+            EventBus<OnItemUsed>.Listen((data) => OnItemUsed(data.player));
         }
 
         private void OnHit(HitEvent hitEvent)
@@ -56,6 +65,18 @@ namespace Game.Boxes
             {
                 playerItemModule.PickRandomItem();
                 NetworkServer.Destroy(hitEvent.source.gameObject);
+            }
+        }
+
+        private void OnItemUsed(PlayerBase player)
+        {
+            for (int i = 0; i < maxNeedSpawnFails; i++)
+            {
+                var info = MapLoader.loadedMap.info;
+                var playerShapePosition = new Vector3(player.transform.position.x, info.boundsMax.y, player.transform.position.z);
+                var point = Vector3.Lerp(info.SelectRandomPointOnSpawnShape(), playerShapePosition, offsetTowardsPlayerFactor);
+                if (TrySpawnBox(point)) break;
+                Debug.Log($"Failed to spawn need box. Fail iteration: {i}");
             }
         }
 
@@ -80,52 +101,20 @@ namespace Game.Boxes
 
             if (_timer <= 0f)
             {
-                _timer = 1f / (spawnRate * playerCount);
-                for (int i = 0; i < maxSpawnFails; i++)
+                _timer = 1f / (ambientSpawnRate * playerCount);
+                for (int i = 0; i < maxAmbientSpawnFails; i++)
                 {
-                    if (TrySpawnBox()) break;
-                    Debug.Log($"Failed to spawn box. Fail iteration: {i}");
+                    var point = MapLoader.loadedMap.info.SelectRandomPointOnSpawnShape();
+                    if (TrySpawnBox(point)) break;
+                    Debug.Log($"Failed to spawn ambient box. Fail iteration: {i}");
                 }
             }
             else _timer -= Time.deltaTime;
         }
 
-        private bool TrySpawnBox()
+        private bool TrySpawnBox(Vector3 pointOnShape)
         {
-            var info = MapLoader.loadedMap.info;
-
-            var probabilityOffset = 0f;
-            var selectedTriangleIdx = -1;
-            var triangleSelectionRandom = Random.value;
-            for (int i = 0; i < info.boxSpawnShapeTriangulationData.triangles.Length; i++)
-            {
-                var triangle = info.boxSpawnShapeTriangulationData.triangles[i];
-                var areaRatio = triangle.area / info.boxSpawnShapeTriangulationData.totalArea;
-                if (triangleSelectionRandom >= probabilityOffset && triangleSelectionRandom < probabilityOffset + areaRatio)
-                {
-                    selectedTriangleIdx = i;
-                    break;
-                }
-                probabilityOffset += areaRatio;
-            }
-
-            if (selectedTriangleIdx == -1) return false;
-            var selectedTriangle = info.boxSpawnShapeTriangulationData.triangles[selectedTriangleIdx];
-
-            var triangleOrigin = Vector2.Min(selectedTriangle.a, Vector2.Min(selectedTriangle.b, selectedTriangle.c));
-            var relativeA = selectedTriangle.a - triangleOrigin;
-            var relativeB = selectedTriangle.b - triangleOrigin;
-            var relativeC = selectedTriangle.c - triangleOrigin;
-
-            var trianglePointRandom1 = Random.value;
-            var trianglePointRandom2 = Random.value;
-            var triangleU = 1f - Mathf.Sqrt(trianglePointRandom1);
-            var triangleV = Mathf.Sqrt(trianglePointRandom1) * (1f - trianglePointRandom2);
-            var triangleW = 1f - triangleU - triangleV;
-            var relativeRandomPoint = triangleU * relativeA + triangleV * relativeB + triangleW * relativeC;
-            var randomPoint = relativeRandomPoint + triangleOrigin;
-
-            var origin = info.transform.position + new Vector3(randomPoint.x, info.boundsMax.y, randomPoint.y);
+            var origin = pointOnShape;
             var possibleSpawnPoints = new List<Vector3>();
             while (Physics.Raycast(origin, Vector3.down, out var hit, 200f, _enviromentLayerMask))
             {

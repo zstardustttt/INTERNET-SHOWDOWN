@@ -152,6 +152,41 @@ namespace Game.Core.Maps
             return crossA <= 0f && crossB <= 0f && crossC <= 0f;
         }
 
+        public Vector3 SelectRandomPointOnSpawnShape()
+        {
+            var probabilityOffset = 0f;
+            var selectedTriangleIdx = -1;
+            var triangleSelectionRandom = Random.value;
+            for (int i = 0; i < boxSpawnShapeTriangulationData.triangles.Length; i++)
+            {
+                var triangle = boxSpawnShapeTriangulationData.triangles[i];
+                var areaRatio = triangle.area / boxSpawnShapeTriangulationData.totalArea;
+                if (triangleSelectionRandom >= probabilityOffset && triangleSelectionRandom < probabilityOffset + areaRatio)
+                {
+                    selectedTriangleIdx = i;
+                    break;
+                }
+                probabilityOffset += areaRatio;
+            }
+
+            if (selectedTriangleIdx == -1) return Vector2.zero;
+            var selectedTriangle = boxSpawnShapeTriangulationData.triangles[selectedTriangleIdx];
+
+            var triangleOrigin = Vector2.Min(selectedTriangle.a, Vector2.Min(selectedTriangle.b, selectedTriangle.c));
+            var relativeA = selectedTriangle.a - triangleOrigin;
+            var relativeB = selectedTriangle.b - triangleOrigin;
+            var relativeC = selectedTriangle.c - triangleOrigin;
+
+            var trianglePointRandom1 = Random.value;
+            var trianglePointRandom2 = Random.value;
+            var triangleU = 1f - Mathf.Sqrt(trianglePointRandom1);
+            var triangleV = Mathf.Sqrt(trianglePointRandom1) * (1f - trianglePointRandom2);
+            var triangleW = 1f - triangleU - triangleV;
+            var relativeRandomPoint = triangleU * relativeA + triangleV * relativeB + triangleW * relativeC;
+            var randomPoint = relativeRandomPoint + triangleOrigin;
+            return transform.position + new Vector3(randomPoint.x, boundsMax.y, randomPoint.y);
+        }
+
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.green;

@@ -46,4 +46,9 @@ namespace Game.Player.Events
         public PlayerBase player;
         public bool reset;
     }
+
+    public struct OnItemUsed : IEvent
+    {
+        public PlayerBase player;
+    }
 }

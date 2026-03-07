@@ -1,6 +1,8 @@
 using System;
+using Game.Core.Events;
 using Game.Core.Hits;
 using Game.Core.Items;
+using Game.Player.Events;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
@@ -166,6 +168,7 @@ namespace Game.Player
                 ResetItem();
                 player.stats.activity++;
                 onItemUsed.Invoke();
+                EventBus<OnItemUsed>.Invoke(new() { player = player });
             }
             else TargetRestartItemAnimation();
         }
