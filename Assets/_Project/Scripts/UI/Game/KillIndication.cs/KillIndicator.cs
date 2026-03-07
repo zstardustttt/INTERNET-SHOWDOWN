@@ -70,9 +70,9 @@ namespace Game.UI.Game.KillIndication
             {
                 if (!data.player.isLocalPlayer) return;
 
-                if (data.previous.pureKills != data.current.pureKills) Play();
-                else if (data.previous.finishingKills != data.current.finishingKills) Play();
-                else if (data.previous.supportingKills != data.current.supportingKills) Play();
+                if (data.previous.pureKills < data.current.pureKills) Play();
+                else if (data.previous.finishingKills < data.current.finishingKills) Play();
+                else if (data.previous.supportingKills < data.current.supportingKills) Play();
             });
         }
 

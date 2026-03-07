@@ -39,9 +39,9 @@ namespace Game.UI.Game.HitIndiction
             {
                 if (!data.player.isLocalPlayer) return;
 
-                if (data.previous.directHits != data.current.directHits)
+                if (data.previous.directHits < data.current.directHits)
                     Indicate(data.current.GetScore() - data.previous.GetScore(), true);
-                else if (data.previous.indirectHits != data.current.indirectHits)
+                else if (data.previous.indirectHits < data.current.indirectHits)
                     Indicate(data.current.GetScore() - data.previous.GetScore(), false);
             });
         }
