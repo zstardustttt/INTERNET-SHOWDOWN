@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 418f73291c68b2e49a3036283a475a59, type: 3}
   m_Name: Acophyst
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Items.ItemConfig
-  include: 1
+  include: 0
   prefab: {fileID: 7116874807829508220, guid: 8227ce0c82086224a87d810e4739fbe4, type: 3}
   rarity: {fileID: 11400000, guid: 728896c93a1299e468e7f7c259067434, type: 2}
   displayName: Acophyst

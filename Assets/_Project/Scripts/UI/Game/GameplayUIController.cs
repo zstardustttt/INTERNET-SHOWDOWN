@@ -46,15 +46,6 @@ namespace Game.UI.Game
                 else _uiSwitchRequested = true;
             });
 
-            EventBus<OnPlayerStatsChanged>.Listen((data) =>
-            {
-                if (!data.player.isLocalPlayer) return;
-
-                if (data.previous.pureKills != data.current.pureKills) PureKillIndicatorAnimation();
-                else if (data.previous.finishingKills != data.current.finishingKills) UnpureKillIndicatorAnimation();
-                else if (data.previous.supportingKills != data.current.supportingKills) UnpureKillIndicatorAnimation();
-            });
-
             EventBus<OnPlayerHealthChanged>.Listen((data) =>
             {
                 if (!data.healthModule.isLocalPlayer) return;
@@ -88,25 +79,11 @@ namespace Game.UI.Game
         }
 
         private Coroutine _damageIndicatorCoroutine;
-        private Coroutine _pureKillIndicatorCoroutine;
-        private Coroutine _unpureKillIndicatorCoroutine;
 
         private void DamageIndicatorAnimation()
         {
             if (_damageIndicatorCoroutine != null) StopCoroutine(_damageIndicatorCoroutine);
             _damageIndicatorCoroutine = StartCoroutine(CO_IndicatorAnimation(damageIndicator, 0.5f));
-        }
-
-        private void PureKillIndicatorAnimation()
-        {
-            if (_pureKillIndicatorCoroutine != null) StopCoroutine(_pureKillIndicatorCoroutine);
-            _pureKillIndicatorCoroutine = StartCoroutine(CO_IndicatorAnimation(pureKillIndicator, 1f));
-        }
-
-        private void UnpureKillIndicatorAnimation()
-        {
-            if (_unpureKillIndicatorCoroutine != null) StopCoroutine(_unpureKillIndicatorCoroutine);
-            _unpureKillIndicatorCoroutine = StartCoroutine(CO_IndicatorAnimation(unpureKillIndicator, 1f));
         }
 
         private IEnumerator CO_IndicatorAnimation(CanvasGroup group, float duration)

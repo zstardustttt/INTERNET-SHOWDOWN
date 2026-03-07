@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 418f73291c68b2e49a3036283a475a59, type: 3}
   m_Name: BOOMerang
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Items.ItemConfig
-  include: 1
+  include: 0
   prefab: {fileID: 8730809908688905300, guid: 89592cd9ff3cbab4cb8d9e95686f2819, type: 3}
   rarity: {fileID: 11400000, guid: c3b52a2756e20b3438d116e9a052254e, type: 2}
   displayName: B-BOOMerang

@@ -133,7 +133,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   author: {fileID: 0}
-  damageType: 0
+  damageType: 1
   damageAmount: 10
 --- !u!1 &6619339023262767049
 GameObject:
@@ -188,6 +188,8 @@ MonoBehaviour:
   damageSource: {fileID: 3646660236376352543}
   startProj: {fileID: 0}
   endProj: {fileID: 0}
+  startPos: {x: 0, y: 0, z: 0}
+  endPos: {x: 0, y: 0, z: 0}
 --- !u!120 &8668921467422308858
 LineRenderer:
   serializedVersion: 3
