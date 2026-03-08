@@ -9,7 +9,7 @@ namespace Game.Graphics.Outlines
     {
         public Color color;
         public float thickness;
-        public LayerMask layerMask;
+        public RenderingLayerMask renderingLayerMask;
 
         [Space(9)]
         public bool enableDepth;

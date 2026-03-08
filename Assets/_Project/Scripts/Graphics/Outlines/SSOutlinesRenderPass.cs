@@ -120,7 +120,7 @@ namespace Game.Graphics.Outlines
 
             var drawSettings = RenderingUtils.CreateDrawingSettings(shaderTags, renderingData, cameraData, lightData, cameraData.defaultOpaqueSortFlags);
             drawSettings.overrideMaterial = _outlinesMaskMaterial;
-            var filteringSettings = new FilteringSettings(RenderQueueRange.opaque, _properties.layerMask);
+            var filteringSettings = new FilteringSettings(RenderQueueRange.opaque, renderingLayerMask: _properties.renderingLayerMask);
             var rendererListParams = new RendererListParams(renderingData.cullResults, drawSettings, filteringSettings);
 
             using var builder = renderGraph.AddRasterRenderPass<SSOutlinesRenderPassData>("Get Outlines Mask Texture", out var passData);

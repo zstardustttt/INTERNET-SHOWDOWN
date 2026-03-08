@@ -1,5 +1,44 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7682981769579529404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c3f510a71b2a364eab0ddd6bd873c7e, type: 3}
+  m_Name: SSOutlinesRendererFeature
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Graphics.Outlines.SSOutlinesRendererFeature
+  m_Active: 1
+  properties:
+    color: {r: 1, g: 0.11372548, b: 0.11372548, a: 1}
+    thickness: 0.1
+    renderingLayerMask:
+      serializedVersion: 0
+      m_Bits: 1024
+    enableDepth: 1
+    depthStrength: 1
+    depthThickness: 50
+    depthThreshold: 50
+    enableColor: 0
+    colorStrength: 1
+    colorThickness: 10
+    colorThreshold: 0.5
+    enableNormals: 0
+    normalsStrength: 1
+    normalsThickness: 100
+    normalsThreshold: 0.3
+    acuteAngleStartDot: 0
+    acuteDepthThreshold: 50
+    adjustNearDepth: 0
+    adjustFarDepth: 50
+    normalsFarThreshold: 1
+    colorFarThreshold: 1
+  shader: {fileID: 4800000, guid: 8b5766d62e247e846b16a0459904bd52, type: 3}
+  injectionPoint: 550
 --- !u!114 &-4524852355417012378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51,9 +90,9 @@ MonoBehaviour:
   properties:
     color: {r: 0.7, g: 0.7, b: 0.7, a: 1}
     thickness: 0.1
-    layerMask:
-      serializedVersion: 2
-      m_Bits: 13376
+    renderingLayerMask:
+      serializedVersion: 0
+      m_Bits: 2048
     enableDepth: 1
     depthStrength: 1
     depthThickness: 50
@@ -102,8 +141,10 @@ MonoBehaviour:
   - {fileID: 4772964828174011577}
   - {fileID: 4106938239991161458}
   - {fileID: -822168341375895447}
+  - {fileID: 3494863621557382411}
+  - {fileID: -7682981769579529404}
   - {fileID: -3805008779101506429}
-  m_RendererFeatureMap: b9ccbe1439fa3c42722224dd91c6fe3869b8b7e23f1297f4837469daace431cb
+  m_RendererFeatureMap: b9ccbe1439fa3c42722224dd91c6fe3869b8b7e23f1297f40bed5c7df23f803044fb6868c9906095837469daace431cb
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -132,6 +173,45 @@ MonoBehaviour:
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
+--- !u!114 &3494863621557382411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c3f510a71b2a364eab0ddd6bd873c7e, type: 3}
+  m_Name: SSOutlinesRendererFeature
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Graphics.Outlines.SSOutlinesRendererFeature
+  m_Active: 1
+  properties:
+    color: {r: 0.112359524, g: 0.42134818, b: 1, a: 1}
+    thickness: 0.1
+    renderingLayerMask:
+      serializedVersion: 0
+      m_Bits: 512
+    enableDepth: 1
+    depthStrength: 1
+    depthThickness: 50
+    depthThreshold: 50
+    enableColor: 0
+    colorStrength: 1
+    colorThickness: 10
+    colorThreshold: 0.5
+    enableNormals: 0
+    normalsStrength: 1
+    normalsThickness: 100
+    normalsThreshold: 0.3
+    acuteAngleStartDot: 0
+    acuteDepthThreshold: 50
+    adjustNearDepth: 0
+    adjustFarDepth: 50
+    normalsFarThreshold: 1
+    colorFarThreshold: 1
+  shader: {fileID: 4800000, guid: 8b5766d62e247e846b16a0459904bd52, type: 3}
+  injectionPoint: 550
 --- !u!114 &4106938239991161458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,9 +228,9 @@ MonoBehaviour:
   properties:
     color: {r: 0, g: 0, b: 0, a: 0.7490196}
     thickness: 0.1
-    layerMask:
-      serializedVersion: 2
-      m_Bits: 2048
+    renderingLayerMask:
+      serializedVersion: 0
+      m_Bits: 256
     enableDepth: 1
     depthStrength: 1
     depthThickness: 100

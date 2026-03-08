@@ -53,9 +53,13 @@ namespace Game.Boxes
                 var visual = box.visual;
 
                 visual.localPosition = Mathf.Sin(box.hash + Time.time * moveFrequency) * moveAmplitude * Vector3.up;
-                visual.Rotate(Vector3.up, spinSpeed * Time.deltaTime);
-                visual.Rotate(Vector3.forward, spinSpeed * Time.deltaTime * Mathf.Sin(box.hash + Time.time * 0.5f));
-                visual.Rotate(Vector3.right, spinSpeed * Time.deltaTime * Mathf.Cos(box.hash + Time.time * 0.5f));
+
+                var spinDelta = spinSpeed * Time.deltaTime;
+                visual.Rotate(Vector3.up, spinDelta);
+
+                var spinFactorArg = box.hash + Time.time * 0.5f;
+                visual.Rotate(Vector3.forward, spinDelta * Mathf.Sin(spinFactorArg));
+                visual.Rotate(Vector3.right, spinDelta * Mathf.Cos(spinFactorArg));
 
                 if (box.timer >= box.hash + visualUpdateInterval)
                 {

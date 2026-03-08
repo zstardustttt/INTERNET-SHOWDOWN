@@ -293,7 +293,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 5eec874820d98184c8c3648bd3263c15, type: 2}
@@ -424,6 +424,14 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 123
       objectReference: {fileID: 0}
+    - target: {fileID: -7179977621632755682, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: -6662296304173161518, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: -5603568263708238521, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
       propertyPath: m_Layer
       value: 11
@@ -439,6 +447,10 @@ PrefabInstance:
     - target: {fileID: -5037349870440704867, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: -4929788903857198384, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
       objectReference: {fileID: 0}
     - target: {fileID: -3754608908043963507, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
       propertyPath: m_Layer
@@ -456,6 +468,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 123
       objectReference: {fileID: 0}
+    - target: {fileID: -2195407104471221312, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: -1760714182489039777, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
       propertyPath: m_Layer
       value: 11
@@ -463,6 +479,14 @@ PrefabInstance:
     - target: {fileID: -1760714182489039777, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: -1707992212735795690, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: -305091885687274788, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
       objectReference: {fileID: 0}
     - target: {fileID: -82358763968010616, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
       propertyPath: m_Layer
@@ -479,6 +503,10 @@ PrefabInstance:
     - target: {fileID: 524340850711097137, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: 903781129018998227, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
       propertyPath: m_Name
@@ -492,6 +520,18 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 123
       objectReference: {fileID: 0}
+    - target: {fileID: 4210965255248954314, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 4370951913967234905, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 4953377252493334692, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 5092708244707826562, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
       propertyPath: m_Layer
       value: 11
@@ -499,6 +539,10 @@ PrefabInstance:
     - target: {fileID: 5092708244707826562, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: 5223827243018389903, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
       objectReference: {fileID: 0}
     - target: {fileID: 5425626536462331279, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
       propertyPath: m_Layer
@@ -515,6 +559,14 @@ PrefabInstance:
     - target: {fileID: 5766573793312001283, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: 6251913747656884347, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548377097586529050, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
       objectReference: {fileID: 0}
     - target: {fileID: 8702430246359457498, guid: 22109f618aa454ffb8306b7069e5e61a, type: 3}
       propertyPath: m_Layer
@@ -900,7 +952,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 9d3f6bbf762f50a4d9704be23f848310, type: 2}
@@ -1846,7 +1898,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 9d3f6bbf762f50a4d9704be23f848310, type: 2}
@@ -1943,7 +1995,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 9d3f6bbf762f50a4d9704be23f848310, type: 2}
@@ -2471,7 +2523,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 1ca7ad2543b696c438771771a10dbf67, type: 2}
@@ -4592,7 +4644,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 5eec874820d98184c8c3648bd3263c15, type: 2}
@@ -4975,6 +5027,9 @@ MonoBehaviour:
   - mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
     scale: 1.75
   outerFieldMaterial: {fileID: 2100000, guid: 7e16c845d802c5e409a9cc0ddc783402, type: 2}
+  renderingLayerMask:
+    serializedVersion: 0
+    m_Bits: 2048
 --- !u!1 &1174911732
 GameObject:
   m_ObjectHideFlags: 0
@@ -5225,7 +5280,7 @@ Terrain:
   m_ScaleInLightmap: 0.0256
   m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
   m_GroupingID: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_AllowAutoConnect: 1
   m_EnableHeightmapRayTracing: 1
   m_EnableTreesAndDetailsRayTracing: 0
@@ -5530,7 +5585,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 5eec874820d98184c8c3648bd3263c15, type: 2}
@@ -6531,7 +6586,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 5eec874820d98184c8c3648bd3263c15, type: 2}
@@ -7273,7 +7328,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 9d3f6bbf762f50a4d9704be23f848310, type: 2}
@@ -8093,7 +8148,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 9d3f6bbf762f50a4d9704be23f848310, type: 2}
@@ -8634,6 +8689,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 729054699}
     m_Modifications:
+    - target: {fileID: 1811448515830959218, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 5068157160698124617, guid: 77343da56c2a4884e92045b868b998da, type: 3}
       propertyPath: m_Name
       value: JumpPad

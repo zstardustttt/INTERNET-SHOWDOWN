@@ -63,7 +63,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 2049
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 7a55372cc32dda04688a021b92de8def, type: 2}
@@ -177,7 +177,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52cf161b4bc25bf49975d0eeecfac34d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Other.BoxAnimation
-  outerFieldFilter: {fileID: 0}
   outlineFilter: {fileID: 8480133697489101004}
   visual: {fileID: 2789467421147770397}
   hash: 0
@@ -207,6 +206,7 @@ MonoBehaviour:
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   skipObservationUpdate: 0
+  index: 0
   boxCollider: {fileID: 8222996875898718387}
 --- !u!114 &7762867787826688087
 MonoBehaviour:

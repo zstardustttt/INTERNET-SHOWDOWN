@@ -687,6 +687,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1320255330}
     m_Modifications:
+    - target: {fileID: 1811448515830959218, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 5068157160698124617, guid: 77343da56c2a4884e92045b868b998da, type: 3}
       propertyPath: m_Name
       value: JumpPad
@@ -938,7 +942,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 5eec874820d98184c8c3648bd3263c15, type: 2}
@@ -1440,7 +1444,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 1ca7ad2543b696c438771771a10dbf67, type: 2}
@@ -5732,7 +5736,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 5eec874820d98184c8c3648bd3263c15, type: 2}
