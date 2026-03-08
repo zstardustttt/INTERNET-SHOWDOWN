@@ -36,6 +36,7 @@ namespace Game.Player.Death
         private float _endingTimer;
 
         private Material[][] _baseMaterials;
+        private Material[][] _baseWithRespawnMaterials;
         private Material _respawnMaterial;
 
         private void Awake()
@@ -44,9 +45,15 @@ namespace Game.Player.Death
 
             _respawnMaterial = Instantiate(config.respawnEffectMaterial);
             _baseMaterials = new Material[respawnEffectRenderers.Length][];
+            _baseWithRespawnMaterials = new Material[respawnEffectRenderers.Length][];
             for (int i = 0; i < respawnEffectRenderers.Length; i++)
             {
-                _baseMaterials[i] = respawnEffectRenderers[i].materials;
+                var mats = respawnEffectRenderers[i].materials;
+                _baseMaterials[i] = mats;
+
+                var newMaterials = mats.ToList();
+                newMaterials.Add(_respawnMaterial);
+                _baseWithRespawnMaterials[i] = newMaterials.ToArray();
             }
         }
 
@@ -74,9 +81,7 @@ namespace Game.Player.Death
 
                 for (int i = 0; i < respawnEffectRenderers.Length; i++)
                 {
-                    var newMaterials = _baseMaterials[i].ToList();
-                    newMaterials.Add(_respawnMaterial);
-                    respawnEffectRenderers[i].SetMaterials(newMaterials);
+                    respawnEffectRenderers[i].materials = _baseWithRespawnMaterials[i];
                 }
 
                 return;
