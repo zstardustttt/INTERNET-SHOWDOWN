@@ -26,6 +26,7 @@ namespace Game.Core.Hits
         [HideInInspector] public Vector3 previousObservedPosition;
         [HideInInspector] public Vector3 observedDelta;
         [HideInInspector] public bool skipObservationUpdate;
+        [HideInInspector] public int index;
 
         public abstract int CastNonAlloc(Vector3 origin, Vector3 direction, float length, LayerMask layerMask, RaycastHit[] results, QueryTriggerInteraction triggerInteraction);
         public abstract int OverlapNonAlloc(Vector3 origin, LayerMask layerMask, Collider[] results, QueryTriggerInteraction triggerInteraction);
@@ -56,13 +57,14 @@ namespace Game.Core.Hits
 
         private void Awake()
         {
+            index = -1;
             MoveEntityObservation(transform.position);
             EventBus<OnHitEntityCreate>.Invoke(new() { entity = this });
         }
 
         private void OnDestroy()
         {
-            EventBus<OnHitEntityDestroy>.Invoke(new() { guid = guid });
+            EventBus<OnHitEntityDestroy>.Invoke(new() { index = index });
         }
 
         public void UpdateActivity(bool sourcesActive, bool targetsActive)

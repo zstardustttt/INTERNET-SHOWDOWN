@@ -6,7 +6,6 @@ namespace Game.Boxes
 {
     public class ItemBox : MonoBehaviour
     {
-        public MeshFilter outerFieldFilter;
         public MeshFilter outlineFilter;
         public Transform visual;
 

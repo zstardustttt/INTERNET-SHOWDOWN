@@ -115,7 +115,7 @@ namespace Game.Graphics.Outlines
             var lightData = frameData.Get<UniversalLightData>();
 
             var cameraTextureDescriptor = cameraData.cameraTargetDescriptor;
-            var renderTextureDescriptor = new RenderTextureDescriptor(cameraTextureDescriptor.width, cameraTextureDescriptor.height, cameraTextureDescriptor.colorFormat, 0, cameraTextureDescriptor.mipCount, RenderTextureReadWrite.Default);
+            var renderTextureDescriptor = new RenderTextureDescriptor(cameraTextureDescriptor.width, cameraTextureDescriptor.height, RenderTextureFormat.RGHalf, 0, cameraTextureDescriptor.mipCount, RenderTextureReadWrite.Default);
             var outlinesMaskTexture = UniversalRenderer.CreateRenderGraphTexture(renderGraph, renderTextureDescriptor, "_SSOMask", false);
 
             var drawSettings = RenderingUtils.CreateDrawingSettings(shaderTags, renderingData, cameraData, lightData, cameraData.defaultOpaqueSortFlags);

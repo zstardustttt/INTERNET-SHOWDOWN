@@ -1,4 +1,3 @@
-using System;
 using Game.Core.Events;
 using UnityEngine;
 
@@ -11,7 +10,7 @@ namespace Game.Core.Hits.Events
 
     public struct OnHitEntityDestroy : IEvent
     {
-        public Guid guid;
+        public int index;
     }
 
     public struct HitEvent : IEvent

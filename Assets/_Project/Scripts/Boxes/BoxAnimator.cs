@@ -15,40 +15,74 @@ namespace Game.Boxes
 
     public class BoxAnimator : MonoBehaviour
     {
+        public const int MAX_BOXES_PER_MESH = 512;
+
         public float moveFrequency;
         public float moveAmplitude;
         public float spinSpeed;
         public float visualUpdateInterval;
         public PossibleBoxMesh[] possibleMeshes;
 
+        [Header("Instancing")]
+        public Material outerFieldMaterial;
+
         private List<ItemBox> _boxes;
+        private Matrix4x4[][] _drawCallData;
+        private int[] _counters;
 
         private void Awake()
         {
             _boxes = new();
+            _drawCallData = new Matrix4x4[possibleMeshes.Length][];
+            for (int i = 0; i < possibleMeshes.Length; i++)
+            {
+                _drawCallData[i] = new Matrix4x4[MAX_BOXES_PER_MESH];
+            }
+            _counters = new int[possibleMeshes.Length];
+
             EventBus<OnBoxSpawn>.Listen((data) => _boxes.Add(data.box));
             EventBus<OnBoxDestroy>.Listen((data) => _boxes.Remove(data.box));
         }
 
         private void Update()
         {
+            if (_boxes.Count == 0) return;
+
             foreach (var box in _boxes)
             {
-                box.visual.localPosition = Mathf.Sin(box.hash + Time.time * moveFrequency) * moveAmplitude * Vector3.up;
-                box.visual.Rotate(Vector3.up, spinSpeed * Time.deltaTime);
-                box.visual.Rotate(Vector3.forward, spinSpeed * Time.deltaTime * Mathf.Sin(box.hash + Time.time * 0.5f));
-                box.visual.Rotate(Vector3.right, spinSpeed * Time.deltaTime * Mathf.Cos(box.hash + Time.time * 0.5f));
+                var visual = box.visual;
+
+                visual.localPosition = Mathf.Sin(box.hash + Time.time * moveFrequency) * moveAmplitude * Vector3.up;
+                visual.Rotate(Vector3.up, spinSpeed * Time.deltaTime);
+                visual.Rotate(Vector3.forward, spinSpeed * Time.deltaTime * Mathf.Sin(box.hash + Time.time * 0.5f));
+                visual.Rotate(Vector3.right, spinSpeed * Time.deltaTime * Mathf.Cos(box.hash + Time.time * 0.5f));
 
                 if (box.timer >= box.hash + visualUpdateInterval)
                 {
                     box.meshIdx = (box.meshIdx + 1) % possibleMeshes.Length;
                     var mesh = possibleMeshes[box.meshIdx];
-                    box.visual.localScale = mesh.scale * Vector3.one;
-                    box.outerFieldFilter.mesh = mesh.mesh;
+                    visual.localScale = mesh.scale * Vector3.one;
                     box.outlineFilter.mesh = mesh.mesh;
                     box.timer = box.hash;
                 }
                 box.timer += Time.deltaTime;
+
+                var counter = _counters[box.meshIdx];
+                if (counter < MAX_BOXES_PER_MESH)
+                {
+                    _drawCallData[box.meshIdx][counter] = visual.transform.localToWorldMatrix;
+                    _counters[box.meshIdx]++;
+                }
+            }
+
+            for (int meshIdx = 0; meshIdx < possibleMeshes.Length; meshIdx++)
+            {
+                var mesh = possibleMeshes[meshIdx].mesh;
+                var counter = _counters[meshIdx];
+                if (counter == 0) continue;
+
+                UnityEngine.Graphics.RenderMeshInstanced(new RenderParams(outerFieldMaterial), mesh, 0, _drawCallData[meshIdx], counter);
+                _counters[meshIdx] = 0;
             }
         }
     }

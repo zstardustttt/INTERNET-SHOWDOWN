@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Game.Core.Events;
 using Game.Core.Hits.Events;
 using UnityEngine;
@@ -13,9 +14,9 @@ namespace Game.Core.Hits
         public float queryMargin;
         public HitLayer[] layers;
 
-        private Dictionary<Guid, HitEntity> _entities;
+        private List<HitEntity> _entities;
         private Stack<HitEntity> _freshEntities;
-        private Stack<Guid> _outdatedEntities;
+        private List<int> _outdatedEntities;
 
         private Collider[] _queryCollidersBuffer;
         private RaycastHit[] _queryHitsBuffer;
@@ -59,7 +60,12 @@ namespace Game.Core.Hits
 
                 _freshEntities.Push(data.entity);
             });
-            EventBus<OnHitEntityDestroy>.Listen((data) => _outdatedEntities.Push(data.guid));
+
+            EventBus<OnHitEntityDestroy>.Listen((data) =>
+            {
+                if (data.index > -1)
+                    _outdatedEntities.Add(data.index);
+            });
         }
 
         private void Update()
@@ -73,10 +79,18 @@ namespace Game.Core.Hits
 
         private void CleanupOutdatedEntities()
         {
-            while (_outdatedEntities.Count > 0)
+            if (_outdatedEntities.Count == 0) return;
+
+            var ordered = _outdatedEntities.OrderByDescending((x) => x);
+            foreach (var index in ordered)
             {
-                var guid = _outdatedEntities.Pop();
-                _entities.Remove(guid);
+                _entities.RemoveAt(index);
+            }
+            _outdatedEntities.Clear();
+
+            for (int i = 0; i < _entities.Count; i++)
+            {
+                _entities[i].index = i;
             }
         }
 
@@ -86,13 +100,15 @@ namespace Game.Core.Hits
             {
                 var entity = _freshEntities.Pop();
                 if (!entity) continue;
-                _entities.Add(entity.guid, entity);
+
+                entity.index = _entities.Count;
+                _entities.Add(entity);
             }
         }
 
         private void BeforeHitScan()
         {
-            foreach (var (_, entity) in _entities)
+            foreach (var entity in _entities)
             {
                 if (!entity) continue;
 
@@ -133,16 +149,14 @@ namespace Game.Core.Hits
 
         private void HitScan()
         {
-            foreach (var (selfGuid, selfEntity) in _entities)
+            foreach (var selfEntity in _entities)
             {
-                if (!selfEntity) continue;
                 if (!selfEntity.Active || !selfEntity.SourcesActive) continue;
 
-                foreach (var (otherGuid, otherEntity) in _entities)
+                foreach (var otherEntity in _entities)
                 {
-                    if (!otherEntity) continue;
                     if (!otherEntity.Active || !otherEntity.TargetsActive) continue;
-                    if (selfGuid == otherGuid) continue;
+                    if (selfEntity.index == otherEntity.index) continue;
 
                     // skip if sharing family
                     if (selfEntity.family != Guid.Empty && otherEntity.family != Guid.Empty && selfEntity.family == otherEntity.family) continue;
