@@ -11,6 +11,7 @@ namespace Game.Player
         Motor,
         Health,
         Hit,
+        Force
     }
 
     public class PlayerLocks : NetworkBehaviour
@@ -27,7 +28,8 @@ namespace Game.Player
             PlayerLock.Input,
             PlayerLock.Motor,
             PlayerLock.Health,
-            PlayerLock.Hit
+            PlayerLock.Hit,
+            PlayerLock.Force
         };
 
         [Header("Objects")]

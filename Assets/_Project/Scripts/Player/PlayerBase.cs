@@ -651,6 +651,7 @@ namespace Game.Player
         [TargetRpc]
         public void TargetSetAdditionalForce(Vector3 force)
         {
+            if (locks.Locked(PlayerLock.Force)) return;
             _additionalVelocity = force;
         }
 

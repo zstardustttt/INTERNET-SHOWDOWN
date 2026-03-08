@@ -1,4 +1,5 @@
 using Game.Core.Events;
+using Game.Player.Death;
 using Game.Player.Health;
 
 namespace Game.Player.Events
@@ -50,5 +51,11 @@ namespace Game.Player.Events
     public struct OnItemUsed : IEvent
     {
         public PlayerBase player;
+    }
+
+    public struct OnPlayerRespawnInvincibilityStateChanged : IEvent
+    {
+        public PlayerBase player;
+        public RespawnInvincibilityState state;
     }
 }

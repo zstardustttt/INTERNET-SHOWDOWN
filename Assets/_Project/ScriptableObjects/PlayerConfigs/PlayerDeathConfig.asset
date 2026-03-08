@@ -12,4 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ad77f308d220b741a9cd7e2842322b3, type: 3}
   m_Name: PlayerDeathConfig
   m_EditorClassIdentifier: Assembly-CSharp::Game.Player.Death.PlayerDeathConfig
+  respawnEffectMaterial: {fileID: 2100000, guid: afa9f36190871274d85cdfd8fb5de092, type: 2}
   ascendSpeed: 5
+  awakeInvincibilityDuration: 1
+  endingInvincibilityDuration: 2.5
+  moveThreshold: 1

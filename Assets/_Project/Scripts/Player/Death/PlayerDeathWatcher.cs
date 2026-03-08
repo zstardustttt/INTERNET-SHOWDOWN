@@ -51,11 +51,10 @@ namespace Game.Player.Death
 
         public void RespawnPlayer(PlayerBase player)
         {
-            if (MapLoader.IsPlayerOnMap(player))
-                player.ServerMovePlayer(MapLoader.loadedMap.info.GetRandomSpawnPoint());
-            else player.ServerMovePlayer(lobbyInfo.spawnArea.RandomSampleArea(Space.World));
+            var position = MapLoader.IsPlayerOnMap(player) ? MapLoader.loadedMap.info.GetRandomSpawnPoint() : lobbyInfo.spawnArea.RandomSampleArea(Space.World);
+            player.ServerMovePlayer(position);
+            player.deathModule.previousPosition = position;
 
-            // TODO: respawn invincibility
             player.deathModule.Respawn();
         }
 

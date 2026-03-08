@@ -702,6 +702,8 @@ MonoBehaviour:
   player: {fileID: 6754057132338759635}
   config: {fileID: 11400000, guid: 3cb526ad745f02144862fecd5c07d756, type: 2}
   ghostModel: {fileID: 7006930605099416351}
+  respawnEffectRenderers:
+  - {fileID: 6833519805803861239}
   onDeath:
     m_PersistentCalls:
       m_Calls: []
@@ -709,6 +711,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   respawnTimer: 0
+  previousPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &1977572232203292389
 GameObject:
   m_ObjectHideFlags: 0
@@ -796,6 +799,7 @@ MonoBehaviour:
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   skipObservationUpdate: 0
+  index: 0
   capsuleCollider: {fileID: 6144822228631900321}
 --- !u!114 &5880631188279301956
 MonoBehaviour:
