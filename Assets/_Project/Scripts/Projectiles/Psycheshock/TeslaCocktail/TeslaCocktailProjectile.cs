@@ -51,14 +51,11 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
         private void OnHit(HitEvent hitEvent)
         {
             if (!hitEvent.target.transform.root.TryGetComponent(out PlayerBase player)) return;
-            if (player == author) return;
+            if (player == authorReference.author) return;
 
             var playerField = MapLoader.NetworkSpawnOnMap(playerFieldPrefab, player.transform.position, Quaternion.identity);
-            playerField.BroadcastOnChildren(new SetupDamageSourceBroadcast()
-            {
-                author = author,
-                family = author.healthModule.family,
-            });
+            playerField.BroadcastOnGameObject(new SetAuthorBroadcast(authorReference.author));
+            playerField.BroadcastOnGameObject(new SetTeamBroadcast(teamReference.team));
 
             playerField.GetComponent<TeslaCocktailPlayerField>().player = player;
             DestroyProjectile();
@@ -67,11 +64,8 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
         private void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
             var field = MapLoader.NetworkSpawnOnMap(fieldPrefab, point, Quaternion.FromToRotation(Vector3.up, normal));
-            field.BroadcastOnChildren(new SetupDamageSourceBroadcast()
-            {
-                author = author,
-                family = author.healthModule.family
-            });
+            field.BroadcastOnGameObject(new SetAuthorBroadcast(authorReference.author));
+            field.BroadcastOnGameObject(new SetTeamBroadcast(teamReference.team));
 
             DestroyProjectile();
         }

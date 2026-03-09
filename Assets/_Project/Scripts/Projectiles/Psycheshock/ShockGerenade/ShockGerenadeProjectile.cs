@@ -58,6 +58,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         private PlayerBase _explosionRequestAuthor;
         private float _explosionTimer;
         private Vector3 _explosionTriggerVelocity;
+        private float _holdDamageAmount;
 
         [HideInInspector] public float flySpeed;
         [HideInInspector] public float explodeAfter;
@@ -90,6 +91,8 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             {
                 collision.CheckCollisionBetweenTwoPoints(previousPrediction.position, prediction.position);
             });
+
+            _holdDamageAmount = holdDamage * (explodeAfterPrimary / explodeAfter);
         }
 
         protected override void OnDestroyed()
@@ -107,16 +110,16 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         private void OnHit(HitEvent hitEvent)
         {
             if (!hitEvent.target.transform.root.TryGetComponent(out PlayerBase player)) return;
-            if (player == author) return;
+            if (player == authorReference.author) return;
 
             Attach(player);
         }
 
         private void OnDamage(DamageEvent damageEvent)
         {
-            var explosionAuthor = damageEvent.damage.type == DamageType.Direct && damageEvent.source.author
-                ? damageEvent.source.author
-                : author;
+            var explosionAuthor = damageEvent.damage.type == DamageType.Direct && damageEvent.damage.author
+                ? damageEvent.damage.author
+                : authorReference.author;
 
             Explode(explosionAuthor);
         }
@@ -182,7 +185,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             tickAudioSource.spatialBlend = 1f;
         }
 
-        private void OnAttachedDeath() => Explode(author);
+        private void OnAttachedDeath() => Explode(authorReference.author);
 
         [ClientRpc]
         private void RpcPlayAttachDetachAudio(bool attach)
@@ -215,18 +218,15 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
                         _attached.deathModule.onDeath.RemoveListener(OnAttachedDeath);
                         _attached.healthModule.onWishDamage.RemoveListener(OnDamage);
 
-                        var damage = new Damage(DamageType.Indirect, 100f, _explosionRequestAuthor, Guid.NewGuid(), _explosionRequestAuthor.healthModule.family);
+                        var damage = new Damage(DamageType.Indirect, 100f, _explosionRequestAuthor, Guid.NewGuid(), _explosionRequestAuthor.teamReference.team);
                         _attached.healthModule.ApplyDamage(damage);
                         pos = _attached.motor.Capsule.bounds.center;
                     }
                     else pos = transform.position;
 
                     var explosion = MapLoader.NetworkSpawnOnMap(explosionPrefab, pos, Quaternion.identity);
-                    explosion.BroadcastOnChildren(new SetupDamageSourceBroadcast()
-                    {
-                        family = _explosionRequestAuthor.healthModule.family,
-                        author = _explosionRequestAuthor
-                    });
+                    explosion.BroadcastOnGameObject(new SetAuthorBroadcast(authorReference.author));
+                    explosion.BroadcastOnGameObject(new SetTeamBroadcast(teamReference.team));
 
                     DestroyProjectile();
                 }
@@ -236,7 +236,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
             if (lifetime > explodeAfter)
             {
-                Explode(author);
+                Explode(authorReference.author);
                 return;
             }
 
@@ -259,8 +259,8 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
                 if (_collectedAttachedDelta >= detachTotalDelta) Detach();
                 else
                 {
-                    var damage = holdDamage * (explodeAfterPrimary / explodeAfter);
-                    _attached.healthModule.ApplyDamage(new(DamageType.Indirect, damage, author, _holdDamageSourceGuid, author.healthModule.family));
+                    var damage = new Damage(DamageType.Indirect, _holdDamageAmount, authorReference.author, _holdDamageSourceGuid, teamReference.team);
+                    _attached.healthModule.ApplyDamage(damage);
                 }
 
                 return;

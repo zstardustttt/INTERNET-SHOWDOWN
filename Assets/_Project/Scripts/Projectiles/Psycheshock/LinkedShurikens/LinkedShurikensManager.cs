@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Game.Player;
+using Game.Core.Damages;
 using Mirror;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -12,6 +12,8 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
     {
         [Header("Objects")]
         public ShurikenLink shurikenLinkPrefab;
+        public AuthorReference authorReference;
+        public TeamReference teamReference;
 
         [Header("Properties")]
         public float pointsPerUnit;
@@ -45,12 +47,13 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
             }
         }
 
-        public void SetupAuthorAndFamily(PlayerBase author, Guid family)
+        public override void OnStartServer()
         {
             foreach (var link in _shurikenLinks)
             {
-                link.damageSource.author = author;
-                link.damageSource.family = family;
+                link.damageSource.authorReference = authorReference;
+                link.damageSource.teamReference = teamReference;
+
                 link.damageSource.beforeHitScan.AddListener(() =>
                 {
                     if (!link.startProj || !link.endProj) return;

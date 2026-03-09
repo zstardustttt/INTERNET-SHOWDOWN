@@ -61,11 +61,8 @@ namespace Game.Projectiles.Psycheshock
         public void Explode(Vector3 point)
         {
             var explosion = MapLoader.NetworkSpawnOnMap(explosionPrefab, point, Quaternion.identity);
-            explosion.BroadcastOnChildren(new SetupDamageSourceBroadcast()
-            {
-                family = author.healthModule.family,
-                author = author
-            });
+            explosion.BroadcastOnGameObject(new SetAuthorBroadcast(authorReference.author));
+            explosion.BroadcastOnGameObject(new SetTeamBroadcast(teamReference.team));
 
             DestroyProjectile();
         }

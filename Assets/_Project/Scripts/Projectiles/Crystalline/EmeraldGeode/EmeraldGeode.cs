@@ -1,6 +1,5 @@
 using System;
 using DG.Tweening;
-using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Damages.Events;
 using Game.Core.Hits;
@@ -14,13 +13,15 @@ using Random = UnityEngine.Random;
 
 namespace Game.Projectiles.Crystalline.EmeraldGeode
 {
-    public class EmeraldGeode : NetworkBehaviour, IBroadcastReceiver<SetupDamageSourceBroadcast>
+    public class EmeraldGeode : NetworkBehaviour
     {
         [Header("Objects")]
         public Transform spawnPointsContainer;
         public Transform visual;
         public HitEntity hitEntity;
         public DamageTarget damageTarget;
+        public AuthorReference authorReference;
+        public TeamReference teamReference;
         public EmeraldGeodeProjectile projectile;
         public ParticleSystem[] spawnEffects;
         public GameObject breakEffect;
@@ -49,9 +50,6 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
         private float _spawnTimer;
 
         private float _lifetime;
-
-        private PlayerBase _author;
-        private Guid _family;
 
         protected override void OnValidate()
         {
@@ -116,7 +114,7 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
             var position = transform.TransformPoint(_spawnPoints[loopedIdx]);
             var rotation = Quaternion.FromToRotation(Vector3.forward, (position - transform.position).normalized);
 
-            var proj = Projectile.Spawn(projectile, _author, position, rotation, NetworkTime.time, (proj) =>
+            var proj = Projectile.Spawn(projectile, authorReference.author, teamReference.team, position, rotation, NetworkTime.time, (proj) =>
             {
                 proj.hitEntity.family = hitEntity.family;
             });
@@ -218,13 +216,6 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
             {
                 Gizmos.DrawSphere(transform.TransformPoint(_spawnPoints[i]), 0.05f);
             }
-        }
-
-        public void Receive(SetupDamageSourceBroadcast broadcast)
-        {
-            _author = broadcast.author;
-            _family = broadcast.family;
-            damageTarget.family = _family;
         }
     }
 }

@@ -48,6 +48,8 @@ GameObject:
   - component: {fileID: 3678650528618506568}
   - component: {fileID: 2762855302227303365}
   - component: {fileID: 995001314689355060}
+  - component: {fileID: 8140967754608827254}
+  - component: {fileID: 1946182701380433017}
   m_Layer: 10
   m_Name: AcophystProjectileLevel2
   m_TagString: Untagged
@@ -91,7 +93,8 @@ MonoBehaviour:
   rb: {fileID: 1289744956753037696}
   netTransform: {fileID: 1943222080262355107}
   netRb: {fileID: 1458376385741237078}
-  author: {fileID: 0}
+  authorReference: {fileID: 8140967754608827254}
+  teamReference: {fileID: 1946182701380433017}
   lifetime: 0
   spawnPosition: {x: 0, y: 0, z: 0}
   spawnRotation: {x: 0, y: 0, z: 0, w: 0}
@@ -275,6 +278,39 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &8140967754608827254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2132040386777057985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97713dbfc340b7845a67797373802679, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.AuthorReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  author: {fileID: 0}
+--- !u!114 &1946182701380433017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2132040386777057985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d063f58264eb86940a7f8a4b6b69c914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.TeamReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1 &2417954815724651086
 GameObject:
   m_ObjectHideFlags: 0
@@ -548,6 +584,7 @@ MonoBehaviour:
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   skipObservationUpdate: 0
+  index: 0
   boxCollider: {fileID: 8255508435612688206}
 --- !u!114 &2433473995355313201
 MonoBehaviour:
@@ -575,13 +612,15 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   canDamageFamily: 0
+  authorReference: {fileID: 8140967754608827254}
+  teamReference: {fileID: 1946182701380433017}
+  canDamageTeam: 0
   onWishDamage:
     m_PersistentCalls:
       m_Calls: []
   onDamage:
     m_PersistentCalls:
       m_Calls: []
-  author: {fileID: 0}
   damageType: 1
   damageAmount: 20
 --- !u!1 &9102467712362677163

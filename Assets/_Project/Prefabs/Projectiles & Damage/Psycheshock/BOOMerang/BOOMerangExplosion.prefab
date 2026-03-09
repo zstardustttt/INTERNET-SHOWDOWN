@@ -18,6 +18,8 @@ GameObject:
   - component: {fileID: 5213909373270996031}
   - component: {fileID: 1027551292999665406}
   - component: {fileID: 6782610045723240616}
+  - component: {fileID: 6197550940520681713}
+  - component: {fileID: 5009858568228553438}
   m_Layer: 9
   m_Name: BOOMerangExplosion
   m_TagString: Untagged
@@ -136,6 +138,7 @@ MonoBehaviour:
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   skipObservationUpdate: 0
+  index: 0
   sphereCollider: {fileID: 7681473800882726293}
 --- !u!114 &466974322591248012
 MonoBehaviour:
@@ -163,13 +166,15 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   canDamageFamily: 0
+  authorReference: {fileID: 5009858568228553438}
+  teamReference: {fileID: 6197550940520681713}
+  canDamageTeam: 0
   onWishDamage:
     m_PersistentCalls:
       m_Calls: []
   onDamage:
     m_PersistentCalls:
       m_Calls: []
-  author: {fileID: 0}
   centerOffset: {x: 0, y: 0, z: 0}
   damageType: 1
   outerRadius: 10
@@ -230,6 +235,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Hits.DeactivateHitListenerAfterTime
   hitListener: {fileID: 1027551292999665406}
   time: 0.1
+--- !u!114 &6197550940520681713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3101699681814522868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d063f58264eb86940a7f8a4b6b69c914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.TeamReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+--- !u!114 &5009858568228553438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3101699681814522868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97713dbfc340b7845a67797373802679, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.AuthorReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  author: {fileID: 0}
 --- !u!1 &4654514875637633129
 GameObject:
   m_ObjectHideFlags: 0

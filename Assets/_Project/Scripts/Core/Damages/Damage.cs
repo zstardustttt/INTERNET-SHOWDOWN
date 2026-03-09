@@ -16,15 +16,15 @@ namespace Game.Core.Damages
         public float amount;
         public PlayerBase author;
         public Guid source;
-        public Guid family;
+        public Guid team;
 
-        public Damage(DamageType type, float amount, PlayerBase author, Guid source, Guid family)
+        public Damage(DamageType type, float amount, PlayerBase author, Guid source, Guid team)
         {
             this.type = type;
             this.amount = amount;
             this.author = author;
             this.source = source;
-            this.family = family;
+            this.team = team;
         }
     }
 }

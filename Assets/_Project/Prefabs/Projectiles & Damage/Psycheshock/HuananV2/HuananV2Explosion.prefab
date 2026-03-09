@@ -24677,6 +24677,8 @@ GameObject:
   - component: {fileID: 6188270649285907794}
   - component: {fileID: 772117909738435127}
   - component: {fileID: 8129586979763025812}
+  - component: {fileID: 9123583227568595825}
+  - component: {fileID: 2227766243308831210}
   m_Layer: 9
   m_Name: HuananV2Explosion
   m_TagString: Untagged
@@ -24746,6 +24748,7 @@ MonoBehaviour:
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   skipObservationUpdate: 0
+  index: 0
   sphereCollider: {fileID: 5563388409014675495}
 --- !u!114 &697191921998550392
 MonoBehaviour:
@@ -24773,13 +24776,15 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   canDamageFamily: 0
+  authorReference: {fileID: 2227766243308831210}
+  teamReference: {fileID: 9123583227568595825}
+  canDamageTeam: 0
   onWishDamage:
     m_PersistentCalls:
       m_Calls: []
   onDamage:
     m_PersistentCalls:
       m_Calls: []
-  author: {fileID: 0}
   centerOffset: {x: 0, y: 0, z: 0}
   damageType: 1
   outerRadius: 6
@@ -24889,3 +24894,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Hits.DeactivateHitListenerAfterTime
   hitListener: {fileID: 772117909738435127}
   time: 0.1
+--- !u!114 &9123583227568595825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8596668877135600386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d063f58264eb86940a7f8a4b6b69c914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.TeamReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+--- !u!114 &2227766243308831210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8596668877135600386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97713dbfc340b7845a67797373802679, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.AuthorReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  author: {fileID: 0}

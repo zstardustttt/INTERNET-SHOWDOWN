@@ -1,4 +1,3 @@
-using System;
 using Game.Core.Damages.Events;
 using Game.Core.Events;
 using Game.Core.Hits.Events;
@@ -18,13 +17,13 @@ namespace Game.Core.Damages
             if (hitEvent.source is not DamageSource source) return;
             if (hitEvent.target is not DamageTarget target) return;
 
-            var sharingFamily = source.family != Guid.Empty && target.family != Guid.Empty && source.family == target.family;
-            if (!sharingFamily || source.canDamageFamily)
+            var sharingFamily = source.teamReference.Unwrap().CompareTeam(target.teamReference.Unwrap());
+            if (!sharingFamily || source.canDamageTeam)
             {
                 var evaluation = source.EvaluateDamage(target);
                 if (!evaluation.valid) return;
 
-                var damage = new Damage(evaluation.type, evaluation.amount, source.author, source.Guid, source.family);
+                var damage = new Damage(evaluation.type, evaluation.amount, source.authorReference.Unwrap(), source.Guid, source.teamReference.Unwrap());
                 var damageEvent = new DamageEvent(source, target, damage);
 
                 source.onWishDamage.Invoke(damageEvent);

@@ -116,8 +116,8 @@ namespace Game.Projectiles.Crystalline
             var rotation1 = Quaternion.Euler(axisEuler);
             var rotation2 = Quaternion.Euler(-axisEuler);
 
-            Spawn(projectileToSpawnOnHit, author, transform.position, rotation1, NetworkTime.time);
-            Spawn(projectileToSpawnOnHit, author, transform.position, rotation2, NetworkTime.time);
+            Spawn(projectileToSpawnOnHit, authorReference.author, teamReference.team, transform.position, rotation1, NetworkTime.time);
+            Spawn(projectileToSpawnOnHit, authorReference.author, teamReference.team, transform.position, rotation2, NetworkTime.time);
 
             Break(true, Vector3.zero, Vector3.up);
         }
@@ -135,7 +135,7 @@ namespace Game.Projectiles.Crystalline
             var closestDistance = 2000f;
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
-                if (player.deathModule.Dead || player == author) continue;
+                if (player.deathModule.Dead || player == authorReference.author) continue;
                 var distance = Vector3.Distance(player.transform.position, transform.position);
                 if (distance < closestDistance)
                 {
@@ -170,11 +170,8 @@ namespace Game.Projectiles.Crystalline
             else
             {
                 var breakEffect = MapLoader.NetworkSpawnOnMap(breakEffectPrefab, effectPoint, Quaternion.FromToRotation(Vector3.up, effectUp));
-                breakEffect.BroadcastOnChildren(new SetupDamageSourceBroadcast()
-                {
-                    author = author,
-                    family = author.healthModule.family,
-                });
+                breakEffect.BroadcastOnGameObject(new SetAuthorBroadcast(authorReference.author));
+                breakEffect.BroadcastOnGameObject(new SetTeamBroadcast(teamReference.team));
             }
 
             RpcBreak();

@@ -1,3 +1,4 @@
+using System;
 using Game.Core.Damages;
 using Game.Core.Events;
 using Game.Core.Hits;
@@ -26,6 +27,7 @@ namespace Game.Player
         public PlayerHealthModule healthModule;
         public PlayerItemModule itemModule;
         public PlayerDeathModule deathModule;
+        public TeamReference teamReference;
         public PlayerLocks locks;
         public PlayerConfig config;
         public IPlayerController controller;
@@ -135,6 +137,8 @@ namespace Game.Player
                 if (plock == PlayerLock.Hit) hitEntity.active = !locked;
                 else if (plock == PlayerLock.Health) healthModule.active = !locked;
             });
+
+            teamReference.team = Guid.NewGuid();
         }
 
         private void Update()

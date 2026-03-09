@@ -276,6 +276,7 @@ GameObject:
   - component: {fileID: 4075737330760207556}
   - component: {fileID: 1976138601191644980}
   - component: {fileID: 9142073372359770434}
+  - component: {fileID: 2384920938161365344}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -518,6 +519,7 @@ MonoBehaviour:
   healthModule: {fileID: 5880631188279301956}
   itemModule: {fileID: 7304304024719944416}
   deathModule: {fileID: 9142073372359770434}
+  teamReference: {fileID: 2384920938161365344}
   locks: {fileID: 1976138601191644980}
   config: {fileID: 11400000, guid: 6557f4f69351e73429465a2a5dfea442, type: 2}
   motor: {fileID: 3085756864833092725}
@@ -712,6 +714,22 @@ MonoBehaviour:
       m_Calls: []
   respawnTimer: 0
   previousPosition: {x: 0, y: 0, z: 0}
+--- !u!114 &2384920938161365344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635209751978783220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d063f58264eb86940a7f8a4b6b69c914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.TeamReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1 &1977572232203292389
 GameObject:
   m_ObjectHideFlags: 0
@@ -826,6 +844,7 @@ MonoBehaviour:
   beforeHitScan:
     m_PersistentCalls:
       m_Calls: []
+  teamReference: {fileID: 2384920938161365344}
   onWishDamage:
     m_PersistentCalls:
       m_Calls: []

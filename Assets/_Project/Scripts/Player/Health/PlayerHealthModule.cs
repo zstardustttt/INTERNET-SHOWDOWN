@@ -47,8 +47,6 @@ namespace Game.Player.Health
             invincibilityTimers = new();
 
             damageHistory = new();
-            family = Guid.NewGuid();
-
             ResetHealth();
         }
 
@@ -57,8 +55,7 @@ namespace Game.Player.Health
             if (player.locks.Locked(PlayerLock.Health)) return false;
             if (invincibilityTimers.ContainsKey(damage.source)) return false;
 
-            var sharingFamily = family != Guid.Empty && damage.family != Guid.Empty && family == damage.family;
-            if (damage.author && !sharingFamily)
+            if (damage.author && !teamReference.Unwrap().CompareTeam(damage.team))
             {
                 damage.author.ReportDealtDamage
                 (
@@ -87,7 +84,7 @@ namespace Game.Player.Health
                 differenceCounter += damage.amount;
 
                 if (differenceCounter <= difference) continue;
-                damageHistory.Push(new(damage.type, differenceCounter - difference, damage.author, damage.source, damage.family));
+                damageHistory.Push(new(damage.type, differenceCounter - difference, damage.author, damage.source, damage.team));
                 break;
             }
 

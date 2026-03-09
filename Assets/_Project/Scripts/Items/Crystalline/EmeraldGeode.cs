@@ -13,7 +13,7 @@ namespace Game.Items.Crystalline
         public override bool Use(PlayerBase user, ItemUseClientContext context)
         {
             var forwardOffset = context.headRotation * Vector3.forward * 0.5f;
-            Projectile.Spawn(projectile, user, context.headPosition + forwardOffset, context.headRotation, context.useTime);
+            Projectile.Spawn(projectile, user, user.teamReference.team, context.headPosition + forwardOffset, context.headRotation, context.useTime);
             return true;
         }
     }

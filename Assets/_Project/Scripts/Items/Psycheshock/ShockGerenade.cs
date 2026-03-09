@@ -34,7 +34,7 @@ namespace Game.Items.Psycheshock
 
         public override bool Use(PlayerBase user, ItemUseClientContext context)
         {
-            Projectile.Spawn(projectile, user, context.headPosition, context.headRotation, context.useTime, (proj) =>
+            Projectile.Spawn(projectile, user, user.teamReference.team, context.headPosition, context.headRotation, context.useTime, (proj) =>
             {
                 proj.flySpeed = context.secondary ? proj.secondarySpeed : proj.speed;
                 proj.explodeAfter = context.secondary ? proj.explodeAfterSecondary : proj.explodeAfterPrimary;

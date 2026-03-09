@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 490452635148387784}
   - component: {fileID: 3814544164326343549}
   - component: {fileID: 65647630199678033}
+  - component: {fileID: 8547363349159174681}
+  - component: {fileID: 2961389997109991315}
   m_Layer: 10
   m_Name: ShockGerenade
   m_TagString: Untagged
@@ -85,7 +87,8 @@ MonoBehaviour:
   rb: {fileID: 8422152388811641674}
   netTransform: {fileID: 8203638565341032619}
   netRb: {fileID: 518300984145970512}
-  author: {fileID: 0}
+  authorReference: {fileID: 8547363349159174681}
+  teamReference: {fileID: 2961389997109991315}
   lifetime: 0
   spawnPosition: {x: 0, y: 0, z: 0}
   spawnRotation: {x: 0, y: 0, z: 0, w: 0}
@@ -352,6 +355,39 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8547363349159174681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1459376448108328031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97713dbfc340b7845a67797373802679, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.AuthorReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  author: {fileID: 0}
+--- !u!114 &2961389997109991315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1459376448108328031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d063f58264eb86940a7f8a4b6b69c914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.TeamReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1 &2011318079426229929
 GameObject:
   m_ObjectHideFlags: 0
@@ -433,6 +469,7 @@ MonoBehaviour:
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   skipObservationUpdate: 0
+  index: 0
   sphereCollider: {fileID: 6595121199782008432}
 --- !u!114 &7040493596059717009
 MonoBehaviour:
@@ -484,6 +521,7 @@ MonoBehaviour:
   beforeHitScan:
     m_PersistentCalls:
       m_Calls: []
+  teamReference: {fileID: 0}
   onWishDamage:
     m_PersistentCalls:
       m_Calls: []

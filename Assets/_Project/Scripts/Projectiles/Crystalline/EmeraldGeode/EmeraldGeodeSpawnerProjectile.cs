@@ -43,11 +43,8 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
         private void OnCollision(Vector3 point, Vector3 normal, Collider other)
         {
             var emeraldGeode = MapLoader.NetworkSpawnOnMap(emeraldGeodePrefab, point, Quaternion.FromToRotation(Vector3.up, normal));
-            emeraldGeode.BroadcastOnChildren(new SetupDamageSourceBroadcast()
-            {
-                author = author,
-                family = author.healthModule.family,
-            });
+            emeraldGeode.BroadcastOnGameObject(new SetAuthorBroadcast(authorReference.author));
+            emeraldGeode.BroadcastOnGameObject(new SetTeamBroadcast(teamReference.team));
 
             DestroyProjectile();
         }

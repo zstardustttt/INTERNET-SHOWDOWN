@@ -1,19 +1,10 @@
 using System;
-using Game.Core.Broadcast;
 using Game.Core.Damages.Events;
 using Game.Core.Hits;
-using Game.Player;
-using UnityEngine;
 using UnityEngine.Events;
 
 namespace Game.Core.Damages
 {
-    public struct SetupDamageSourceBroadcast
-    {
-        public Guid family;
-        public PlayerBase author;
-    }
-
     public struct DamageEvaluation
     {
         public bool valid;
@@ -28,16 +19,15 @@ namespace Game.Core.Damages
         }
     }
 
-    public class DamageSource : HitListener, IBroadcastReceiver<SetupDamageSourceBroadcast>
+    public class DamageSource : HitListener
     {
         public Guid Guid { get; private set; }
 
-        public bool canDamageFamily;
+        public AuthorReference authorReference;
+        public TeamReference teamReference;
+        public bool canDamageTeam;
         public UnityEvent<DamageEvent> onWishDamage;
         public UnityEvent<DamageEvent> onDamage;
-
-        [HideInInspector] public PlayerBase author;
-        [HideInInspector] public Guid family;
 
         private void Awake()
         {
@@ -47,12 +37,6 @@ namespace Game.Core.Damages
         public virtual DamageEvaluation EvaluateDamage(DamageTarget target)
         {
             return default;
-        }
-
-        public void Receive(SetupDamageSourceBroadcast broadcast)
-        {
-            family = broadcast.family;
-            author = broadcast.author;
         }
     }
 }

@@ -5014,6 +5014,7 @@ MonoBehaviour:
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   skipObservationUpdate: 0
+  index: 0
   boxCollider: {fileID: 140443639753249438}
 --- !u!114 &542484312898659771
 MonoBehaviour:
@@ -5041,13 +5042,15 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   canDamageFamily: 0
+  authorReference: {fileID: 5516479265608034548}
+  teamReference: {fileID: 53578493652914002}
+  canDamageTeam: 0
   onWishDamage:
     m_PersistentCalls:
       m_Calls: []
   onDamage:
     m_PersistentCalls:
       m_Calls: []
-  author: {fileID: 0}
   damageType: 0
   damageAmount: 20
 --- !u!1 &5419103293203108044
@@ -5255,6 +5258,8 @@ GameObject:
   - component: {fileID: 2528156539210598983}
   - component: {fileID: 223967848806961954}
   - component: {fileID: 7122442680882183601}
+  - component: {fileID: 5516479265608034548}
+  - component: {fileID: 53578493652914002}
   m_Layer: 10
   m_Name: LinkedShurikenProjectile
   m_TagString: Untagged
@@ -5397,7 +5402,8 @@ MonoBehaviour:
   rb: {fileID: 9214235689123662022}
   netTransform: {fileID: 7736598877331663676}
   netRb: {fileID: 5621182609258816947}
-  author: {fileID: 0}
+  authorReference: {fileID: 5516479265608034548}
+  teamReference: {fileID: 53578493652914002}
   lifetime: 0
   spawnPosition: {x: 0, y: 0, z: 0}
   spawnRotation: {x: 0, y: 0, z: 0, w: 0}
@@ -5579,6 +5585,39 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5516479265608034548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7874815376088176383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97713dbfc340b7845a67797373802679, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.AuthorReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  author: {fileID: 0}
+--- !u!114 &53578493652914002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7874815376088176383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d063f58264eb86940a7f8a4b6b69c914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.TeamReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1001 &6765660685699890574
 PrefabInstance:
   m_ObjectHideFlags: 0

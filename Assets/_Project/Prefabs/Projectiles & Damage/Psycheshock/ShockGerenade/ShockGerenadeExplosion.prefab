@@ -9945,6 +9945,8 @@ GameObject:
   - component: {fileID: 5298370162904033481}
   - component: {fileID: 5345040428679002968}
   - component: {fileID: 4870092962609594493}
+  - component: {fileID: 7659422548848370963}
+  - component: {fileID: 6341730075977355948}
   m_Layer: 9
   m_Name: ShockGerenadeExplosion
   m_TagString: Untagged
@@ -10063,6 +10065,7 @@ MonoBehaviour:
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   skipObservationUpdate: 0
+  index: 0
   sphereCollider: {fileID: 7299828617124353764}
 --- !u!114 &6279231139512775734
 MonoBehaviour:
@@ -10090,13 +10093,15 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   canDamageFamily: 1
+  authorReference: {fileID: 7659422548848370963}
+  teamReference: {fileID: 6341730075977355948}
+  canDamageTeam: 1
   onWishDamage:
     m_PersistentCalls:
       m_Calls: []
   onDamage:
     m_PersistentCalls:
       m_Calls: []
-  author: {fileID: 0}
   centerOffset: {x: 0, y: 0, z: 0}
   damageType: 1
   outerRadius: 8
@@ -10157,6 +10162,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Hits.DeactivateHitListenerAfterTime
   hitListener: {fileID: 5345040428679002968}
   time: 0.1
+--- !u!114 &7659422548848370963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228057851501706029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97713dbfc340b7845a67797373802679, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.AuthorReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  author: {fileID: 0}
+--- !u!114 &6341730075977355948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228057851501706029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d063f58264eb86940a7f8a4b6b69c914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.TeamReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1 &3556841456498905073
 GameObject:
   m_ObjectHideFlags: 0

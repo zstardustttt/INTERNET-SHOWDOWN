@@ -5040,6 +5040,8 @@ GameObject:
   - component: {fileID: 5430840458658788007}
   - component: {fileID: 6986286408549408776}
   - component: {fileID: 1499078453112064720}
+  - component: {fileID: 6248273010036703941}
+  - component: {fileID: 2355660353592759377}
   m_Layer: 9
   m_Name: TeslaCocktailField
   m_TagString: Untagged
@@ -5125,6 +5127,7 @@ MonoBehaviour:
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   skipObservationUpdate: 0
+  index: 0
   sphereCollider: {fileID: 1835711590667591631}
 --- !u!114 &125256339657675952
 MonoBehaviour:
@@ -5152,13 +5155,15 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   canDamageFamily: 1
+  authorReference: {fileID: 2355660353592759377}
+  teamReference: {fileID: 6248273010036703941}
+  canDamageTeam: 1
   onWishDamage:
     m_PersistentCalls:
       m_Calls: []
   onDamage:
     m_PersistentCalls:
       m_Calls: []
-  author: {fileID: 0}
   centerOffset: {x: 0, y: 0, z: 0}
   damageType: 1
   outerRadius: 8
@@ -5343,6 +5348,39 @@ MonoBehaviour:
   amplitude: 0.5
   minDistance: 5
   maxDistance: 50
+--- !u!114 &6248273010036703941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489991236996220354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d063f58264eb86940a7f8a4b6b69c914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.TeamReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+--- !u!114 &2355660353592759377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489991236996220354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97713dbfc340b7845a67797373802679, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.AuthorReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  author: {fileID: 0}
 --- !u!1 &3247484108831360086
 GameObject:
   m_ObjectHideFlags: 0

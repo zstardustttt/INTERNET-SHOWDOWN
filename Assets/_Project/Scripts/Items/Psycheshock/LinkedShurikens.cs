@@ -20,7 +20,7 @@ namespace Game.Items.Psycheshock
 
         public override bool Use(PlayerBase user, ItemUseClientContext context)
         {
-            var proj = Projectile.Spawn(projectilePrefab, user, context.headPosition, context.headRotation, context.useTime, (proj) =>
+            var proj = Projectile.Spawn(projectilePrefab, user, user.teamReference.team, context.headPosition, context.headRotation, context.useTime, (proj) =>
             {
                 proj.collideAudioPitch = initialPitch + _uses * pitchIncrease;
             });
@@ -30,7 +30,8 @@ namespace Game.Items.Psycheshock
                 _manager = MapLoader.NetworkSpawnOnMap(managerPrefab.gameObject, Vector3.zero, Quaternion.identity)
                     .GetComponent<LinkedShurikensManager>();
 
-                _manager.SetupAuthorAndFamily(user, user.healthModule.family);
+                _manager.authorReference.author = user;
+                _manager.teamReference.team = user.teamReference.team;
             }
             _manager.AddProjectile(proj);
 

@@ -53,7 +53,7 @@ namespace Game.Items.Psycheshock
 
         public override bool Use(PlayerBase user, ItemUseClientContext context)
         {
-            Projectile.Spawn(projectile, user, context.headPosition, context.headRotation, context.useTime, (proj) =>
+            Projectile.Spawn(projectile, user, user.teamReference.team, context.headPosition, context.headRotation, context.useTime, (proj) =>
             {
                 proj.damageMultiply = _parsedDamageMultiplier;
                 proj.returns = _parsedReturns;

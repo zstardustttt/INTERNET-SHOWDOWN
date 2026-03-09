@@ -5156,6 +5156,7 @@ MonoBehaviour:
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   skipObservationUpdate: 0
+  index: 0
   boxCollider: {fileID: 6552705432739538980}
 --- !u!114 &334281805058564404
 MonoBehaviour:
@@ -5182,6 +5183,7 @@ MonoBehaviour:
   beforeHitScan:
     m_PersistentCalls:
       m_Calls: []
+  teamReference: {fileID: 6230271570755950658}
   onWishDamage:
     m_PersistentCalls:
       m_Calls: []
@@ -29744,6 +29746,8 @@ GameObject:
   - component: {fileID: 691699366846325386}
   - component: {fileID: 3965218106177612276}
   - component: {fileID: 6746293290612159170}
+  - component: {fileID: 8188077163264751911}
+  - component: {fileID: 6230271570755950658}
   m_Layer: 10
   m_Name: EmeraldGeode
   m_TagString: Untagged
@@ -29788,6 +29792,8 @@ MonoBehaviour:
   visual: {fileID: 574856919906312720}
   hitEntity: {fileID: 1405320631681534965}
   damageTarget: {fileID: 334281805058564404}
+  authorReference: {fileID: 8188077163264751911}
+  teamReference: {fileID: 6230271570755950658}
   projectile: {fileID: 754763746251007763, guid: f1ef73d2527e08a47b138590ff47dedb, type: 3}
   spawnEffects:
   - {fileID: 6193566207504536497}
@@ -29848,6 +29854,39 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 2
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8188077163264751911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074578129384192954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97713dbfc340b7845a67797373802679, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.AuthorReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  author: {fileID: 0}
+--- !u!114 &6230271570755950658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074578129384192954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d063f58264eb86940a7f8a4b6b69c914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.TeamReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1 &2113271908642492759
 GameObject:
   m_ObjectHideFlags: 0

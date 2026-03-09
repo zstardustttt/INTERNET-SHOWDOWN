@@ -9,14 +9,16 @@ using UnityEngine;
 namespace Game.Core.Projectiles
 {
     [RequireComponent(typeof(Rigidbody), typeof(NetworkTransformReliable), typeof(NetworkRigidbodyReliable))]
+    [RequireComponent(typeof(AuthorReference), typeof(TeamReference))]
     public abstract class Projectile : NetworkBehaviour
     {
         [Header("Base Objects")]
         public Rigidbody rb;
         public NetworkTransformReliable netTransform;
         public NetworkRigidbodyReliable netRb;
+        public AuthorReference authorReference;
+        public TeamReference teamReference;
 
-        [HideInInspector] public PlayerBase author;
         [HideInInspector] public float lifetime;
         [HideInInspector] public Vector3 spawnPosition;
         [HideInInspector] public Quaternion spawnRotation;
@@ -29,6 +31,8 @@ namespace Game.Core.Projectiles
             rb = GetComponent<Rigidbody>();
             netTransform = GetComponent<NetworkTransformReliable>();
             netRb = GetComponent<NetworkRigidbodyReliable>();
+            authorReference = GetComponent<AuthorReference>();
+            teamReference = GetComponent<TeamReference>();
 
             rb.interpolation = RigidbodyInterpolation.Interpolate;
             netTransform.syncDirection = SyncDirection.ServerToClient;
@@ -36,7 +40,7 @@ namespace Game.Core.Projectiles
         }
 
         [Server]
-        public static T Spawn<T>(T prefab, PlayerBase author, Vector3 position, Quaternion rotation, double spawnTime, Action<T> setup = null) where T : Projectile
+        public static T Spawn<T>(T prefab, PlayerBase author, Guid team, Vector3 position, Quaternion rotation, double spawnTime, Action<T> setup = null) where T : Projectile
         {
             if (MapLoader.loadedMap == null || !MapLoader.loadedMap.scene.IsValid())
                 throw new("Can't spawn projectile: Map is not loaded");
@@ -46,17 +50,14 @@ namespace Game.Core.Projectiles
                 scene = MapLoader.loadedMap.scene,
             });
             var projectile = projectileObject.GetComponent<T>();
-            projectile.author = author;
+            projectile.authorReference.author = author;
+            projectile.teamReference.team = team;
             projectile.spawnPosition = position;
             projectile.spawnRotation = rotation;
             projectile.spawnTime = spawnTime;
             setup?.Invoke(projectile);
 
-            projectile.gameObject.BroadcastOnChildren(new SetupDamageSourceBroadcast()
-            {
-                family = author.healthModule.family,
-                author = author
-            });
+            projectile.gameObject.BroadcastOnChildren(new SetAuthorBroadcast(author));
 
             NetworkServer.Spawn(projectileObject);
             projectile.OnSpawned();

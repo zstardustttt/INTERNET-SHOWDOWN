@@ -79,6 +79,7 @@ MonoBehaviour:
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   skipObservationUpdate: 0
+  index: 0
   boxCollider: {fileID: 2917248093975008040}
 --- !u!114 &2728405055182721985
 MonoBehaviour:
@@ -121,6 +122,8 @@ GameObject:
   - component: {fileID: 4657373714339973732}
   - component: {fileID: 846919516064988069}
   - component: {fileID: 6815060551347088938}
+  - component: {fileID: 4916973600908766391}
+  - component: {fileID: 8662507165151753522}
   m_Layer: 10
   m_Name: TeslaCocktail
   m_TagString: Untagged
@@ -164,7 +167,8 @@ MonoBehaviour:
   rb: {fileID: 4815251024805592757}
   netTransform: {fileID: 1789330743275152635}
   netRb: {fileID: 8195396347111606234}
-  author: {fileID: 0}
+  authorReference: {fileID: 4916973600908766391}
+  teamReference: {fileID: 8662507165151753522}
   lifetime: 0
   spawnPosition: {x: 0, y: 0, z: 0}
   spawnRotation: {x: 0, y: 0, z: 0, w: 0}
@@ -335,6 +339,39 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   coll: {fileID: 846919516064988069}
+--- !u!114 &4916973600908766391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6565942098022493468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97713dbfc340b7845a67797373802679, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.AuthorReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  author: {fileID: 0}
+--- !u!114 &8662507165151753522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6565942098022493468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d063f58264eb86940a7f8a4b6b69c914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.TeamReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1001 &3920227737113749836
 PrefabInstance:
   m_ObjectHideFlags: 0

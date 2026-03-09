@@ -1,3 +1,5 @@
+using Game.Core.Broadcast;
+using Game.Core.Damages;
 using Game.Core.Damages.Events;
 using Game.Core.Hits;
 using Game.Core.Hits.Events;
@@ -93,7 +95,7 @@ namespace Game.Projectiles.Psycheshock
             }
 
             var t = lifetime / LoopDuration;
-            var position = GetBezierPosition(wishPosition, author.verticalOrientation.position, t);
+            var position = GetBezierPosition(wishPosition, authorReference.author.verticalOrientation.position, t);
 
             rb.linearVelocity = (position - _previousBezierPosition) / Time.deltaTime;
             _previousBezierPosition = position;
@@ -125,9 +127,9 @@ namespace Game.Projectiles.Psycheshock
             if (!hitEvent.target.transform.root.TryGetComponent(out PlayerBase player)) return;
             if (secondary) return;
 
-            if (player != author || lifetime < LoopDuration / 2f) return;
+            if (player != authorReference.author || lifetime < LoopDuration / 2f) return;
 
-            author.itemModule.SetItem(boomerangItem,
+            authorReference.author.itemModule.SetItem(boomerangItem,
                 new IntItemArgument("boomerang_damage_multiplier", damageMultiply),
                 new IntItemArgument("boomerang_returns", returns + 1)
             );
@@ -150,10 +152,10 @@ namespace Game.Projectiles.Psycheshock
         private void Explode(Vector3 point, Vector3 normal)
         {
             var explosion = MapLoader.NetworkSpawnOnMap(explosionPrefab, point, Quaternion.FromToRotation(Vector3.up, normal));
+            explosion.BroadcastOnGameObject(new SetAuthorBroadcast(authorReference.author));
+            explosion.BroadcastOnGameObject(new SetTeamBroadcast(teamReference.team));
 
             var radialDamage = explosion.GetComponent<RadialDamageSource>();
-            radialDamage.author = author;
-            radialDamage.family = author.healthModule.family;
             radialDamage.outerDamageAmount = explosionDamage * DamageMultiply;
             radialDamage.innerDamageAmount = radialDamage.outerDamageAmount;
 
@@ -177,7 +179,7 @@ namespace Game.Projectiles.Psycheshock
             else
             {
                 var delta = 0.05f;
-                var endPos = author ? author.transform.position : transform.position;
+                var endPos = authorReference.author ? authorReference.author.transform.position : transform.position;
                 var pos = GetBezierPosition(wishPosition, endPos, timePassed / LoopDuration);
                 var prevPos = GetBezierPosition(wishPosition, endPos, (timePassed - delta) / LoopDuration);
                 return new()
