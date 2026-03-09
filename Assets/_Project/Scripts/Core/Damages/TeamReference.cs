@@ -1,6 +1,7 @@
 using System;
 using Game.Core.Broadcast;
 using Mirror;
+using UnityEngine.Events;
 
 namespace Game.Core.Damages
 {
@@ -16,7 +17,14 @@ namespace Game.Core.Damages
 
     public class TeamReference : NetworkBehaviour, IBroadcastReceiver<SetTeamBroadcast>
     {
-        [SyncVar] public Guid team;
+        public UnityEvent<Guid, Guid> onTeamChanged = new();
+
+        [SyncVar(hook = nameof(OnTeamChanged))] public Guid team;
+
+        private void OnTeamChanged(Guid old, Guid _new)
+        {
+            onTeamChanged.Invoke(old, _new);
+        }
 
         public void Receive(SetTeamBroadcast broadcast)
         {

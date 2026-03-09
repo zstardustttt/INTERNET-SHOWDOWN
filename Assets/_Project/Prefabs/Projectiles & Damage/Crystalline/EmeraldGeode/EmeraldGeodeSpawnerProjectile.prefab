@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 9002663506888278435}
   - component: {fileID: 3831756836701519500}
   - component: {fileID: 5365178292779109659}
+  - component: {fileID: 4824990313577570136}
   m_Layer: 10
   m_Name: EmeraldGeodeSpawnerProjectile
   m_TagString: Untagged
@@ -263,6 +264,24 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  onTeamChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &4824990313577570136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 343536639837620852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ea9e29e9cc2d0e42b1df136854f3ebc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Damages.OutlineTeamReference
+  teamReference: {fileID: 5365178292779109659}
+  renderers:
+  - {fileID: 6841460756332741782}
 --- !u!1 &1123382309661894150
 GameObject:
   m_ObjectHideFlags: 0
@@ -375,5 +394,10 @@ PrefabInstance:
 --- !u!4 &5673106799983788025 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3c437d8e0909a2d4aa9a2405f80e1d1a, type: 3}
+  m_PrefabInstance: {fileID: 5273809647552141330}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6841460756332741782 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 3c437d8e0909a2d4aa9a2405f80e1d1a, type: 3}
   m_PrefabInstance: {fileID: 5273809647552141330}
   m_PrefabAsset: {fileID: 0}

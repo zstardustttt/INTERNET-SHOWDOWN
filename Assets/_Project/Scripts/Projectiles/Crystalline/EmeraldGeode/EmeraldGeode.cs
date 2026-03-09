@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Damages.Events;
 using Game.Core.Hits;
@@ -24,7 +25,7 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
         public TeamReference teamReference;
         public EmeraldGeodeProjectile projectile;
         public ParticleSystem[] spawnEffects;
-        public GameObject breakEffect;
+        public GameObject breakEffectPrefab;
 
         [Header("Properties")]
         public float maxLifetime;
@@ -182,7 +183,7 @@ namespace Game.Projectiles.Crystalline.EmeraldGeode
 
         private void DestroyGeode()
         {
-            MapLoader.NetworkSpawnOnMap(breakEffect, transform.position, transform.rotation);
+            MapLoader.NetworkSpawnOnMap(breakEffectPrefab, transform.position, transform.rotation);
             damageTarget.onDamage.RemoveAllListeners();
             NetworkServer.Destroy(gameObject);
         }

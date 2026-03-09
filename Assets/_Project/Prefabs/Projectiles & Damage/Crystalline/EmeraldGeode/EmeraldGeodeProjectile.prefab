@@ -178,6 +178,7 @@ GameObject:
   - component: {fileID: 7443579952667858573}
   - component: {fileID: 3250663497439013438}
   - component: {fileID: 2266652920580302398}
+  - component: {fileID: 5102973218563515617}
   m_Layer: 10
   m_Name: EmeraldGeodeProjectile
   m_TagString: Untagged
@@ -426,6 +427,24 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  onTeamChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &5102973218563515617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4215882776892291702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ea9e29e9cc2d0e42b1df136854f3ebc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Damages.OutlineTeamReference
+  teamReference: {fileID: 2266652920580302398}
+  renderers:
+  - {fileID: 2703428150005585567}
 --- !u!1 &4229479571546234780
 GameObject:
   m_ObjectHideFlags: 0
@@ -532,7 +551,6 @@ MonoBehaviour:
   beforeHitScan:
     m_PersistentCalls:
       m_Calls: []
-  canDamageFamily: 0
   authorReference: {fileID: 3250663497439013438}
   teamReference: {fileID: 2266652920580302398}
   canDamageTeam: 0

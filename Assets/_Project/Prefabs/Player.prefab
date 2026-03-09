@@ -277,6 +277,7 @@ GameObject:
   - component: {fileID: 1976138601191644980}
   - component: {fileID: 9142073372359770434}
   - component: {fileID: 2384920938161365344}
+  - component: {fileID: 3696968812922307318}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -730,6 +731,24 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  onTeamChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &3696968812922307318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635209751978783220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ea9e29e9cc2d0e42b1df136854f3ebc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Damages.OutlineTeamReference
+  teamReference: {fileID: 2384920938161365344}
+  renderers:
+  - {fileID: 6833519805803861239}
 --- !u!1 &1977572232203292389
 GameObject:
   m_ObjectHideFlags: 0

@@ -29748,6 +29748,7 @@ GameObject:
   - component: {fileID: 6746293290612159170}
   - component: {fileID: 8188077163264751911}
   - component: {fileID: 6230271570755950658}
+  - component: {fileID: 544379362400003445}
   m_Layer: 10
   m_Name: EmeraldGeode
   m_TagString: Untagged
@@ -29806,7 +29807,7 @@ MonoBehaviour:
   - {fileID: 6214031200004766010}
   - {fileID: 8720086229928044963}
   - {fileID: 5725235287446958115}
-  breakEffect: {fileID: 8565087915014886782, guid: c5fa7b2d789f50143ae3c0ec0c8b90df, type: 3}
+  breakEffectPrefab: {fileID: 8565087915014886782, guid: c5fa7b2d789f50143ae3c0ec0c8b90df, type: 3}
   maxLifetime: 10
   groupSpawnTimeInterval: 0.5
   spawnTimeInterval: 0.02
@@ -29887,6 +29888,34 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  onTeamChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &544379362400003445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074578129384192954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ea9e29e9cc2d0e42b1df136854f3ebc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Damages.OutlineTeamReference
+  teamReference: {fileID: 6230271570755950658}
+  renderers:
+  - {fileID: 2548013804532688335}
+  - {fileID: 4912891786085389017}
+  - {fileID: 428441343323502823}
+  - {fileID: 5845760830329327997}
+  - {fileID: 478907635918962862}
+  - {fileID: 6319880139133567687}
+  - {fileID: 2420787174994694234}
+  - {fileID: 5971618064199875105}
+  - {fileID: 5796244063304502882}
+  - {fileID: 500236459545231329}
+  - {fileID: 3017687323893889030}
 --- !u!1 &2113271908642492759
 GameObject:
   m_ObjectHideFlags: 0
@@ -99446,6 +99475,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 89342a1b1e53a44439bf8b01a0bd974a, type: 3}
+--- !u!23 &2548013804532688335 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 89342a1b1e53a44439bf8b01a0bd974a, type: 3}
+  m_PrefabInstance: {fileID: 3791407119410198859}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3681536369469529760 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 89342a1b1e53a44439bf8b01a0bd974a, type: 3}
