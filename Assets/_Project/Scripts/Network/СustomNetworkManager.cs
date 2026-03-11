@@ -130,10 +130,13 @@ namespace Game.Network
 
         public override void OnServerDisconnect(NetworkConnectionToClient conn)
         {
-            var player = conn.identity.GetComponent<PlayerBase>();
-            if (_gameState.phase.info.saveStats)
+            if (conn != null && conn.identity)
             {
-                _disconnectedPlayersStats.Add(player.playerGuid, player.stats);
+                var player = conn.identity.GetComponent<PlayerBase>();
+                if (_gameState.phase.info.saveStats)
+                {
+                    _disconnectedPlayersStats.Add(player.playerGuid, player.stats);
+                }
             }
 
             // base destroys connection's player

@@ -4252,7 +4252,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 123
   m_IsActive: 1
 --- !u!114 &840231071
 MonoBehaviour:
@@ -8551,7 +8551,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2120864719
 Transform:
@@ -8802,6 +8802,14 @@ PrefabInstance:
     - target: {fileID: 5068157160698124617, guid: 77343da56c2a4884e92045b868b998da, type: 3}
       propertyPath: m_Name
       value: JumpPad
+      objectReference: {fileID: 0}
+    - target: {fileID: 5068157160698124617, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: 7172472734753034672, guid: 77343da56c2a4884e92045b868b998da, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 123
       objectReference: {fileID: 0}
     - target: {fileID: 8821395964928196951, guid: 77343da56c2a4884e92045b868b998da, type: 3}
       propertyPath: m_LocalPosition.x

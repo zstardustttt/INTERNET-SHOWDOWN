@@ -110,12 +110,13 @@ Shader "Custom/Dither"
             {
                 half2 checkerboardUv = uv + _TimeParameters.x * _checkerboard_scroll_speed;
                 int2 checker = frac(_checkerboard_size * checkerboardUv) > 0.5;
-                half checkerboard = checker.x ^ checker.y ? _checkerboard_intensity_inverted : 1;
+                half checkerboard = checker.x ^ checker.y ? lerp(1, _checkerboard_intensity_inverted, abs(uv.x * 2 - 1)) : 1;
                 return SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, uv) * checkerboard;
             }
 
             float3 Frag (Varyings input) : SV_Target
             {
+                UNITY_BRANCH
                 if (SampleRawDepth(input.texcoord) == 0)
                 {
                     return GetSkyboxColor(input.texcoord);

@@ -56,7 +56,7 @@ namespace Game.Graphics.Outlines
             _material = new(shader);
             _renderPass = new(_material, properties)
             {
-                renderPassEvent = injectionPoint
+                renderPassEvent = injectionPoint,
             };
 
             _renderPass.ConfigureInput(ScriptableRenderPassInput.Normal);

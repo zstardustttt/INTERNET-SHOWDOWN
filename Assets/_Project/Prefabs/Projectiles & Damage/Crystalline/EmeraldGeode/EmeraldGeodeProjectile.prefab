@@ -445,6 +445,7 @@ MonoBehaviour:
   teamReference: {fileID: 2266652920580302398}
   renderers:
   - {fileID: 2703428150005585567}
+  transparent: 1
 --- !u!1 &4229479571546234780
 GameObject:
   m_ObjectHideFlags: 0

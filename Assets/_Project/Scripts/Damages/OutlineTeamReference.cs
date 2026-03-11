@@ -9,16 +9,19 @@ namespace Game.Damages
     {
         private static int _friendlyLayer;
         private static int _hostileLayer;
+        private static int _transparentOutlinesLayer;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Init()
         {
             _friendlyLayer = RenderingLayerMask.NameToRenderingLayer("Friendly");
             _hostileLayer = RenderingLayerMask.NameToRenderingLayer("Hostile");
+            _transparentOutlinesLayer = RenderingLayerMask.NameToRenderingLayer("TransparentOutlines");
         }
 
         public TeamReference teamReference;
         public Renderer[] renderers;
+        public bool transparent;
 
         private RenderingLayerMask[] _baseMasks;
         private TeamReference _localTeamReference;
@@ -47,7 +50,9 @@ namespace Game.Damages
             var layer = friendly ? _friendlyLayer : _hostileLayer;
             for (int i = 0; i < renderers.Length; i++)
             {
-                renderers[i].renderingLayerMask = _baseMasks[i] | (uint)(1 << layer);
+                var renderer = renderers[i];
+                renderer.renderingLayerMask = _baseMasks[i] | (uint)(1 << layer);
+                if (transparent) renderer.renderingLayerMask |= (uint)(1 << _transparentOutlinesLayer);
             }
         }
     }

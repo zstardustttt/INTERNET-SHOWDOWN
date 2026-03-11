@@ -1,44 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7682981769579529404
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c3f510a71b2a364eab0ddd6bd873c7e, type: 3}
-  m_Name: SSOutlinesRendererFeature
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Graphics.Outlines.SSOutlinesRendererFeature
-  m_Active: 1
-  properties:
-    color: {r: 1, g: 0.11372548, b: 0.11372548, a: 1}
-    thickness: 0.1
-    renderingLayerMask:
-      serializedVersion: 0
-      m_Bits: 1024
-    enableDepth: 1
-    depthStrength: 1
-    depthThickness: 50
-    depthThreshold: 50
-    enableColor: 0
-    colorStrength: 1
-    colorThickness: 10
-    colorThreshold: 0.5
-    enableNormals: 0
-    normalsStrength: 1
-    normalsThickness: 100
-    normalsThreshold: 0.3
-    acuteAngleStartDot: 0
-    acuteDepthThreshold: 50
-    adjustNearDepth: 0
-    adjustFarDepth: 50
-    normalsFarThreshold: 1
-    colorFarThreshold: 1
-  shader: {fileID: 4800000, guid: 8b5766d62e247e846b16a0459904bd52, type: 3}
-  injectionPoint: 550
 --- !u!114 &-4524852355417012378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54,6 +15,37 @@ MonoBehaviour:
   m_Active: 1
   m_LayerMask:
     m_Bits: 183
+--- !u!114 &-3963061301478693559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b70be0016da2e84e9df6f0097e0de73, type: 3}
+  m_Name: MultiDepthOutlinesFeature
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Graphics.Outlines.MultiDepthOutlines.MultiDepthOutlinesFeature
+  m_Active: 1
+  injectionPoint: 550
+  thickness: 0.1
+  mask1:
+    serializedVersion: 0
+    m_Bits: 2048
+  color1: {r: 0.69803923, g: 0.69803923, b: 0.69803923, a: 1}
+  mask2:
+    serializedVersion: 0
+    m_Bits: 512
+  color2: {r: 0.1273585, g: 0.49071932, b: 1, a: 1}
+  mask3:
+    serializedVersion: 0
+    m_Bits: 1024
+  color3: {r: 1, g: 0.16509432, b: 0.20395581, a: 1}
+  transparentMask:
+    serializedVersion: 0
+    m_Bits: 4096
+  transparentOpacity: 0.35
 --- !u!114 &-3805008779101506429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,45 +66,6 @@ MonoBehaviour:
   passIndex: 0
   bindDepthStencilAttachment: 0
   m_Version: 1
---- !u!114 &-822168341375895447
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c3f510a71b2a364eab0ddd6bd873c7e, type: 3}
-  m_Name: SSOutlinesRendererFeature
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Graphics.Outlines.SSOutlinesRendererFeature
-  m_Active: 1
-  properties:
-    color: {r: 0.7, g: 0.7, b: 0.7, a: 1}
-    thickness: 0.1
-    renderingLayerMask:
-      serializedVersion: 0
-      m_Bits: 2048
-    enableDepth: 1
-    depthStrength: 1
-    depthThickness: 50
-    depthThreshold: 50
-    enableColor: 0
-    colorStrength: 1
-    colorThickness: 10
-    colorThreshold: 0.5
-    enableNormals: 0
-    normalsStrength: 1
-    normalsThickness: 100
-    normalsThreshold: 0.3
-    acuteAngleStartDot: 0
-    acuteDepthThreshold: 50
-    adjustNearDepth: 0
-    adjustFarDepth: 50
-    normalsFarThreshold: 1
-    colorFarThreshold: 1
-  shader: {fileID: 4800000, guid: 8b5766d62e247e846b16a0459904bd52, type: 3}
-  injectionPoint: 550
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,11 +93,9 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: 4772964828174011577}
   - {fileID: 4106938239991161458}
-  - {fileID: -822168341375895447}
-  - {fileID: 3494863621557382411}
-  - {fileID: -7682981769579529404}
+  - {fileID: -3963061301478693559}
   - {fileID: -3805008779101506429}
-  m_RendererFeatureMap: b9ccbe1439fa3c42722224dd91c6fe3869b8b7e23f1297f40bed5c7df23f803044fb6868c9906095837469daace431cb
+  m_RendererFeatureMap: b9ccbe1439fa3c42722224dd91c6fe3849e54356be6000c9837469daace431cb
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -173,45 +124,6 @@ MonoBehaviour:
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
---- !u!114 &3494863621557382411
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c3f510a71b2a364eab0ddd6bd873c7e, type: 3}
-  m_Name: SSOutlinesRendererFeature
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Graphics.Outlines.SSOutlinesRendererFeature
-  m_Active: 1
-  properties:
-    color: {r: 0.112359524, g: 0.42134818, b: 1, a: 1}
-    thickness: 0.1
-    renderingLayerMask:
-      serializedVersion: 0
-      m_Bits: 512
-    enableDepth: 1
-    depthStrength: 1
-    depthThickness: 50
-    depthThreshold: 50
-    enableColor: 0
-    colorStrength: 1
-    colorThickness: 10
-    colorThreshold: 0.5
-    enableNormals: 0
-    normalsStrength: 1
-    normalsThickness: 100
-    normalsThreshold: 0.3
-    acuteAngleStartDot: 0
-    acuteDepthThreshold: 50
-    adjustNearDepth: 0
-    adjustFarDepth: 50
-    normalsFarThreshold: 1
-    colorFarThreshold: 1
-  shader: {fileID: 4800000, guid: 8b5766d62e247e846b16a0459904bd52, type: 3}
-  injectionPoint: 550
 --- !u!114 &4106938239991161458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,8 +155,8 @@ MonoBehaviour:
     normalsStrength: 1
     normalsThickness: 100
     normalsThreshold: 0.3
-    acuteAngleStartDot: 0
-    acuteDepthThreshold: 1
+    acuteAngleStartDot: -0.5
+    acuteDepthThreshold: 1.25
     adjustNearDepth: 0
     adjustFarDepth: 50
     normalsFarThreshold: 1
@@ -267,7 +179,7 @@ MonoBehaviour:
   properties:
     checkerboardSize: 40
     checherboardScrollSpeed: 0.005
-    checkerboardIntensity: 0.05
+    checkerboardIntensity: 0.11
     skyboxQuantization: 24
     skyboxPixelization: 101
     skyboxDitherScale: 1

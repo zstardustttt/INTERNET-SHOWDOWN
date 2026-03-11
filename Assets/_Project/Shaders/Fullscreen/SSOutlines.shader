@@ -148,8 +148,8 @@ Shader "Custom/SSOutlines"
                     minMask = min(sobelMask.r, minMask);
                     minDepth = min(sobelMask.g, minDepth);
                 }
-
-                if (minMask == 0 && minDepth != 0)
+                
+                if (floor(minMask) == 0 && minDepth != 0)
                 {
                     return base;
                 }
@@ -207,8 +207,9 @@ Shader "Custom/SSOutlines"
                     minMask = min(sobelMask.r, minMask);
                     minDepth = min(sobelMask.g, minDepth);
                 }
+                
 
-                if (minMask == 0 && minDepth != 0)
+                if (floor(minMask) == 0 && minDepth != 0)
                 {
                     return base;
                 }
@@ -264,8 +265,9 @@ Shader "Custom/SSOutlines"
                     minMask = min(sobelMask.r, minMask);
                     minDepth = min(sobelMask.g, minDepth);
                 }
+                
 
-                if (minMask == 0 && minDepth != 0)
+                if (floor(minMask) == 0 && minDepth != 0)
                 {
                     return base;
                 }
@@ -319,8 +321,9 @@ Shader "Custom/SSOutlines"
                     minMask = min(sobelMask.r, minMask);
                     minDepth = min(sobelMask.g, minDepth);
                 }
+                
 
-                if (minMask == 0 && minDepth != 0)
+                if (floor(minMask) == 0 && minDepth != 0)
                 {
                     return base;
                 }
@@ -379,7 +382,8 @@ Shader "Custom/SSOutlines"
                     minDepth = min(sobelMask.g, minDepth);
                 }
 
-                if (minMask == 0 && minDepth != 0)
+
+                if (floor(minMask) == 0 && minDepth != 0)
                 {
                     return base;
                 }
@@ -451,7 +455,8 @@ Shader "Custom/SSOutlines"
                     minDepth = min(sobelMask.g, minDepth);
                 }
 
-                if (minMask == 0 && minDepth != 0)
+
+                if (floor(minMask) == 0 && minDepth != 0)
                 {
                     return base;
                 }
@@ -515,8 +520,9 @@ Shader "Custom/SSOutlines"
                     minMask = min(sobelMask.r, minMask);
                     minDepth = min(sobelMask.g, minDepth);
                 }
+                
 
-                if (minMask == 0 && minDepth != 0)
+                if (floor(minMask) == 0 && minDepth != 0)
                 {
                     return base;
                 }
