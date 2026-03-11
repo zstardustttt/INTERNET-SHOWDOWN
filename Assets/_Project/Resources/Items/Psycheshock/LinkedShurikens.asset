@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Items.ItemConfig
   include: 1
   prefab: {fileID: 8697607699108650305, guid: fc57f507e5d26ed498e81c33b559baa9, type: 3}
-  rarity: {fileID: 11400000, guid: ef58f522f451a5b4fbeec67c68daf1c4, type: 2}
+  rarity: {fileID: 11400000, guid: 728896c93a1299e468e7f7c259067434, type: 2}
   displayName: Linked Shurikens
   series: {fileID: 11400000, guid: a336a78b29b80e74b80768ed8bf26799, type: 2}
   description: 'Each shuriken flies forward, hitting other players. Redirects itself

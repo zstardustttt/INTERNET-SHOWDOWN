@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 418f73291c68b2e49a3036283a475a59, type: 3}
   m_Name: EmeraldGeode
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Items.ItemConfig
-  include: 1
+  include: 0
   prefab: {fileID: 3249145290353018548, guid: 5f6d7da9aa89ff441ae29330c2ffc1e7, type: 3}
   rarity: {fileID: 11400000, guid: 8e1dbfb413df3c64f8d873040f92b762, type: 2}
   displayName: Emerald Geode

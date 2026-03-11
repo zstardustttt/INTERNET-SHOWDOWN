@@ -99,6 +99,7 @@ MonoBehaviour:
   previousObservedPosition: {x: 0, y: 0, z: 0}
   observedDelta: {x: 0, y: 0, z: 0}
   skipObservationUpdate: 0
+  index: 0
   capsuleCollider: {fileID: 3762621573933854340}
 --- !u!114 &3646660236376352543
 MonoBehaviour:
@@ -125,14 +126,15 @@ MonoBehaviour:
   beforeHitScan:
     m_PersistentCalls:
       m_Calls: []
-  canDamageFamily: 0
+  authorReference: {fileID: 0}
+  teamReference: {fileID: 0}
+  canDamageTeam: 1
   onWishDamage:
     m_PersistentCalls:
       m_Calls: []
   onDamage:
     m_PersistentCalls:
       m_Calls: []
-  author: {fileID: 0}
   damageType: 1
   damageAmount: 10
 --- !u!1 &6619339023262767049

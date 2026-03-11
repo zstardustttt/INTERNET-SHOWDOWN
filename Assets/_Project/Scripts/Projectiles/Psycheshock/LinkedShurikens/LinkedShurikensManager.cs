@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Game.Core.Damages;
 using Mirror;
@@ -20,21 +20,43 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
         public int maxLinksCount;
 
         private List<LinkedShurikenProjectile> _projectiles;
+        private List<LinkedShurikenProjectile> _collidedProjectiles;
         private List<ShurikenLink> _shurikenLinks;
 
-        [SyncVar(hook = nameof(OnActiveLinksCountChanged))] public int activeLinksCount;
+        [SyncVar(hook = nameof(OnLinksPointsChanged))] private Vector3[] _linksPoints;
 
-        private void OnActiveLinksCountChanged(int old, int _new)
+        private void OnLinksPointsChanged(Vector3[] old, Vector3[] _new)
         {
+            var previousPoint = _new[^1];
+            var linksCount = GetLinksCount(_new.Length);
             for (int i = 0; i < _shurikenLinks.Count; i++)
             {
-                _shurikenLinks[i].gameObject.SetActive(i < _new);
+                var link = _shurikenLinks[i];
+                var active = i < linksCount;
+                link.gameObject.SetActive(active);
+
+                if (!active) break;
+                var currentPoint = _new[i];
+
+                link.startPos = previousPoint;
+                link.endPos = currentPoint;
+
+                var projectileDistance = Vector3.Distance(previousPoint, currentPoint);
+                var pointsCount = Mathf.Max(Mathf.CeilToInt(projectileDistance * pointsPerUnit), 2);
+                link.lineRenderer.positionCount = pointsCount;
+                link.lineRendererPointsCount = pointsCount;
+
+                link.lineRenderer.SetPosition(0, previousPoint);
+                link.lineRenderer.SetPosition(pointsCount - 1, currentPoint);
+
+                previousPoint = currentPoint;
             }
         }
 
         private void Awake()
         {
             _projectiles = new();
+            _collidedProjectiles = new();
             _shurikenLinks = new();
 
             for (int i = 0; i < maxLinksCount; i++)
@@ -53,17 +75,7 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
             {
                 link.damageSource.authorReference = authorReference;
                 link.damageSource.teamReference = teamReference;
-
-                link.damageSource.beforeHitScan.AddListener(() =>
-                {
-                    if (!link.startProj || !link.endProj) return;
-                    var start = link.startPos;
-                    var end = link.endPos;
-
-                    link.hitEntity.transform.position = (start + end) / 2f;
-                    link.hitEntity.transform.up = (start - end).normalized;
-                    link.hitEntity.capsuleCollider.height = (start - end).magnitude;
-                });
+                link.hitEntity.active = false;
             }
         }
 
@@ -76,16 +88,9 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
                 if (!link.gameObject.activeInHierarchy) continue;
 
                 // Electricity effect
-                var projectileDistance = Vector3.Distance(link.startPos, link.endPos);
-                var pointsCount = Mathf.Max(Mathf.CeilToInt(projectileDistance * pointsPerUnit), 2);
-
-                link.lineRenderer.positionCount = pointsCount;
-                link.lineRenderer.SetPosition(0, link.startPos);
-                link.lineRenderer.SetPosition(pointsCount - 1, link.endPos);
-
-                for (int i = 1; i < pointsCount - 1; i++)
+                for (int i = 1; i < link.lineRendererPointsCount - 1; i++)
                 {
-                    var pointOnLine = Vector3.Lerp(link.startPos, link.endPos, (float)i / pointsCount);
+                    var pointOnLine = Vector3.Lerp(link.startPos, link.endPos, (float)i / link.lineRendererPointsCount);
                     var offset = Random.insideUnitSphere * 0.5f;
                     link.lineRenderer.SetPosition(i, pointOnLine + offset);
                 }
@@ -97,67 +102,56 @@ namespace Game.Projectiles.Psycheshock.LinkedShurikens
                 var projection = Vector3.ClampMagnitude(Vector3.Project(targetDirection, lineDirection), (link.endPos - link.startPos).magnitude / 2f);
                 link.audioSource.transform.position = middlePoint + projection;
             }
-
-            if (!NetworkServer.active) return;
-            if (_projectiles.Count == 0) return;
-
-            var previousProjectile = _projectiles[^1];
-            var starts = new List<Vector3>();
-            var ends = new List<Vector3>();
-            for (int i = 0; i < _projectiles.Count; i++)
-            {
-                var projectile = _projectiles[i];
-
-                var start = previousProjectile.transform.position;
-                var end = projectile.transform.position;
-                starts.Add(start);
-                ends.Add(end);
-
-                var link = _shurikenLinks[i];
-                link.startProj = previousProjectile;
-                link.endProj = projectile;
-                link.startPos = start;
-                link.endPos = end;
-
-                previousProjectile = projectile;
-            }
-
-            if (NetworkClient.active) CmdSetLinksPositions(starts.ToArray(), ends.ToArray());
-            else RpcSetLinksPositions(starts.ToArray(), ends.ToArray());
-        }
-
-        [Command]
-        private void CmdSetLinksPositions(Vector3[] starts, Vector3[] ends)
-        {
-            RpcSetLinksPositions(starts, ends);
-        }
-
-        [ClientRpc]
-        private void RpcSetLinksPositions(Vector3[] starts, Vector3[] ends)
-        {
-            for (int i = 0; i < starts.Length; i++)
-            {
-                var link = _shurikenLinks[i];
-                link.startPos = starts[i];
-                link.endPos = ends[i];
-            }
         }
 
         public void AddProjectile(LinkedShurikenProjectile projectile)
         {
-            projectile.onDestroy.AddListener(OnProjectileDestroy);
+            projectile.onCollide.AddListener(() =>
+            {
+                projectile.onDestroy.AddListener(() =>
+                {
+                    _collidedProjectiles.Remove(projectile);
+                    UpdateLinksPoints();
+                });
+
+                _collidedProjectiles.Add(projectile);
+                UpdateLinksPoints();
+            });
+
+            projectile.onDestroy.AddListener(() =>
+            {
+                _projectiles.Remove(projectile);
+                if (_projectiles.Count == 0) NetworkServer.Destroy(gameObject);
+            });
+
             _projectiles.Add(projectile);
-            activeLinksCount = GetTargetLinksCount();
         }
 
-        private void OnProjectileDestroy(LinkedShurikenProjectile projectile)
+        private void UpdateLinksPoints()
         {
-            _projectiles.Remove(projectile);
-            activeLinksCount = GetTargetLinksCount();
-            if (_projectiles.Count == 0) NetworkServer.Destroy(gameObject);
+            if (_collidedProjectiles.Count == 0) return;
+            _linksPoints = _collidedProjectiles.Select(x => x.transform.position).ToArray();
+
+            var previousPoint = _linksPoints[^1];
+            var linksCount = GetLinksCount(_linksPoints.Length);
+            for (int i = 0; i < _shurikenLinks.Count; i++)
+            {
+                var link = _shurikenLinks[i];
+                var active = i < linksCount;
+                link.gameObject.SetActive(active);
+
+                if (!active) break;
+                var currentPoint = _linksPoints[i];
+
+                link.hitEntity.transform.position = (previousPoint + currentPoint) / 2f;
+                link.hitEntity.transform.up = (previousPoint - currentPoint).normalized;
+                link.hitEntity.capsuleCollider.height = (previousPoint - currentPoint).magnitude;
+                link.hitEntity.active = true;
+                previousPoint = currentPoint;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetTargetLinksCount() => _projectiles.Count < 3 ? _projectiles.Count - 1 : _projectiles.Count;
+        private int GetLinksCount(int pointsCount) => pointsCount <= 2 ? pointsCount - 1 : pointsCount;
     }
 }

@@ -40,6 +40,8 @@ namespace Game.Boxes
 
         private void Awake()
         {
+            if (!NetworkServer.active) return;
+
             _enviromentLayerMask = LayerMask.GetMask("Enviroment");
 
             EventBus<OnGameStateChange>.Listen((data) =>

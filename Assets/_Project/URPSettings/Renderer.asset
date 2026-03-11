@@ -37,11 +37,11 @@ MonoBehaviour:
   mask2:
     serializedVersion: 0
     m_Bits: 512
-  color2: {r: 0.1273585, g: 0.49071932, b: 1, a: 1}
+  color2: {r: 0.11294117, g: 0.44117644, b: 0.9, a: 1}
   mask3:
     serializedVersion: 0
     m_Bits: 1024
-  color3: {r: 1, g: 0.16509432, b: 0.20395581, a: 1}
+  color3: {r: 0.9, g: 0.14823528, b: 0.18352945, a: 1}
   transparentMask:
     serializedVersion: 0
     m_Bits: 4096

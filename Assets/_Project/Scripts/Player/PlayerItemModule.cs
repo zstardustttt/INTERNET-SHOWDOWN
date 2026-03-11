@@ -161,6 +161,21 @@ namespace Game.Player
                 player = player,
                 fullyUsed = fullyUsed
             });
+
+            RpcOnItemUsed(fullyUsed);
+        }
+
+        [ClientRpc]
+        private void RpcOnItemUsed(bool fullyUsed)
+        {
+            if (NetworkServer.active) return;
+
+            onItemUsed.Invoke(fullyUsed);
+            EventBus<OnItemUsed>.Invoke(new()
+            {
+                player = player,
+                fullyUsed = fullyUsed
+            });
         }
     }
 }

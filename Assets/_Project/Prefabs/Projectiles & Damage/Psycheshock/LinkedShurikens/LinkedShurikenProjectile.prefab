@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3038953428983721535}
   - component: {fileID: 7619138193349217839}
   - component: {fileID: 7715702293307265872}
-  - component: {fileID: 4386596968253453174}
   m_Layer: 0
   m_Name: Electricity
   m_TagString: Untagged
@@ -4838,103 +4837,6 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
---- !u!82 &4386596968253453174
-AudioSource:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 243680931074371350}
-  m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 6418180475301049370, guid: 079ba13993c0f8147ad89261a63524e6, type: 2}
-  m_PlayOnAwake: 0
-  m_Volume: 0.35
-  m_Pitch: 1.5
-  Loop: 0
-  Mute: 0
-  Spatialize: 0
-  SpatializePostEffects: 0
-  Priority: 128
-  DopplerLevel: 0
-  MinDistance: 5
-  MaxDistance: 50
-  Pan2D: 0
-  rolloffMode: 1
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
 --- !u!1 &686689784944485789
 GameObject:
   m_ObjectHideFlags: 0
@@ -5051,7 +4953,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   damageType: 0
-  damageAmount: 20
+  damageAmount: 25
 --- !u!1 &5419103293203108044
 GameObject:
   m_ObjectHideFlags: 0
@@ -5138,7 +5040,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0
   MinDistance: 5
-  MaxDistance: 60
+  MaxDistance: 80
   Pan2D: 0
   rolloffMode: 2
   BypassEffects: 0
@@ -5411,19 +5313,16 @@ MonoBehaviour:
   predictionDebugIterations: 1
   predictionDebugTimePassed: 1
   collision: {fileID: 223967848806961954}
+  hitEntity: {fileID: 4367145986551987104}
   mainDamage: {fileID: 542484312898659771}
   visualToRotate: {fileID: 7423571706004745222}
   flyAudioSource: {fileID: 7122442680882183601}
   collideAudioSource: {fileID: 2009170532438820532}
-  collideShockAudioSource: {fileID: 4386596968253453174}
   collideParticleEffect: {fileID: 7619138193349217839}
   shockEffectPrefab: {fileID: 8596668877135600386, guid: 8a453cab5b2278840aa1253d4ffabc9d, type: 3}
   startFlySpeed: 200
-  minFlySpeed: 20
   maxLifetime: 15
-  flyAudioCenterPitch: 2
-  flyAudioInitialVolume: 0.65
-  visualRotationFactor: 35
+  visualRotationFactor: 2400
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
@@ -5502,7 +5401,7 @@ AudioSource:
   m_Resource: {fileID: 8300000, guid: 03b63d69801b7024ba4634e7346f0366, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.65
-  m_Pitch: 1.8
+  m_Pitch: 2
   Loop: 1
   Mute: 0
   Spatialize: 0
