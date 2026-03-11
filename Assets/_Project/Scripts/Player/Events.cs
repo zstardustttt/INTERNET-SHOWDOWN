@@ -51,6 +51,7 @@ namespace Game.Player.Events
     public struct OnItemUsed : IEvent
     {
         public PlayerBase player;
+        public bool fullyUsed;
     }
 
     public struct OnPlayerRespawnInvincibilityStateChanged : IEvent

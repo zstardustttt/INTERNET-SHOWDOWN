@@ -53,7 +53,11 @@ namespace Game.Boxes
 
             EventBus<HitEvent>.Listen(OnHit);
 
-            EventBus<OnItemUsed>.Listen((data) => OnItemUsed(data.player));
+            EventBus<OnItemUsed>.Listen((data) =>
+            {
+                if (!data.fullyUsed) return;
+                OnItemUsed(data.player);
+            });
         }
 
         private void OnHit(HitEvent hitEvent)

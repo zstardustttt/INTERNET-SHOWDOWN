@@ -38,15 +38,9 @@ namespace Game.Player
         [SyncVar(hook = nameof(OnItemChange))] public PlayerItemData itemData;
         public Item item;
 
+        [HideInInspector] public UnityEvent onDestroyItem = new();
         [HideInInspector] public UnityEvent onItemPickup = new();
-        [HideInInspector] public UnityEvent onItemUsed = new();
-
-        private void Update()
-        {
-            if (!isLocalPlayer || !item) return;
-            item.transform.localPosition = Vector3.Lerp(item.transform.localPosition, item.offset, Time.deltaTime * 15f);
-            itemHolder.localScale = Vector3.Lerp(itemHolder.localScale, Vector3.one, Time.deltaTime * 30f);
-        }
+        [HideInInspector] public UnityEvent<bool> onItemUsed = new();
 
         [Server]
         public void ResetItem()
@@ -107,26 +101,17 @@ namespace Game.Player
 
         private void OnItemChange(PlayerItemData old, PlayerItemData _new)
         {
-            if (item) Destroy(item.gameObject);
+            if (item)
+            {
+                onDestroyItem.Invoke();
+                Destroy(item.gameObject);
+            }
 
             if (_new.itemIndex != -1)
             {
                 item = Instantiate(ItemPool.items[_new.rarityIndex][_new.itemIndex].prefab, itemHolder).GetComponent<Item>();
                 item.arguments = _new.arguments;
-
-                if (isLocalPlayer)
-                {
-                    var layer = LayerMask.NameToLayer("ItemVisual");
-                    var children = item.GetComponentsInChildren<Transform>(includeInactive: true);
-                    foreach (var child in children)
-                    {
-                        child.gameObject.layer = layer;
-                    }
-
-                    item.transform.localPosition = new(item.offset.x, item.offset.y, -Mathf.Abs(player.verticalOrientation.position.z - itemHolder.position.z));
-                    itemHolder.localScale = new(0.1f, 4f, 0.1f);
-                }
-                else item.transform.localPosition = item.offset;
+                item.transform.localPosition = item.offset;
 
                 onItemPickup.Invoke();
             }
@@ -163,22 +148,19 @@ namespace Game.Player
         {
             if (!item || player.locks.Locked(PlayerLock.Input)) return;
 
-            if (item.Use(player, context))
+            var fullyUsed = item.Use(player, context);
+            if (fullyUsed)
             {
                 ResetItem();
                 player.stats.activity++;
-                onItemUsed.Invoke();
-                EventBus<OnItemUsed>.Invoke(new() { player = player });
             }
-            else TargetRestartItemAnimation();
-        }
 
-        [TargetRpc]
-        private void TargetRestartItemAnimation()
-        {
-            if (!item) return;
-            item.transform.localPosition = new(item.offset.x, item.offset.y, -Mathf.Abs(player.verticalOrientation.position.z - itemHolder.position.z));
-            itemHolder.localScale = new(0.1f, 4f, 0.1f);
+            onItemUsed.Invoke(fullyUsed);
+            EventBus<OnItemUsed>.Invoke(new()
+            {
+                player = player,
+                fullyUsed = fullyUsed
+            });
         }
     }
 }

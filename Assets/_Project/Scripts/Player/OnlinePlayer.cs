@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using Game.Core.Damages;
 using Game.Core.Events;
 using Game.Core.Maps;
@@ -91,12 +94,33 @@ namespace Game.Player
         public float groundSlamCameraShakeMultiplier;
         public float maxGroundSlamCameraShake;
 
+        [Header("Item Animations")]
+        public float itemUseFOVAddition;
+        public float itemUseFOVDuration;
+        public AnimationCurve itemUseFOVCurve;
+
+        [Space(9)]
+        public Vector3 itemPickScale;
+        public float itemPickScaleDuration;
+        public AnimationCurve itemPickScaleCurve;
+
+        [Space(9)]
+        public float itemPickZOffset;
+        public float itemPickZOffsetDuration;
+        public AnimationCurve itemPickZOffsetCurve;
+
         private PlayerCamera _camera;
         private float _cameraRotX;
         private Vector3 _prevPosition;
         private float _timeSinceRunning;
-
         private float _mouseSens;
+
+        private float _cameraSpeedFOV;
+        private float _itemUseFOVAddition;
+        private int _itemVisualLayer;
+        private TweenerCore<float, float, FloatOptions> _itemUseFOVTween;
+        private TweenerCore<Vector3, Vector3, VectorOptions> _itemPickScaleTween;
+        private TweenerCore<Vector3, Vector3, VectorOptions> _itemPickZOffsetTween;
 
         private PlayerActions _actions;
 
@@ -177,6 +201,30 @@ namespace Game.Player
                 EventBus<RespawnEffectRequest>.Invoke(new());
             });
 
+            player.itemModule.onDestroyItem.AddListener(() =>
+            {
+                _itemPickScaleTween?.Kill();
+                _itemPickZOffsetTween?.Kill();
+            });
+
+            _itemVisualLayer = LayerMask.NameToLayer("ItemVisual");
+            player.itemModule.onItemPickup.AddListener(() =>
+            {
+                var children = player.itemModule.item.GetComponentsInChildren<Transform>(includeInactive: true);
+                foreach (var child in children)
+                {
+                    child.gameObject.layer = _itemVisualLayer;
+                }
+
+                PickItemAnimation();
+            });
+
+            player.itemModule.onItemUsed.AddListener((fullyUsed) =>
+            {
+                OnItemUsedAnimation();
+                if (!fullyUsed) PickItemAnimation();
+            });
+
             player.controller = this;
             _actions.Enable();
 
@@ -195,6 +243,29 @@ namespace Game.Player
 
                 _shakeGenerator.Shake(Mathf.Max(amplitude, _shakeGenerator.shakeAmplitude), shakeFrequency, shakeFalloffSpeed);
             });
+
+            _cameraSpeedFOV = idleFOV;
+        }
+
+        private void OnItemUsedAnimation()
+        {
+            _itemUseFOVTween?.Kill(false);
+            _itemUseFOVAddition = 0f;
+            _itemUseFOVTween = DOTween.To(() => _itemUseFOVAddition, x => _itemUseFOVAddition = x, itemUseFOVAddition, itemUseFOVDuration).SetEase(itemUseFOVCurve);
+        }
+
+        private void PickItemAnimation()
+        {
+            if (!player.itemModule.item) return;
+            var item = player.itemModule.item;
+            item.transform.localScale = itemPickScale;
+            item.transform.localPosition = item.offset + Vector3.forward * itemPickZOffset;
+
+            _itemPickScaleTween?.Kill();
+            _itemPickZOffsetTween?.Kill();
+
+            _itemPickScaleTween = item.transform.DOScale(Vector3.one, itemPickScaleDuration).SetEase(itemPickScaleCurve);
+            _itemPickZOffsetTween = item.transform.DOLocalMoveZ(item.offset.z, itemPickZOffsetDuration).SetEase(itemPickZOffsetCurve);
         }
 
         private void OnDestroy()
@@ -316,9 +387,11 @@ namespace Game.Player
             {
                 var dot = Vector3.Dot(cameraOrientation.transform.forward, dir);
                 var targetFov = Mathf.Lerp(idleFOV, maxFOV, FOVCurve.Evaluate(speed / maxFOVSpeed * Mathf.Abs(dot)));
-                _camera.camera.fieldOfView = Mathf.Lerp(_camera.camera.fieldOfView, targetFov, Time.deltaTime * FOVSmoothingSpeed);
+                _cameraSpeedFOV = Mathf.Lerp(_cameraSpeedFOV, targetFov, Time.deltaTime * FOVSmoothingSpeed);
             }
-            else _camera.camera.fieldOfView = idleFOV;
+            else _cameraSpeedFOV = idleFOV;
+
+            _camera.camera.fieldOfView = _cameraSpeedFOV + _itemUseFOVAddition;
 
             // SPEEDLINES
             if (enableSpeedlines)

@@ -477,6 +477,156 @@ MonoBehaviour:
   shakeFalloffSpeed: 9
   groundSlamCameraShakeMultiplier: 0.085
   maxGroundSlamCameraShake: 3
+  itemUseFOVAddition: -2
+  itemUseFOVDuration: 0.35
+  itemUseFOVCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 23.5658
+      outSlope: 23.5658
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.0689632
+    - serializedVersion: 3
+      time: 0.14703387
+      value: 0.816254
+      inSlope: -6.0127244
+      outSlope: -6.0127244
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.1179416
+    - serializedVersion: 3
+      time: 0.3723191
+      value: -0.2655927
+      inSlope: 1.5642554
+      outSlope: 1.5642554
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.21873628
+    - serializedVersion: 3
+      time: 0.5624367
+      value: 0.15775524
+      inSlope: 0.19694063
+      outSlope: 0.19694063
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.16923213
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 1.455783
+      outSlope: 1.455783
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.12662241
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  itemPickScale: {x: 0.25, y: 3, z: 0.25}
+  itemPickScaleDuration: 0.2
+  itemPickScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: -0.19457409
+      outSlope: -0.19457409
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.9864865
+    - serializedVersion: 3
+      time: 0.10135134
+      value: 0.15231664
+      inSlope: 4.8988495
+      outSlope: 4.8988495
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.09065134
+    - serializedVersion: 3
+      time: 0.39814258
+      value: 0.9696313
+      inSlope: 0.9364802
+      outSlope: 0.9364802
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.1329788
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  itemPickZOffset: -1
+  itemPickZOffsetDuration: 0.7
+  itemPickZOffsetCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.0013504028
+      value: 0
+      inSlope: 18.588913
+      outSlope: 18.588913
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.04635699
+    - serializedVersion: 3
+      time: 0.15397678
+      value: 1.055968
+      inSlope: -0.056888487
+      outSlope: -0.056888487
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.4384732
+    - serializedVersion: 3
+      time: 0.34816897
+      value: 0.9732046
+      inSlope: -0.059267323
+      outSlope: -0.059267323
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.35742998
+      outWeight: 0.21996328
+    - serializedVersion: 3
+      time: 0.6513624
+      value: 1.0205785
+      inSlope: -0.12565507
+      outSlope: -0.12565507
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.1327548
+    - serializedVersion: 3
+      time: 0.9986572
+      value: 1
+      inSlope: -0.07036394
+      outSlope: -0.07036394
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.44099763
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!136 &241399185085964307
 CapsuleCollider:
   m_ObjectHideFlags: 8
@@ -749,6 +899,7 @@ MonoBehaviour:
   teamReference: {fileID: 2384920938161365344}
   renderers:
   - {fileID: 6833519805803861239}
+  transparent: 0
 --- !u!1 &1977572232203292389
 GameObject:
   m_ObjectHideFlags: 0
@@ -944,6 +1095,9 @@ MonoBehaviour:
     rarityIndex: 0
     itemIndex: 0
   item: {fileID: 0}
+  onDestroyItem:
+    m_PersistentCalls:
+      m_Calls: []
   onItemPickup:
     m_PersistentCalls:
       m_Calls: []
