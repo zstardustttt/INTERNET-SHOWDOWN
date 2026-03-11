@@ -155,13 +155,12 @@ MonoBehaviour:
     normalsStrength: 1
     normalsThickness: 100
     normalsThreshold: 0.3
-    acuteAngleStartDot: -0.5
+    acuteAngleStartDot: -0.05
     acuteDepthThreshold: 1.25
     adjustNearDepth: 0
     adjustFarDepth: 50
     normalsFarThreshold: 1
     colorFarThreshold: 0.8
-  shader: {fileID: 4800000, guid: 8b5766d62e247e846b16a0459904bd52, type: 3}
   injectionPoint: 550
 --- !u!114 &4772964828174011577
 MonoBehaviour:

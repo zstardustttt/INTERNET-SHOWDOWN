@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace Game.Graphics.Outlines
@@ -43,7 +44,6 @@ namespace Game.Graphics.Outlines
     public class SSOutlinesRendererFeature : ScriptableRendererFeature
     {
         public SSOutlinesProperties properties;
-        public Shader shader;
         public RenderPassEvent injectionPoint;
 
         private Material _material;
@@ -51,9 +51,10 @@ namespace Game.Graphics.Outlines
 
         public override void Create()
         {
-            if (shader == null) return;
+            var shader = Shader.Find("Hidden/SSOutlines");
+            if (!shader) throw new("Screen Space Outlines shader couldn't be found!");
+            _material = CoreUtils.CreateEngineMaterial(shader);
 
-            _material = new(shader);
             _renderPass = new(_material, properties)
             {
                 renderPassEvent = injectionPoint,

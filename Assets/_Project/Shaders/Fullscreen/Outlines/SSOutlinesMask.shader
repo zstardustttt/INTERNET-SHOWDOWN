@@ -1,4 +1,4 @@
-Shader "Hidden/LayerMask"
+Shader "Hidden/SSOutlinesMask"
 {
     SubShader
     {
@@ -6,7 +6,7 @@ Shader "Hidden/LayerMask"
         
         Pass
         {
-            Name "LayerMask"
+            Name "SSOutlinesMask"
             Tags { "LightMode"="UniversalForward" }
             
             HLSLPROGRAM

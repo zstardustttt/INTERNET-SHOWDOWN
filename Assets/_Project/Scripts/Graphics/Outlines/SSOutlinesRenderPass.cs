@@ -71,13 +71,9 @@ namespace Game.Graphics.Outlines
             _material = material;
             _properties = properties;
 
-            var layerMaskShader = Shader.Find("Hidden/LayerMask");
-            if (!layerMaskShader)
-            {
-                // Fallback
-                layerMaskShader = Shader.Find("Unlit/Color");
-            }
-            _outlinesMaskMaterial = CoreUtils.CreateEngineMaterial(layerMaskShader);
+            var maskShader = Shader.Find("Hidden/SSOutlinesMask");
+            if (!maskShader) throw new("Screen Space Outlines Mask shader couldn't be found!");
+            _outlinesMaskMaterial = CoreUtils.CreateEngineMaterial(maskShader);
         }
 
         public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)

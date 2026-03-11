@@ -1,4 +1,4 @@
-Shader "Custom/SSOutlines"
+Shader "Hidden/SSOutlines"
 {   
     Properties
     {
