@@ -53,20 +53,18 @@ namespace Game.Player.Health
         public override bool ApplyDamage(Damage damage)
         {
             if (player.locks.Locked(PlayerLock.Health)) return false;
-            if (invincibilityTimers.ContainsKey(damage.source)) return false;
+            if (invincibilityTimers.ContainsKey(damage.identification.guid)) return false;
 
-            if (damage.author && !teamReference.Unwrap().CompareTeam(damage.team))
+            EventBus<OnPlayerDamage>.Invoke(new()
             {
-                damage.author.ReportDealtDamage
-                (
-                    Mathf.Clamp(damage.amount, 0f, health),
-                    damage.type
-                );
-            }
+                player = player,
+                damage = damage,
+                finalAmount = Mathf.Clamp(damage.amount, 0f, health)
+            });
 
             damageHistory.Push(damage);
             health = Mathf.Clamp(health - damage.amount, 0f, config.maxHealth);
-            RequestInvincibility(damage.source, config.invincibilityDuration);
+            RequestInvincibility(damage.identification.guid, config.invincibilityDuration);
             return true;
         }
 
@@ -84,7 +82,8 @@ namespace Game.Player.Health
                 differenceCounter += damage.amount;
 
                 if (differenceCounter <= difference) continue;
-                damageHistory.Push(new(damage.type, differenceCounter - difference, damage.author, damage.source, damage.team));
+                damage.amount = differenceCounter - difference;
+                damageHistory.Push(damage);
                 break;
             }
 

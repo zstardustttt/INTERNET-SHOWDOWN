@@ -71,7 +71,7 @@ namespace Game.Player
 
         private void ModifyInternal(Modification modification, PlayerLock[] locks)
         {
-            Debug.Log($"{modification} on {player.playerName}: {string.Join(", ", locks)}");
+            Debug.Log($"{modification} on {player.Identification.name}: {string.Join(", ", locks)}");
 
             if (modification == Modification.Lock)
             {
@@ -91,7 +91,7 @@ namespace Game.Player
                 {
                     if (!_locks.TryGetValue(plock, out var currentCounter))
                     {
-                        Debug.LogError($"Unlock failed: Player {player.playerName} isn't locked on {plock}");
+                        Debug.LogError($"Unlock failed: Player {player.Identification.name} isn't locked on {plock}");
                         continue;
                     }
 

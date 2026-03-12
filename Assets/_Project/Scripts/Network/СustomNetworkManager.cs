@@ -14,6 +14,7 @@ using Game.GameLoop;
 using Game.GameLoop.Events;
 using Game.Maps.Events;
 using Game.Core.Lobby;
+using System;
 
 namespace Game.Network
 {
@@ -23,7 +24,7 @@ namespace Game.Network
         public static CustomNetworkManager CustomSingleton => (CustomNetworkManager)singleton;
         private GameObject _portal;
 
-        private Dictionary<string, PlayerStats> _disconnectedPlayersStats;
+        private Dictionary<Guid, PlayerStats> _disconnectedPlayersStats;
         private GameState _gameState;
 
         public override void OnStartServer()
@@ -64,10 +65,10 @@ namespace Game.Network
                 {
                     itemData = new()
                     {
-                        guid = data.player.playerGuid,
+                        guid = data.player.Identification.guid,
                         item = new()
                         {
-                            name = data.player.playerName,
+                            name = data.player.Identification.name,
                             activity = data.player.stats.activity,
                             score = data.player.stats.GetScore()
                         }
@@ -94,10 +95,10 @@ namespace Game.Network
                 {
                     itemData = new()
                     {
-                        guid = data.player.playerGuid,
+                        guid = data.player.Identification.guid,
                         item = new()
                         {
-                            name = data.player.playerName,
+                            name = data.player.Identification.name,
                             activity = data.current.activity,
                             score = currentScore
                         }
@@ -115,10 +116,10 @@ namespace Game.Network
             {
                 if (!_gameState.phase.info.loadStats) return;
 
-                if (_disconnectedPlayersStats.TryGetValue(data.player.playerGuid, out var stats))
+                if (_disconnectedPlayersStats.TryGetValue(data.player.Identification.guid, out var stats))
                 {
                     data.player.stats = stats;
-                    _disconnectedPlayersStats.Remove(data.player.playerGuid);
+                    _disconnectedPlayersStats.Remove(data.player.Identification.guid);
                 }
             });
         }
@@ -135,7 +136,7 @@ namespace Game.Network
                 var player = conn.identity.GetComponent<PlayerBase>();
                 if (_gameState.phase.info.saveStats)
                 {
-                    _disconnectedPlayersStats.Add(player.playerGuid, player.stats);
+                    _disconnectedPlayersStats.Add(player.Identification.guid, player.stats);
                 }
             }
 
@@ -165,7 +166,7 @@ namespace Game.Network
                         guid = x.Key,
                         item = new()
                         {
-                            name = x.Value.playerName,
+                            name = x.Value.Identification.name,
                             activity = x.Value.stats.activity,
                             score = x.Value.stats.GetScore()
                         }

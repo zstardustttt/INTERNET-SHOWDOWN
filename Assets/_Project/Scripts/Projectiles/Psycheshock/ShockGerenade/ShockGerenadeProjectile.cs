@@ -21,11 +21,14 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         public GameObject localGerenadeVisualPrefab;
         public Transform shakee;
 
+        [Space(9)]
+        public DamageIdentificationSetup damageIdentificationSetup;
         public HitEntity hitEntity;
         public HitListener attachHitListener;
         public DamageTarget damageTarget;
         public ProjectileCollision collision;
 
+        [Space(9)]
         public AudioSource tickAudioSource;
         public AudioSource attachAudioSource;
         public AudioSource detachAudioSource;
@@ -49,7 +52,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         // client
         private ShockGerenadeLocalVisual _localGerenadeVisual;
 
-        private Guid _holdDamageSourceGuid;
+        private DamageIdentification _holdDamageIdentification;
         private PlayerBase _attached;
         private Vector3 _previousAttachedPosition;
         private float _collectedAttachedDelta;
@@ -81,7 +84,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
         protected override void OnSpawned()
         {
-            _holdDamageSourceGuid = Guid.NewGuid();
+            _holdDamageIdentification = DamageIdentification.From(damageIdentificationSetup);
 
             attachHitListener.onHit.AddListener(OnHit);
             damageTarget.onDamage.AddListener(OnDamage);
@@ -218,7 +221,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
                         _attached.deathModule.onDeath.RemoveListener(OnAttachedDeath);
                         _attached.healthModule.onWishDamage.RemoveListener(OnDamage);
 
-                        var damage = new Damage(DamageType.Indirect, 100f, _explosionRequestAuthor, Guid.NewGuid(), _explosionRequestAuthor.teamReference.team);
+                        var damage = new Damage(DamageType.Indirect, 100f, _explosionRequestAuthor, _explosionRequestAuthor.teamReference.team, DamageIdentification.From(damageIdentificationSetup));
                         _attached.healthModule.ApplyDamage(damage);
                         pos = _attached.motor.Capsule.bounds.center;
                     }
@@ -259,7 +262,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
                 if (_collectedAttachedDelta >= detachTotalDelta) Detach();
                 else
                 {
-                    var damage = new Damage(DamageType.Indirect, _holdDamageAmount, authorReference.author, _holdDamageSourceGuid, teamReference.team);
+                    var damage = new Damage(DamageType.Indirect, _holdDamageAmount, authorReference.author, teamReference.team, _holdDamageIdentification);
                     _attached.healthModule.ApplyDamage(damage);
                 }
 

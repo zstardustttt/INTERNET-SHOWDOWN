@@ -1,3 +1,5 @@
+using System;
+using Game.Core.Damages;
 using Game.Core.Events;
 using Game.Player.Death;
 using Game.Player.Health;
@@ -11,8 +13,22 @@ namespace Game.Player.Events
         public float newHealth;
     }
 
+    public struct OnPlayerDamage : IEvent
+    {
+        public PlayerBase player;
+        public Damage damage;
+        public float finalAmount;
+    }
+
     public struct OnLocalPlayerAddedToMap : IEvent { }
     public struct OnLocalPlayerRemovedFromMap : IEvent { }
+    public struct OnLocalPlayerDealtDamage : IEvent
+    {
+        public PlayerIdentification target;
+        public DamageIdentification source;
+        public DamageType type;
+        public float amount;
+    }
 
     public struct OnPlayerInitialized : IEvent
     {
@@ -21,7 +37,7 @@ namespace Game.Player.Events
 
     public struct OnPlayerDestroy : IEvent
     {
-        public string guid;
+        public Guid guid;
     }
 
     public struct OnPlayerStatsChanged : IEvent

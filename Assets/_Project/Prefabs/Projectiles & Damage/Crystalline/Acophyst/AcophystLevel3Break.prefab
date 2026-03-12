@@ -163,6 +163,7 @@ MonoBehaviour:
   beforeHitScan:
     m_PersistentCalls:
       m_Calls: []
+  damageIdentificationSetup: {fileID: 11400000, guid: f58ff65bade800b4ead10cd364431cf2, type: 2}
   authorReference: {fileID: 2940125565769388795}
   teamReference: {fileID: 2176200713160898901}
   canDamageTeam: 1

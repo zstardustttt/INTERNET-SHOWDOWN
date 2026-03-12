@@ -89,7 +89,7 @@ namespace Game.Player
             }
 
             var itemIdx = Random.Range(0, itemPool.Count);
-            Debug.Log($"Picked item {itemPool[itemIdx].displayName} for player {player.playerName}");
+            Debug.Log($"Picked item {itemPool[itemIdx].displayName} for player {player.Identification.name}");
 
             itemData = new()
             {

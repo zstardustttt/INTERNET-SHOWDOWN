@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -34,8 +35,8 @@ namespace Game.UI.Game
         public RectTransform leaderboardContainer;
         public TMP_Text leaderboardItemPrefab;
 
-        private Dictionary<string, LeaderboardItem> _virtualLeaderboard;
-        private Dictionary<string, TMP_Text> _displayedLeaderboard;
+        private Dictionary<Guid, LeaderboardItem> _virtualLeaderboard;
+        private Dictionary<Guid, TMP_Text> _displayedLeaderboard;
 
         private void Awake()
         {

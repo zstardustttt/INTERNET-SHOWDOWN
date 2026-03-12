@@ -126,6 +126,7 @@ MonoBehaviour:
   beforeHitScan:
     m_PersistentCalls:
       m_Calls: []
+  damageIdentificationSetup: {fileID: 11400000, guid: b4dc823482a087b4685197fa605437c3, type: 2}
   authorReference: {fileID: 0}
   teamReference: {fileID: 0}
   canDamageTeam: 1
@@ -188,10 +189,9 @@ MonoBehaviour:
   audioSource: {fileID: 6721214265687877222}
   hitEntity: {fileID: 3860378417001154337}
   damageSource: {fileID: 3646660236376352543}
-  startProj: {fileID: 0}
-  endProj: {fileID: 0}
   startPos: {x: 0, y: 0, z: 0}
   endPos: {x: 0, y: 0, z: 0}
+  lineRendererPointsCount: 0
 --- !u!120 &8668921467422308858
 LineRenderer:
   serializedVersion: 3

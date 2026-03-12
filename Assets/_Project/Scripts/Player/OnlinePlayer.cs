@@ -228,7 +228,11 @@ namespace Game.Player
             player.controller = this;
             _actions.Enable();
 
-            player.HandleThisPlayer(Environment.UserName, OnlinePlayerGuid.Guid);
+            player.HandleThisPlayer(new()
+            {
+                name = Environment.UserName,
+                guid = OnlinePlayerGuid.Guid
+            });
 
             EventBus<OnCameraShakerSpawn>.Listen((data) =>
             {
@@ -300,7 +304,7 @@ namespace Game.Player
 #if DEBUG
             if (NetworkServer.active && Input.GetKeyDown(KeyCode.F2))
             {
-                player.healthModule.ApplyDamage(new(DamageType.Indirect, 10f, player, Guid.NewGuid(), player.teamReference.team));
+                player.healthModule.ApplyDamage(new(DamageType.Indirect, 10f, player, player.teamReference.team, DamageIdentification.From(null)));
             }
 
             if (NetworkServer.active && Input.GetKeyDown(KeyCode.F3))

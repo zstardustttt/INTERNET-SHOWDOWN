@@ -17,7 +17,7 @@ namespace Game.Core.Maps
         public Scene scene;
         public MapInfo info;
         public MapConfig config;
-        public Dictionary<string, PlayerBase> players;
+        public Dictionary<Guid, PlayerBase> players;
     }
 
     public static class MapLoader
@@ -72,9 +72,9 @@ namespace Game.Core.Maps
                 return false;
 
             SceneManager.MoveGameObjectToScene(go, loadedMap.scene);
-            if (go.TryGetComponent(out PlayerBase player))
+            if (go.TryGetComponent(out PlayerBase player) && player.Initialized)
             {
-                loadedMap.players.Add(player.playerGuid, player);
+                loadedMap.players.Add(player.Identification.guid, player);
                 EventBus<OnAddPlayerToMap>.Invoke(new() { player = player });
             }
             return true;
@@ -138,7 +138,7 @@ namespace Game.Core.Maps
         public static bool IsPlayerOnMap(PlayerBase player)
         {
             if (loadedMap == null) return false;
-            return loadedMap.players.ContainsKey(player.playerGuid);
+            return loadedMap.players.ContainsKey(player.Identification.guid);
         }
 
         [Server]

@@ -1,4 +1,3 @@
-using System;
 using Game.Core.Damages.Events;
 using Game.Core.Hits;
 using UnityEngine.Events;
@@ -21,17 +20,18 @@ namespace Game.Core.Damages
 
     public class DamageSource : HitListener
     {
-        public Guid Guid { get; private set; }
+        public DamageIdentification Identification { get; private set; }
 
+        public DamageIdentificationSetup damageIdentificationSetup;
         public AuthorReference authorReference;
         public TeamReference teamReference;
         public bool canDamageTeam;
         public UnityEvent<DamageEvent> onWishDamage;
         public UnityEvent<DamageEvent> onDamage;
 
-        private void Awake()
+        public override void OnStartServer()
         {
-            Guid = Guid.NewGuid();
+            Identification = DamageIdentification.From(damageIdentificationSetup);
         }
 
         public virtual DamageEvaluation EvaluateDamage(DamageTarget target)

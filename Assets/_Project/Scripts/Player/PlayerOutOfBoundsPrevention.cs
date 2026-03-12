@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Game.Core.Events;
 using Game.Core.Lobby;
@@ -11,9 +12,9 @@ namespace Game.Player
     {
         public LobbyInfo lobbyInfo;
 
-        private Dictionary<string, PlayerBase> _players;
+        private Dictionary<Guid, PlayerBase> _players;
         private Stack<PlayerBase> _newPlayers;
-        private Stack<string> _destroyedPlayers;
+        private Stack<Guid> _destroyedPlayers;
 
         private void Awake()
         {
@@ -30,7 +31,7 @@ namespace Game.Player
             while (_newPlayers.Count > 0)
             {
                 var player = _newPlayers.Pop();
-                _players.Add(player.playerGuid, player);
+                _players.Add(player.Identification.guid, player);
             }
 
             while (_destroyedPlayers.Count > 0)

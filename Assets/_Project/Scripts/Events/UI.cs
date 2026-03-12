@@ -1,3 +1,4 @@
+using System;
 using Game.Core.Events;
 using Game.UI.Game;
 
@@ -9,7 +10,7 @@ namespace Game.Events.UI
 
     public struct LeaderboardEventData
     {
-        public string guid;
+        public Guid guid;
         public LeaderboardItem item;
     }
 
@@ -27,7 +28,7 @@ namespace Game.Events.UI
 
     public struct RemoveLeaderboardItem : IEvent
     {
-        public string guid;
+        public Guid guid;
     }
 
     public struct ChangeLeaderboardItem : IEvent

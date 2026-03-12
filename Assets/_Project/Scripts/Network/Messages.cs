@@ -1,3 +1,4 @@
+using System;
 using Game.Events.UI;
 using Mirror;
 
@@ -21,7 +22,7 @@ namespace Game.Network.Messages
 
     public struct ServerRemoveLeaderboardItem : NetworkMessage
     {
-        public string guid;
+        public Guid guid;
     }
 
     public struct ServerChangeLeaderboardItem : NetworkMessage

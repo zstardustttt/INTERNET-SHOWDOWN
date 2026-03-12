@@ -13,6 +13,12 @@ using UnityEngine.Events;
 
 namespace Game.Player
 {
+    public struct PlayerIdentification
+    {
+        public string name;
+        public Guid guid;
+    }
+
     [RequireComponent(typeof(KinematicCharacterMotor))]
     public class PlayerBase : NetworkBehaviour, ICharacterController
     {
@@ -99,8 +105,8 @@ namespace Game.Player
         [HideInInspector] public UnityEvent<bool> onEndDash = new();
         [HideInInspector] public UnityEvent<Collider> onCollide = new();
 
-        [SyncVar] public string playerGuid;
-        [SyncVar] public string playerName;
+        public PlayerIdentification Identification => _identification;
+        [SyncVar] private PlayerIdentification _identification;
 
         public PlayerStats stats;
         private PlayerStats _previousStats;
@@ -215,10 +221,10 @@ namespace Game.Player
 
         private void OnDestroy()
         {
-            EventBus<OnPlayerDestroy>.Invoke(new() { guid = playerGuid });
+            EventBus<OnPlayerDestroy>.Invoke(new() { guid = _identification.guid });
         }
 
-        public void HandleThisPlayer(string name, string guid)
+        public void HandleThisPlayer(PlayerIdentification identification)
         {
             _localOverlapsCheckBuffer = new Collider[LOCAL_OVERLAPS_CHECK_BUFFER_SIZE];
 
@@ -231,24 +237,24 @@ namespace Game.Player
                 if (plock == PlayerLock.Motor) motor.enabled = !locked;
             });
 
-            if (NetworkServer.active) Initialize(name, guid);
-            else CmdInitialize(name, guid);
+            if (NetworkServer.active) Initialize(identification);
+            else CmdInitialize(identification);
         }
 
         [Command]
-        private void CmdInitialize(string name, string guid) => Initialize(name, guid);
+        private void CmdInitialize(PlayerIdentification identification) => Initialize(identification);
 
         [Server]
-        private void Initialize(string name, string guid)
+        private void Initialize(PlayerIdentification identification)
         {
             if (Initialized)
             {
-                Debug.LogError($"Player {playerName} is already initialized!");
+                Debug.LogError($"Player {_identification.name} is already initialized!");
                 return;
             }
 
-            playerName = name;
-            playerGuid = guid;
+            _identification = identification;
+            Initialized = true;
             EventBus<OnPlayerInitialized>.Invoke(new() { player = this });
         }
 
@@ -635,12 +641,26 @@ namespace Game.Player
         }
 
         [Server]
-        public void ReportDealtDamage(float amount, DamageType type)
+        public void ReportDealtDamage(PlayerBase target, Damage damage, float finalAmount)
         {
-            stats.damageDealt += amount;
-            if (type == DamageType.Direct) stats.directHits++;
-            else if (type == DamageType.Indirect) stats.indirectHits++;
-            else throw new($"Damage type {type} isn't supported");
+            stats.damageDealt += finalAmount;
+            if (damage.type == DamageType.Direct) stats.directHits++;
+            else if (damage.type == DamageType.Indirect) stats.indirectHits++;
+            else throw new($"Damage type {damage.type} isn't supported");
+
+            TargetReportDealtDamage(target._identification, damage.identification, damage.type, finalAmount);
+        }
+
+        [TargetRpc]
+        private void TargetReportDealtDamage(PlayerIdentification target, DamageIdentification source, DamageType type, float amount)
+        {
+            EventBus<OnLocalPlayerDealtDamage>.Invoke(new()
+            {
+                target = target,
+                source = source,
+                type = type,
+                amount = amount
+            });
         }
 
         [Server]

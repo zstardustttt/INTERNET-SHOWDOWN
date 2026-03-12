@@ -10,13 +10,22 @@ namespace Game.UI.Game.HitIndiction
     public class HitInfo : MonoBehaviour
     {
         public RectTransform rectTransform;
-        public CanvasGroup canvasGroup;
         public Image typeGraphic;
-        public TMP_Text otherInfo;
+        public CanvasGroup typeCanvasGroup;
+        public RectTransform infoRectTransform;
+        public CanvasGroup infoCanvasGroup;
+
+        [Space(9)]
+        public TMP_Text playerText;
+        public TMP_Text weaponText;
+        public TMP_Text scoreText;
 
         [Header("Animation")]
-        public float fadeDuration;
-        public AnimationCurve fadeCurve;
+        public float typeFadeDuration;
+        public AnimationCurve typeFadeCurve;
+
+        public float infoFadeDuration;
+        public AnimationCurve infoFadeCurve;
 
         [Space(9)]
         public float endPosition;
@@ -35,7 +44,8 @@ namespace Game.UI.Game.HitIndiction
         public AnimationCurve startScaleCurve;
         public AnimationCurve endScaleCurve;
 
-        private TweenerCore<float, float, FloatOptions> _fadeTween;
+        private TweenerCore<float, float, FloatOptions> _typeFadeTween;
+        private TweenerCore<float, float, FloatOptions> _infoFadeTween;
         private TweenerCore<Vector2, Vector2, VectorOptions> _moveTween;
         private TweenerCore<Vector2, Vector2, VectorOptions> _infoMoveTween;
         private TweenerCore<Vector3, Vector3, VectorOptions> _startScaleTween;
@@ -43,29 +53,35 @@ namespace Game.UI.Game.HitIndiction
 
         private void Awake()
         {
-            canvasGroup.alpha = 0f;
+            typeCanvasGroup.alpha = 0f;
+            infoCanvasGroup.alpha = 0f;
         }
 
-        public void Play(Sprite type, string info)
+        public void Play(Sprite type, string playerName, string weaponName, int score)
         {
             typeGraphic.sprite = type;
-            otherInfo.text = info;
+            playerText.text = playerName;
+            weaponText.text = weaponName;
+            scoreText.text = score.ToString();
 
-            _fadeTween?.Kill();
+            _typeFadeTween?.Kill();
+            _infoFadeTween?.Kill();
             _moveTween?.Kill();
             _infoMoveTween?.Kill();
             _startScaleTween?.Kill();
             _endScaleTween?.Kill();
 
-            canvasGroup.alpha = 1f;
+            typeCanvasGroup.alpha = 1f;
+            infoCanvasGroup.alpha = 1f;
             rectTransform.anchoredPosition = Vector2.zero;
             rectTransform.localScale = startScale;
-            otherInfo.rectTransform.anchoredPosition = Vector2.up * startInfoPosition;
+            infoRectTransform.anchoredPosition = Vector2.up * startInfoPosition;
 
-            _fadeTween = canvasGroup.DOFade(0f, fadeDuration).SetEase(fadeCurve);
+            _typeFadeTween = typeCanvasGroup.DOFade(0f, typeFadeDuration).SetEase(typeFadeCurve);
+            _infoFadeTween = infoCanvasGroup.DOFade(0f, infoFadeDuration).SetEase(infoFadeCurve);
 
             _moveTween = rectTransform.DOAnchorPosY(endPosition, moveDuration).SetEase(moveCurve);
-            _infoMoveTween = otherInfo.rectTransform.DOAnchorPosY(endInfoPosition, infoMoveDuration).SetEase(infoMoveCurve);
+            _infoMoveTween = infoRectTransform.DOAnchorPosY(endInfoPosition, infoMoveDuration).SetEase(infoMoveCurve);
 
             _startScaleTween = rectTransform.DOScale(Vector3.one, startScaleDuration).SetEase(startScaleCurve).OnComplete(() =>
             {

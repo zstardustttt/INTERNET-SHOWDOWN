@@ -1,10 +1,12 @@
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
+using Game.Core.Damages;
 using Game.Core.Events;
 using Game.Player.Events;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace Game.UI.Game.HitIndiction
 {
@@ -35,25 +37,20 @@ namespace Game.UI.Game.HitIndiction
         {
             audioSource.pitch = idlePitch;
 
-            EventBus<OnPlayerStatsChanged>.Listen((data) =>
+            EventBus<OnLocalPlayerDealtDamage>.Listen((data) =>
             {
-                if (!data.player.isLocalPlayer) return;
-
-                if (data.previous.directHits < data.current.directHits)
-                    Indicate(data.current.GetScore() - data.previous.GetScore(), true);
-                else if (data.previous.indirectHits < data.current.indirectHits)
-                    Indicate(data.current.GetScore() - data.previous.GetScore(), false);
+                Indicate(data.type, data.target.name, data.source.name, data.amount);
             });
         }
 
-        private void Indicate(int scoreIncrease, bool direct)
+        private void Indicate(DamageType type, string playerName, string weaponName, float score)
         {
             _indicatorFadeTween?.Kill();
             indicatorGraphic.color = new(indicatorGraphic.color.r, indicatorGraphic.color.g, indicatorGraphic.color.b, indicatorStartAlpha);
             _indicatorFadeTween = indicatorGraphic.DOFade(0f, indicatorFadeDuration).SetEase(indicatorFadeEase);
 
-            var sprite = direct ? directHitSprite : indirectHitSprite;
-            hitInfo.Play(sprite, $"<color=yellow>+{scoreIncrease}</color> score");
+            var sprite = type == DamageType.Direct ? directHitSprite : indirectHitSprite;
+            hitInfo.Play(sprite, playerName, weaponName, (int)score);
 
             audioSource.pitch = Mathf.Min(audioSource.pitch + SEMITONE, maxPitch);
             audioSource.Play();
@@ -71,9 +68,9 @@ namespace Game.UI.Game.HitIndiction
 
 #if DEBUG
             if (Input.GetKeyDown(KeyCode.F5))
-                Indicate(Random.Range(0, 100), true);
+                Indicate(DamageType.Direct, "Player", "Ultra Item", Random.Range(0f, 100f));
             else if (Input.GetKeyDown(KeyCode.F6))
-                Indicate(Random.Range(0, 100), false);
+                Indicate(DamageType.Indirect, "Player", "Ultra Item", Random.Range(0f, 100f));
 #endif
         }
     }

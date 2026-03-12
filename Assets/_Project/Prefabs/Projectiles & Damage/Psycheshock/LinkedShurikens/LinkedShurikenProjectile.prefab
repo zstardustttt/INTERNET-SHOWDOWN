@@ -4943,6 +4943,7 @@ MonoBehaviour:
   beforeHitScan:
     m_PersistentCalls:
       m_Calls: []
+  damageIdentificationSetup: {fileID: 11400000, guid: b4dc823482a087b4685197fa605437c3, type: 2}
   authorReference: {fileID: 5516479265608034548}
   teamReference: {fileID: 53578493652914002}
   canDamageTeam: 0
@@ -5323,6 +5324,9 @@ MonoBehaviour:
   startFlySpeed: 200
   maxLifetime: 15
   visualRotationFactor: 2400
+  onCollide:
+    m_PersistentCalls:
+      m_Calls: []
   onDestroy:
     m_PersistentCalls:
       m_Calls: []

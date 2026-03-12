@@ -24775,7 +24775,7 @@ MonoBehaviour:
   beforeHitScan:
     m_PersistentCalls:
       m_Calls: []
-  canDamageFamily: 0
+  damageIdentificationSetup: {fileID: 11400000, guid: a9061a815f8b47044b108786c15dcafd, type: 2}
   authorReference: {fileID: 2227766243308831210}
   teamReference: {fileID: 9123583227568595825}
   canDamageTeam: 0
@@ -24910,6 +24910,9 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  onTeamChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &2227766243308831210
 MonoBehaviour:
   m_ObjectHideFlags: 0
