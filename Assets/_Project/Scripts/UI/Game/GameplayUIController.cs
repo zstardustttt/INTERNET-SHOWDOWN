@@ -1,9 +1,9 @@
 using System.Collections;
 using Game.Core.Events;
+using Game.Core.Player.Health.Events;
 using Game.Events.UI;
 using Game.GameLoop;
 using Game.GameLoop.Events;
-using Game.Player.Events;
 using UnityEngine;
 using UnityEngine.UI;
 

@@ -267,16 +267,19 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7958844430475812704}
+  - component: {fileID: 1605661011415414080}
   - component: {fileID: 6936427358180725379}
   - component: {fileID: 241399185085964307}
-  - component: {fileID: 6754057132338759635}
-  - component: {fileID: 131148445153040676}
+  - component: {fileID: 1582241118801400820}
+  - component: {fileID: 7132852565658845044}
+  - component: {fileID: 5720209912188820912}
+  - component: {fileID: 3822421574065507937}
+  - component: {fileID: 4210048269870960952}
+  - component: {fileID: 2384920938161365344}
   - component: {fileID: 3085756864833092725}
+  - component: {fileID: 131148445153040676}
   - component: {fileID: 2462157491766292911}
   - component: {fileID: 4075737330760207556}
-  - component: {fileID: 1976138601191644980}
-  - component: {fileID: 9142073372359770434}
-  - component: {fileID: 2384920938161365344}
   - component: {fileID: 3696968812922307318}
   m_Layer: 6
   m_Name: Player
@@ -303,6 +306,43 @@ Transform:
   - {fileID: 4512329816075396210}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1605661011415414080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635209751978783220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 822a11b3bb631cb478245ea133938b8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Player.PlayerCore
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  config: {fileID: 11400000, guid: e895b1c3a2ab5f540ad2cf4771babdfc, type: 2}
+  hitEntity: {fileID: 8243380858814391041}
+  movementModule: {fileID: 1582241118801400820}
+  itemModule: {fileID: 5720209912188820912}
+  healthModule: {fileID: 7132852565658845044}
+  deathModule: {fileID: 3822421574065507937}
+  locks: {fileID: 4210048269870960952}
+  teamReference: {fileID: 2384920938161365344}
+  horizontalOrientation: {fileID: 6124577175492389443}
+  verticalOrientation: {fileID: 9199459176827721078}
+  modelContainer: {fileID: 6485277279108889857}
+  mainModel: {fileID: 7050680160326592069}
+  onHandlingThisPlayer:
+    m_PersistentCalls:
+      m_Calls: []
+  onDealtDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onLocalTriggerEnter:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &6936427358180725379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -320,7 +360,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   cameraPrefab: {fileID: 293337341705726784, guid: 4cdd146b491d11a4692a32238c4fd696, type: 3}
-  player: {fileID: 6754057132338759635}
+  player: {fileID: 1605661011415414080}
   cameraOrientation: {fileID: 9199459176827721078}
   speedRecordSize: 8
   leftFootstepSource: {fileID: 542094216083836975}
@@ -650,7 +690,7 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
---- !u!114 &6754057132338759635
+--- !u!114 &1582241118801400820
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -659,25 +699,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1635209751978783220}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 324c322c0c6e2d343b479dd82503b568, type: 3}
+  m_Script: {fileID: 11500000, guid: 0bfa4a14367abaa4c8f0aef9f66cd1aa, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Player.Movement.PlayerMovementModule
   syncMethod: 0
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  hitEntity: {fileID: 8243380858814391041}
-  healthModule: {fileID: 5880631188279301956}
-  itemModule: {fileID: 7304304024719944416}
-  deathModule: {fileID: 9142073372359770434}
-  teamReference: {fileID: 2384920938161365344}
-  locks: {fileID: 1976138601191644980}
-  config: {fileID: 11400000, guid: 6557f4f69351e73429465a2a5dfea442, type: 2}
+  config: {fileID: 11400000, guid: b340105113101354fa199acef9fb0bce, type: 2}
+  player: {fileID: 1605661011415414080}
   motor: {fileID: 3085756864833092725}
-  horizontalOrientation: {fileID: 6124577175492389443}
-  verticalOrientation: {fileID: 9199459176827721078}
-  modelContainer: {fileID: 6485277279108889857}
-  mainModel: {fileID: 7050680160326592069}
   onGroundSlamLanded:
     m_PersistentCalls:
       m_Calls: []
@@ -696,13 +727,7 @@ MonoBehaviour:
   onEndDash:
     m_PersistentCalls:
       m_Calls: []
-  onCollide:
-    m_PersistentCalls:
-      m_Calls: []
-  playerGuid: 
-  playerName: 
-  localTransientVelocity: {x: 0, y: 0, z: 0}
---- !u!114 &131148445153040676
+--- !u!114 &7132852565658845044
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -711,17 +736,140 @@ MonoBehaviour:
   m_GameObject: {fileID: 1635209751978783220}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e6c71d72c2e1d44cbf753423f77bc0a, type: 3}
+  m_Script: {fileID: 11500000, guid: 956e9a83b8725c7409d7d7b401f3aa69, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Player.Health.PlayerHealthModule
   syncMethod: 0
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  serverSide: 0
-  config: {fileID: 11400000, guid: 78903821474925b4bb25818b3f68d3a8, type: 2}
-  audioSourcesContainer: {fileID: 5212860309231172166}
-  player: {fileID: 6754057132338759635}
+  hitEntity: {fileID: 8243380858814391041}
+  active: 1
+  layer: {fileID: 11400000, guid: 06165ca6f2cb1584fb040de7c828041d, type: 2}
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+  teamReference: {fileID: 2384920938161365344}
+  onWishDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  player: {fileID: 1605661011415414080}
+  config: {fileID: 11400000, guid: 99c2383aa5c7b73458ba68f1f2ad3403, type: 2}
+  health: 0
+--- !u!114 &5720209912188820912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635209751978783220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26da23f77edd0f843a1115939780c96e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Player.Items.PlayerItemModule
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hitEntity: {fileID: 8243380858814391041}
+  active: 1
+  layer: {fileID: 11400000, guid: 4cd91094a9195d344a5f51aa6e49d70c, type: 2}
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  beforeHitScan:
+    m_PersistentCalls:
+      m_Calls: []
+  player: {fileID: 1605661011415414080}
+  itemHolder: {fileID: 4582289290584614918}
+  itemData:
+    rarityIndex: 0
+    itemIndex: 0
+  item: {fileID: 0}
+  onDestroyItem:
+    m_PersistentCalls:
+      m_Calls: []
+  onItemPickup:
+    m_PersistentCalls:
+      m_Calls: []
+  onItemUsed:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &3822421574065507937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635209751978783220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe84106e7461f8b42b2e612e266f24b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Player.Death.PlayerDeathModule
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  player: {fileID: 1605661011415414080}
+  config: {fileID: 11400000, guid: 0ee8d9a28102af0429ebdd9909eadbb4, type: 2}
+  ghostModel: {fileID: 7006930605099416351}
+  respawnEffectRenderers:
+  - {fileID: 6833519805803861239}
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  onRespawn:
+    m_PersistentCalls:
+      m_Calls: []
+  respawnTimer: 0
+  previousPosition: {x: 0, y: 0, z: 0}
+--- !u!114 &4210048269870960952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635209751978783220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d87f078cdf8e1c348bb045749bf3e361, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Player.Locks.PlayerLocks
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  player: {fileID: 1605661011415414080}
+  onLockStateChange:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &2384920938161365344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635209751978783220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d063f58264eb86940a7f8a4b6b69c914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.TeamReference
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  onTeamChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &3085756864833092725
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -764,6 +912,25 @@ MonoBehaviour:
   CheckMovementInitialOverlaps: 1
   KillVelocityWhenExceedMaxMovementIterations: 1
   KillRemainingMovementWhenExceedMaxMovementIterations: 1
+--- !u!114 &131148445153040676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635209751978783220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e6c71d72c2e1d44cbf753423f77bc0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMethod: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  config: {fileID: 11400000, guid: 78903821474925b4bb25818b3f68d3a8, type: 2}
+  audioSourcesContainer: {fileID: 5212860309231172166}
+  player: {fileID: 1605661011415414080}
 --- !u!114 &2462157491766292911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -816,74 +983,6 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
---- !u!114 &1976138601191644980
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1635209751978783220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15ac4a1b8598a18418160c1805e8c4e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Player.PlayerLocks
-  syncMethod: 0
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  player: {fileID: 6754057132338759635}
-  onLockStateChange:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &9142073372359770434
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1635209751978783220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9ec5706dd4939347a22fac44175f035, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Player.Death.PlayerDeathModule
-  syncMethod: 0
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  player: {fileID: 6754057132338759635}
-  config: {fileID: 11400000, guid: 3cb526ad745f02144862fecd5c07d756, type: 2}
-  ghostModel: {fileID: 7006930605099416351}
-  respawnEffectRenderers:
-  - {fileID: 6833519805803861239}
-  onDeath:
-    m_PersistentCalls:
-      m_Calls: []
-  onRespawn:
-    m_PersistentCalls:
-      m_Calls: []
-  respawnTimer: 0
-  previousPosition: {x: 0, y: 0, z: 0}
---- !u!114 &2384920938161365344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1635209751978783220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d063f58264eb86940a7f8a4b6b69c914, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Damages.TeamReference
-  syncMethod: 0
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  onTeamChanged:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &3696968812922307318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -911,9 +1010,7 @@ GameObject:
   - component: {fileID: 4512329816075396210}
   - component: {fileID: 6144822228631900321}
   - component: {fileID: 8243380858814391041}
-  - component: {fileID: 5880631188279301956}
   - component: {fileID: 5918298169735325867}
-  - component: {fileID: 7304304024719944416}
   - component: {fileID: 2706654681915954732}
   m_Layer: 9
   m_Name: HitEntity
@@ -975,10 +1072,10 @@ MonoBehaviour:
   active: 1
   sources: []
   targets:
-  - {fileID: 5880631188279301956}
   - {fileID: 5918298169735325867}
-  - {fileID: 7304304024719944416}
   - {fileID: 2706654681915954732}
+  - {fileID: 5720209912188820912}
+  - {fileID: 7132852565658845044}
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -989,41 +1086,6 @@ MonoBehaviour:
   skipObservationUpdate: 0
   index: 0
   capsuleCollider: {fileID: 6144822228631900321}
---- !u!114 &5880631188279301956
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1977572232203292389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25f4a8beddcc0a845a08dc54f26d6401, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Player.PlayerHealthModule
-  syncMethod: 0
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  hitEntity: {fileID: 8243380858814391041}
-  active: 1
-  layer: {fileID: 11400000, guid: 06165ca6f2cb1584fb040de7c828041d, type: 2}
-  onHit:
-    m_PersistentCalls:
-      m_Calls: []
-  beforeHitScan:
-    m_PersistentCalls:
-      m_Calls: []
-  teamReference: {fileID: 2384920938161365344}
-  onWishDamage:
-    m_PersistentCalls:
-      m_Calls: []
-  onDamage:
-    m_PersistentCalls:
-      m_Calls: []
-  player: {fileID: 6754057132338759635}
-  config: {fileID: 11400000, guid: 7ea6eb0d45ae4614099850a0e9178827, type: 2}
-  health: 0
 --- !u!114 &5918298169735325867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1052,8 +1114,9 @@ MonoBehaviour:
   onKnockback:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6754057132338759635}
-        m_TargetAssemblyTypeName: Game.Player.PlayerBase, Assembly-CSharp
+      - m_Target: {fileID: 1582241118801400820}
+        m_TargetAssemblyTypeName: Game.Core.Player.Movement.PlayerMovementModule,
+          Assembly-CSharp
         m_MethodName: TargetSetAdditionalForce
         m_Mode: 0
         m_Arguments:
@@ -1064,46 +1127,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &7304304024719944416
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1977572232203292389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80dff78874b5db041a7dc6d6f075e6ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Player.PlayerItemModule
-  syncMethod: 0
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  hitEntity: {fileID: 8243380858814391041}
-  active: 1
-  layer: {fileID: 11400000, guid: 4cd91094a9195d344a5f51aa6e49d70c, type: 2}
-  onHit:
-    m_PersistentCalls:
-      m_Calls: []
-  beforeHitScan:
-    m_PersistentCalls:
-      m_Calls: []
-  player: {fileID: 6754057132338759635}
-  itemHolder: {fileID: 4582289290584614918}
-  itemData:
-    rarityIndex: 0
-    itemIndex: 0
-  item: {fileID: 0}
-  onDestroyItem:
-    m_PersistentCalls:
-      m_Calls: []
-  onItemPickup:
-    m_PersistentCalls:
-      m_Calls: []
-  onItemUsed:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &2706654681915954732
 MonoBehaviour:
   m_ObjectHideFlags: 0

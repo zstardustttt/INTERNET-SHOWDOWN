@@ -2,7 +2,7 @@ using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using Game.Core.Events;
-using Game.Player.Events;
+using Game.Core.Player.Stats;
 using UnityEngine;
 using UnityEngine.UI;
 

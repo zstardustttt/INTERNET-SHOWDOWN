@@ -2,7 +2,7 @@ using System;
 using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Maps;
-using Game.Player;
+using Game.Core.Player;
 using Mirror;
 using UnityEngine;
 
@@ -28,19 +28,20 @@ namespace Game.Core.Projectiles
         {
             base.OnValidate();
 
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+            netTransform.syncDirection = SyncDirection.ServerToClient;
+            netRb.syncDirection = SyncDirection.ServerToClient;
+
+            if (Application.isPlaying) return;
             rb = GetComponent<Rigidbody>();
             netTransform = GetComponent<NetworkTransformReliable>();
             netRb = GetComponent<NetworkRigidbodyReliable>();
             authorReference = GetComponent<AuthorReference>();
             teamReference = GetComponent<TeamReference>();
-
-            rb.interpolation = RigidbodyInterpolation.Interpolate;
-            netTransform.syncDirection = SyncDirection.ServerToClient;
-            netRb.syncDirection = SyncDirection.ServerToClient;
         }
 
         [Server]
-        public static T Spawn<T>(T prefab, PlayerBase author, Guid team, Vector3 position, Quaternion rotation, double spawnTime, Action<T> setup = null) where T : Projectile
+        public static T Spawn<T>(T prefab, PlayerCore author, Guid team, Vector3 position, Quaternion rotation, double spawnTime, Action<T> setup = null) where T : Projectile
         {
             if (MapLoader.loadedMap == null || !MapLoader.loadedMap.scene.IsValid())
                 throw new("Can't spawn projectile: Map is not loaded");

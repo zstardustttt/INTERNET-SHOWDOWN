@@ -1,6 +1,6 @@
 using Game.Core.Events;
-using Game.Player.Death;
-using Game.Player.Events;
+using Game.Core.Player.Death;
+using Game.Core.Player.Death.Events;
 using UnityEngine;
 
 namespace Game.UI.Game

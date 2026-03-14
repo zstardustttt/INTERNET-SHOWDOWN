@@ -1,7 +1,7 @@
 using Game.Core.Items;
+using Game.Core.Player;
 using Game.Core.Projectiles;
 using Game.Other;
-using Game.Player;
 using Game.Projectiles.Psycheshock;
 using UnityEngine;
 
@@ -51,7 +51,7 @@ namespace Game.Items.Psycheshock
             visual.localPosition = _shakeGenerator.GetShake();
         }
 
-        public override bool Use(PlayerBase user, ItemUseClientContext context)
+        public override bool Use(PlayerCore user, ItemUseClientContext context)
         {
             Projectile.Spawn(projectile, user, user.teamReference.team, context.headPosition, context.headRotation, context.useTime, (proj) =>
             {

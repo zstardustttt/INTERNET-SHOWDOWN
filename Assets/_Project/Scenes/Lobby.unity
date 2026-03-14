@@ -5731,7 +5731,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1174911733}
   - component: {fileID: 1174911735}
-  - component: {fileID: 1174911734}
+  - component: {fileID: 1174911736}
   m_Layer: 0
   m_Name: DeathWatcher
   m_TagString: Untagged
@@ -5754,21 +5754,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1099961946}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1174911734
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1174911732}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a192292c678fb9048b1050dc13dd613d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Systems.PlayerDeathWatcher
-  lobbyInfo: {fileID: 1125586297}
-  respawnDuration: 5
-  respawnInvincibilityDuration: 2
 --- !u!114 &1174911735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5786,6 +5771,20 @@ MonoBehaviour:
   serverOnly: 1
   visibility: 2
   hasSpawned: 0
+--- !u!114 &1174911736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1174911732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b85aa75ab6f8e8949a174f84d2795b66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Player.Death.PlayerDeathWatcher
+  lobbyInfo: {fileID: 1125586297}
+  respawnDuration: 5
 --- !u!1 &1214836600
 GameObject:
   m_ObjectHideFlags: 0
@@ -9537,7 +9536,7 @@ GameObject:
   - component: {fileID: 2122973371}
   - component: {fileID: 2122973370}
   - component: {fileID: 2122973369}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Portal
   m_TagString: Portal
   m_Icon: {fileID: 0}
@@ -9574,7 +9573,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3

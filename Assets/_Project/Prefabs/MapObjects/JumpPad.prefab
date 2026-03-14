@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8821395964928196951}
-  - component: {fileID: 1986919007287689125}
   - component: {fileID: 9201765391850085574}
+  - component: {fileID: 5006497098007982621}
   m_Layer: 11
   m_Name: JumpPad
   m_TagString: Untagged
@@ -34,19 +34,6 @@ Transform:
   - {fileID: 761817688682458014}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1986919007287689125
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5068157160698124617}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf57915750783f3448082c1487fd5ee6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Maps.JumpPad
-  jumpForce: 70
 --- !u!65 &9201765391850085574
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -68,6 +55,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.7, y: 0.3, z: 1.7}
   m_Center: {x: 0, y: 0.1, z: 0}
+--- !u!114 &5006497098007982621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5068157160698124617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f96c583d2155c8342bca1602c5f962c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Player.InteractionObjects.JumpPad
+  force: 70
 --- !u!1 &7172472734753034672
 GameObject:
   m_ObjectHideFlags: 0

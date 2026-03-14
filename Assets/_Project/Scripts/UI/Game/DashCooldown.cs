@@ -1,5 +1,5 @@
 using Game.Core.Events;
-using Game.Player.Events;
+using Game.Player.Online.Events;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +13,7 @@ namespace Game.UI.Game
 
         private void Awake()
         {
-            EventBus<OnDash>.Listen((data) =>
+            EventBus<OnLocalPlayerDash>.Listen((data) =>
             {
                 foreach (var slider in dashCooldownSliders)
                 {
@@ -25,7 +25,7 @@ namespace Game.UI.Game
                 _cooldownActive = false;
             });
 
-            EventBus<OnEndDash>.Listen((data) =>
+            EventBus<OnLocalPlayerEndDash>.Listen((data) =>
             {
                 if (data.reset)
                 {

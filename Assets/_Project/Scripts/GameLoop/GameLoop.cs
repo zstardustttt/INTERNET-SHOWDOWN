@@ -3,13 +3,14 @@ using Game.Core.Events;
 using Game.Core.Maps;
 using Mirror;
 using UnityEngine;
-using Game.Player;
 using System.Linq;
 
 using Random = UnityEngine.Random;
 using System.Collections.Generic;
 using Game.GameLoop.Events;
 using Game.Core.Lobby;
+using Game.Core.Player;
+using Game.Core.Player.Locks;
 
 namespace Game.GameLoop
 {
@@ -182,18 +183,18 @@ namespace Game.GameLoop
             // Reset player & player stats
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
-                player.ServerMovePlayer(lobbyInfo.spawnArea.RandomSampleArea(Space.World));
+                player.movementModule.ServerMove(lobbyInfo.spawnArea.RandomSampleArea(Space.World));
 
                 player.healthModule.ResetHealth();
                 player.itemModule.ResetItem();
                 player.deathModule.Respawn();
-                player.ResetStats();
+                player.stats = default;
             }
 
             MapLoader.Unload().completed += (_) =>
             {
                 // Unlock everything only once assured that every object from the map has been destroyed
-                foreach (var player in FindObjectsByType<PlayerBase>(FindObjectsSortMode.None))
+                foreach (var player in FindObjectsByType<PlayerCore>(FindObjectsSortMode.None))
                 {
                     player.locks.Drop(PlayerLocks.all);
                 }

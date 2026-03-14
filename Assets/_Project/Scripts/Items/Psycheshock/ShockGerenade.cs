@@ -1,6 +1,6 @@
 using Game.Core.Items;
+using Game.Core.Player;
 using Game.Core.Projectiles;
-using Game.Player;
 using Game.Projectiles.Psycheshock.ShockGerenade;
 using TMPro;
 using UnityEngine;
@@ -32,7 +32,7 @@ namespace Game.Items.Psycheshock
             _textChangeTimer -= Time.deltaTime;
         }
 
-        public override bool Use(PlayerBase user, ItemUseClientContext context)
+        public override bool Use(PlayerCore user, ItemUseClientContext context)
         {
             Projectile.Spawn(projectile, user, user.teamReference.team, context.headPosition, context.headRotation, context.useTime, (proj) =>
             {

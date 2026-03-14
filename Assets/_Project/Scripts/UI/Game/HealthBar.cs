@@ -1,6 +1,6 @@
 using Game.Core.Events;
+using Game.Core.Player.Health.Events;
 using Game.Other;
-using Game.Player.Events;
 using UnityEngine;
 using UnityEngine.UI;
 

@@ -4,10 +4,11 @@ using Game.Core.Events;
 using Game.Core.Hits;
 using Game.Core.Hits.Events;
 using Game.Core.Maps;
+using Game.Core.Player;
+using Game.Core.Player.Items;
+using Game.Core.Player.Items.Events;
 using Game.GameLoop;
 using Game.GameLoop.Events;
-using Game.Player;
-using Game.Player.Events;
 using Mirror;
 using UnityEngine;
 
@@ -74,7 +75,7 @@ namespace Game.Boxes
             }
         }
 
-        private void OnItemUsed(PlayerBase player)
+        private void OnItemUsed(PlayerCore player)
         {
             for (int i = 0; i < maxNeedSpawnFails; i++)
             {

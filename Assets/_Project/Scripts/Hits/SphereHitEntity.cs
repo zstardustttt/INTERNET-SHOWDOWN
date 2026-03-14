@@ -10,7 +10,7 @@ namespace Game.Core.Hits
 
         protected override void OnValidate()
         {
-            sphereCollider = GetComponent<SphereCollider>();
+            if (!Application.isPlaying) sphereCollider = GetComponent<SphereCollider>();
             base.OnValidate();
         }
 

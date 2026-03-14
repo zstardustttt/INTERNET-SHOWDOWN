@@ -1,5 +1,5 @@
 using Game.Core.Broadcast;
-using Game.Player;
+using Game.Core.Player;
 using Mirror;
 using UnityEngine;
 
@@ -7,9 +7,9 @@ namespace Game.Core.Damages
 {
     public struct SetAuthorBroadcast
     {
-        public PlayerBase author;
+        public PlayerCore author;
 
-        public SetAuthorBroadcast(PlayerBase author)
+        public SetAuthorBroadcast(PlayerCore author)
         {
             this.author = author;
         }
@@ -17,7 +17,7 @@ namespace Game.Core.Damages
 
     public class AuthorReference : NetworkBehaviour, IBroadcastReceiver<SetAuthorBroadcast>
     {
-        [HideInInspector] public PlayerBase author;
+        [HideInInspector] public PlayerCore author;
 
         public void Receive(SetAuthorBroadcast broadcast)
         {
@@ -27,7 +27,7 @@ namespace Game.Core.Damages
 
     public static class AuthorUtils
     {
-        public static PlayerBase Unwrap(this AuthorReference self)
+        public static PlayerCore Unwrap(this AuthorReference self)
             => self ? self.author : null;
     }
 }

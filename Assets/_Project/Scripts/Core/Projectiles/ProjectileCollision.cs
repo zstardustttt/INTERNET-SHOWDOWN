@@ -34,7 +34,9 @@ namespace Game.Core.Projectiles
 
         protected virtual void OnValidate()
         {
-            projectile = GetComponent<Projectile>();
+            if (!Application.isPlaying)
+                projectile = GetComponent<Projectile>();
+
             projectile.rb.includeLayers = collisionLayerMask;
             projectile.rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         }

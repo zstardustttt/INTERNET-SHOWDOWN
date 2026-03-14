@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db2da106593c19f4993f1d150590ab7d, type: 3}
+  m_Script: {fileID: 11500000, guid: d99ac2622cbbd3348af22398cb51f93e, type: 3}
   m_Name: PlayerHealthConfig
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Player.Health.PlayerHealthConfig
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Player.Health.PlayerHealthConfig
   maxHealth: 100
   invincibilityDuration: 0.35

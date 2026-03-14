@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Game.Core.Events;
-using Game.Maps.Events;
-using Game.Player;
-using Game.Player.Events;
+using Game.Core.Maps.Events;
+using Game.Core.Player;
+using Game.Core.Player.Events;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -17,7 +17,7 @@ namespace Game.Core.Maps
         public Scene scene;
         public MapInfo info;
         public MapConfig config;
-        public Dictionary<Guid, PlayerBase> players;
+        public Dictionary<Guid, PlayerCore> players;
     }
 
     public static class MapLoader
@@ -39,7 +39,7 @@ namespace Game.Core.Maps
             _onDestroyPlayerListenerGuid = EventBus<OnPlayerDestroy>.Listen((data) =>
             {
                 if (loadedMap == null) return;
-                loadedMap.players.Remove(data.guid);
+                loadedMap.players.Remove(data.identification.guid);
             });
         }
 
@@ -72,7 +72,7 @@ namespace Game.Core.Maps
                 return false;
 
             SceneManager.MoveGameObjectToScene(go, loadedMap.scene);
-            if (go.TryGetComponent(out PlayerBase player) && player.Initialized)
+            if (go.TryGetComponent(out PlayerCore player) && player.Initialized)
             {
                 loadedMap.players.Add(player.Identification.guid, player);
                 EventBus<OnAddPlayerToMap>.Invoke(new() { player = player });
@@ -135,7 +135,7 @@ namespace Game.Core.Maps
         }
 
         [Server]
-        public static bool IsPlayerOnMap(PlayerBase player)
+        public static bool IsPlayerOnMap(PlayerCore player)
         {
             if (loadedMap == null) return false;
             return loadedMap.players.ContainsKey(player.Identification.guid);

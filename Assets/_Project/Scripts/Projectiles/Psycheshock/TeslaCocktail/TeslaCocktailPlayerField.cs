@@ -1,11 +1,11 @@
-using Game.Player;
+using Game.Core.Player;
 using Mirror;
 
 namespace Game.Projectiles.Psycheshock.TeslaCocktail
 {
     public class TeslaCocktailPlayerField : NetworkBehaviour
     {
-        public PlayerBase player;
+        public PlayerCore player;
 
         public override void OnStartServer()
         {
@@ -15,7 +15,7 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
         private void Update()
         {
             if (!NetworkServer.active || !player) return;
-            transform.position = player.transform.position + player.motor.Capsule.center;
+            transform.position = player.transform.position + player.movementModule.motor.Capsule.center;
         }
 
         private void OnDeath()

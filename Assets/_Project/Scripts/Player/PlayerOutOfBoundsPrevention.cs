@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using Game.Core.Events;
 using Game.Core.Lobby;
 using Game.Core.Maps;
-using Game.Player.Events;
+using Game.Core.Player;
+using Game.Core.Player.Events;
 using UnityEngine;
 
 namespace Game.Player
@@ -12,8 +13,8 @@ namespace Game.Player
     {
         public LobbyInfo lobbyInfo;
 
-        private Dictionary<Guid, PlayerBase> _players;
-        private Stack<PlayerBase> _newPlayers;
+        private Dictionary<Guid, PlayerCore> _players;
+        private Stack<PlayerCore> _newPlayers;
         private Stack<Guid> _destroyedPlayers;
 
         private void Awake()
@@ -23,7 +24,7 @@ namespace Game.Player
             _destroyedPlayers = new();
 
             EventBus<OnPlayerInitialized>.Listen((data) => _newPlayers.Push(data.player));
-            EventBus<OnPlayerDestroy>.Listen((data) => _destroyedPlayers.Push(data.guid));
+            EventBus<OnPlayerDestroy>.Listen((data) => _destroyedPlayers.Push(data.identification.guid));
         }
 
         private void Update()
@@ -42,15 +43,15 @@ namespace Game.Player
 
             foreach (var (_, player) in _players)
             {
-                var playerCenter = player.motor.Capsule.bounds.center;
+                var playerCenter = player.movementModule.motor.Capsule.bounds.center;
                 if (MapLoader.IsPlayerOnMap(player) && !MapLoader.loadedMap.info.Bounds.Contains(playerCenter))
                 {
                     var position = MapLoader.loadedMap.info.GetRandomSpawnPoint();
-                    player.ServerMovePlayer(position);
+                    player.movementModule.ServerMove(position);
                 }
                 else if (playerCenter.y < lobbyInfo.minBoundsHeight)
                 {
-                    player.ServerMovePlayer(lobbyInfo.spawnArea.RandomSampleArea(Space.World));
+                    player.movementModule.ServerMove(lobbyInfo.spawnArea.RandomSampleArea(Space.World));
                 }
             }
         }

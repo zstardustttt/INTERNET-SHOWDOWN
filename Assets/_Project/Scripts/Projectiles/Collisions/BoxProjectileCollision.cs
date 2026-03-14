@@ -14,7 +14,8 @@ namespace Game.Projectiles.Collisions
         protected override void OnValidate()
         {
             base.OnValidate();
-            coll = GetComponent<BoxCollider>();
+            if (!Application.isPlaying)
+                coll = GetComponent<BoxCollider>();
         }
 
         protected override void CheckCollisionBetweenTwoPointsInside(Vector3 p1, Vector3 p2)

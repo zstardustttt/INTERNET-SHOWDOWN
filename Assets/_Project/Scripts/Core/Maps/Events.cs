@@ -1,11 +1,11 @@
 using Game.Core.Events;
-using Game.Player;
+using Game.Core.Player;
 
-namespace Game.Maps.Events
+namespace Game.Core.Maps.Events
 {
     public struct OnAddPlayerToMap : IEvent
     {
-        public PlayerBase player;
+        public PlayerCore player;
     }
 
     public struct OnUnloadMap : IEvent { }

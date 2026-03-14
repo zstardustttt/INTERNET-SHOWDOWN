@@ -1,7 +1,7 @@
 using Game.Core.Items;
 using Game.Core.Maps;
+using Game.Core.Player;
 using Game.Core.Projectiles;
-using Game.Player;
 using Game.Projectiles.Psycheshock.LinkedShurikens;
 using UnityEngine;
 
@@ -18,7 +18,7 @@ namespace Game.Items.Psycheshock
         public int maxUses;
         private int _uses;
 
-        public override bool Use(PlayerBase user, ItemUseClientContext context)
+        public override bool Use(PlayerCore user, ItemUseClientContext context)
         {
             var proj = Projectile.Spawn(projectilePrefab, user, user.teamReference.team, context.headPosition, context.headRotation, context.useTime, (proj) =>
             {

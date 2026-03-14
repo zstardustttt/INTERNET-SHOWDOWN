@@ -1,13 +1,12 @@
-using System;
 using Game.Core.Broadcast;
 using Game.Core.Damages;
 using Game.Core.Damages.Events;
 using Game.Core.Hits;
 using Game.Core.Hits.Events;
 using Game.Core.Maps;
+using Game.Core.Player;
 using Game.Core.Projectiles;
 using Game.Other;
-using Game.Player;
 using Mirror;
 using UnityEngine;
 
@@ -53,12 +52,12 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         private ShockGerenadeLocalVisual _localGerenadeVisual;
 
         private DamageIdentification _holdDamageIdentification;
-        private PlayerBase _attached;
+        private PlayerCore _attached;
         private Vector3 _previousAttachedPosition;
         private float _collectedAttachedDelta;
 
         private ShakeGenerator _shakeGenerator;
-        private PlayerBase _explosionRequestAuthor;
+        private PlayerCore _explosionRequestAuthor;
         private float _explosionTimer;
         private Vector3 _explosionTriggerVelocity;
         private float _holdDamageAmount;
@@ -112,7 +111,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
         private void OnHit(HitEvent hitEvent)
         {
-            if (!hitEvent.target.transform.root.TryGetComponent(out PlayerBase player)) return;
+            if (!hitEvent.target.transform.root.TryGetComponent(out PlayerCore player)) return;
             if (player == authorReference.author) return;
 
             Attach(player);
@@ -133,7 +132,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             transform.position = point + normal * collisionRadius;
         }
 
-        private void Attach(PlayerBase player)
+        private void Attach(PlayerCore player)
         {
             attachHitListener.active = false;
             damageTarget.onDamage.RemoveAllListeners();
@@ -168,10 +167,11 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         [TargetRpc]
         private void TargetSpawnVisual(NetworkConnectionToClient _)
         {
-            var player = NetworkClient.localPlayer.GetComponent<PlayerBase>();
+            var player = NetworkClient.localPlayer.GetComponent<PlayerCore>();
             _localGerenadeVisual = Instantiate(localGerenadeVisualPrefab, player.horizontalOrientation).GetComponent<ShockGerenadeLocalVisual>();
-            var yOffset = player.motor.Capsule.center.y * 1.1f * Vector3.up;
-            _localGerenadeVisual.transform.localPosition = yOffset + Vector3.forward * (player.motor.Capsule.radius + collisionRadius);
+            var capsule = player.movementModule.motor.Capsule;
+            var yOffset = capsule.center.y * 1.1f * Vector3.up;
+            _localGerenadeVisual.transform.localPosition = yOffset + Vector3.forward * (capsule.radius + collisionRadius);
             visual.SetActive(false);
 
             tickAudioSource.spatialBlend = 0f;
@@ -223,7 +223,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
                         var damage = new Damage(DamageType.Indirect, 100f, _explosionRequestAuthor, _explosionRequestAuthor.teamReference.team, DamageIdentification.From(damageIdentificationSetup));
                         _attached.healthModule.ApplyDamage(damage);
-                        pos = _attached.motor.Capsule.bounds.center;
+                        pos = _attached.movementModule.motor.Capsule.bounds.center;
                     }
                     else pos = transform.position;
 
@@ -249,7 +249,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
 
                 if (_attached.transform.position != Vector3.zero)
                 {
-                    var capsule = _attached.motor.Capsule;
+                    var capsule = _attached.movementModule.motor.Capsule;
                     var yOffset = capsule.center.y * 1.1f * Vector3.up;
                     rb.position = _attached.transform.position + yOffset + _attached.transform.forward * (capsule.radius + collisionRadius);
 
@@ -273,7 +273,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
             rb.linearVelocity -= gravityAcceleration * Time.deltaTime * Vector3.up;
         }
 
-        private void Explode(PlayerBase explosionAuthor)
+        private void Explode(PlayerCore explosionAuthor)
         {
             if (_explosionRequestAuthor) return;
 

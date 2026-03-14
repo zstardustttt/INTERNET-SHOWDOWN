@@ -5,9 +5,9 @@ using Game.Core.Hits;
 using Game.Core.Hits.Events;
 using Game.Core.Items;
 using Game.Core.Maps;
+using Game.Core.Player;
 using Game.Core.Projectiles;
 using Game.Damages;
-using Game.Player;
 using Mirror;
 using UnityEngine;
 
@@ -124,7 +124,7 @@ namespace Game.Projectiles.Psycheshock
 
         private void OnHit(HitEvent hitEvent)
         {
-            if (!hitEvent.target.transform.root.TryGetComponent(out PlayerBase player)) return;
+            if (!hitEvent.target.transform.root.TryGetComponent(out PlayerCore player)) return;
             if (secondary) return;
 
             if (player != authorReference.author || lifetime < LoopDuration / 2f) return;

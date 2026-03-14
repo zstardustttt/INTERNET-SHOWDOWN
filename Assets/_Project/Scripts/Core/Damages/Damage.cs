@@ -1,5 +1,5 @@
 using System;
-using Game.Player;
+using Game.Core.Player;
 
 namespace Game.Core.Damages
 {
@@ -14,11 +14,11 @@ namespace Game.Core.Damages
     {
         public DamageType type;
         public float amount;
-        public PlayerBase author;
+        public PlayerCore author;
         public Guid team;
         public DamageIdentification identification;
 
-        public Damage(DamageType type, float amount, PlayerBase author, Guid team, DamageIdentification identification)
+        public Damage(DamageType type, float amount, PlayerCore author, Guid team, DamageIdentification identification)
         {
             this.type = type;
             this.amount = amount;

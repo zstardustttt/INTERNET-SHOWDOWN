@@ -3,7 +3,7 @@ using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using Game.Core.Damages;
 using Game.Core.Events;
-using Game.Player.Events;
+using Game.Player.Online.Events;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;

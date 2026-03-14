@@ -4,17 +4,19 @@ using Game.Core.Events;
 using Game.Core.Maps;
 using Game.Events.UI;
 using Game.Network.Messages;
-using Game.Player;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-using Game.Player.Events;
 using Game.GameLoop;
 using Game.GameLoop.Events;
-using Game.Maps.Events;
 using Game.Core.Lobby;
 using System;
+using Game.Core.Player;
+using Game.Core.Player.Stats;
+using Game.Core.Maps.Events;
+using Game.Core.Player.Events;
+using Game.Player.Online.Events;
 
 namespace Game.Network
 {
@@ -42,7 +44,7 @@ namespace Game.Network
 
                 var sceneName = MapLoader.loadedMap.config.sceneName;
                 conn.Send(new SceneMessage() { sceneName = sceneName, sceneOperation = SceneOperation.LoadAdditive });
-                conn.identity.GetComponent<PlayerBase>().ServerMovePlayer(MapLoader.loadedMap.info.GetRandomSpawnPoint());
+                conn.identity.GetComponent<PlayerCore>().movementModule.ServerMove(MapLoader.loadedMap.info.GetRandomSpawnPoint());
                 conn.Send<ServerOnlinePlayerAddedToMap>(new());
             });
 
@@ -70,7 +72,7 @@ namespace Game.Network
                         {
                             name = data.player.Identification.name,
                             activity = data.player.stats.activity,
-                            score = data.player.stats.GetScore()
+                            score = data.player.stats.EvaluateScore()
                         }
                     }
                 });
@@ -82,14 +84,14 @@ namespace Game.Network
 
                 NetworkServer.SendToAll(new ServerRemoveLeaderboardItem()
                 {
-                    guid = data.guid
+                    guid = data.identification.guid
                 });
             });
 
             EventBus<OnPlayerStatsChanged>.Listen((data) =>
             {
-                var currentScore = data.current.GetScore();
-                if (data.previous.activity == data.current.activity && data.previous.GetScore() == currentScore) return;
+                var currentScore = data.current.EvaluateScore();
+                if (data.previous.activity == data.current.activity && data.previous.EvaluateScore() == currentScore) return;
 
                 NetworkServer.SendToAll(new ServerChangeLeaderboardItem()
                 {
@@ -133,7 +135,7 @@ namespace Game.Network
         {
             if (conn != null && conn.identity)
             {
-                var player = conn.identity.GetComponent<PlayerBase>();
+                var player = conn.identity.GetComponent<PlayerCore>();
                 if (_gameState.phase.info.saveStats)
                 {
                     _disconnectedPlayersStats.Add(player.Identification.guid, player.stats);
@@ -168,7 +170,7 @@ namespace Game.Network
                         {
                             name = x.Value.Identification.name,
                             activity = x.Value.stats.activity,
-                            score = x.Value.stats.GetScore()
+                            score = x.Value.stats.EvaluateScore()
                         }
                     };
                 }).ToArray()

@@ -1,4 +1,4 @@
-using Game.Player;
+using Game.Core.Player;
 using UnityEngine;
 
 namespace Game.Core.Items
@@ -9,7 +9,7 @@ namespace Game.Core.Items
         public Vector3 offset;
 
         // Called on the server
-        public abstract bool Use(PlayerBase user, ItemUseClientContext context);
+        public abstract bool Use(PlayerCore user, ItemUseClientContext context);
 
         public void Sway(Vector2 cameraMoveDelta, Vector3 velocity, Transform orientation)
         {

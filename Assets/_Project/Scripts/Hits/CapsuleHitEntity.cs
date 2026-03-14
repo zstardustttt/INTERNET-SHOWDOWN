@@ -10,7 +10,7 @@ namespace Game.Core.Hits
 
         protected override void OnValidate()
         {
-            capsuleCollider = GetComponent<CapsuleCollider>();
+            if (!Application.isPlaying) capsuleCollider = GetComponent<CapsuleCollider>();
             base.OnValidate();
         }
 

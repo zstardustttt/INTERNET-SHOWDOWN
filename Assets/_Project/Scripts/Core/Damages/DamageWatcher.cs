@@ -1,7 +1,7 @@
 using Game.Core.Damages.Events;
 using Game.Core.Events;
 using Game.Core.Hits.Events;
-using Game.Player.Events;
+using Game.Core.Player.Health.Events;
 using UnityEngine;
 
 namespace Game.Core.Damages

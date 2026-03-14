@@ -2,7 +2,7 @@ using EasyTextEffects;
 using Game.Core.Events;
 using Game.GameLoop;
 using Game.GameLoop.Events;
-using Game.Player.Events;
+using Game.Player.Online.Events;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;

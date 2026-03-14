@@ -28,6 +28,7 @@ namespace Game.Damages
 
         private void OnValidate()
         {
+            if (Application.isPlaying) return;
             teamReference = GetComponent<TeamReference>();
         }
 

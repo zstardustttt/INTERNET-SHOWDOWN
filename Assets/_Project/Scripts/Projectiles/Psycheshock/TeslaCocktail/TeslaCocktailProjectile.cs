@@ -3,8 +3,8 @@ using Game.Core.Damages;
 using Game.Core.Hits;
 using Game.Core.Hits.Events;
 using Game.Core.Maps;
+using Game.Core.Player;
 using Game.Core.Projectiles;
-using Game.Player;
 using Mirror;
 using UnityEngine;
 
@@ -50,7 +50,7 @@ namespace Game.Projectiles.Psycheshock.TeslaCocktail
 
         private void OnHit(HitEvent hitEvent)
         {
-            if (!hitEvent.target.transform.root.TryGetComponent(out PlayerBase player)) return;
+            if (!hitEvent.target.transform.root.TryGetComponent(out PlayerCore player)) return;
             if (player == authorReference.author) return;
 
             var playerField = MapLoader.NetworkSpawnOnMap(playerFieldPrefab, player.transform.position, Quaternion.identity);
