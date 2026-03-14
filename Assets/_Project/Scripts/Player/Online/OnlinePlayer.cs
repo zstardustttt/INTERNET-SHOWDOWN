@@ -22,9 +22,11 @@ namespace Game.Player.Online
     [RequireComponent(typeof(PlayerCore))]
     public class OnlinePlayer : NetworkBehaviour, IPlayerMovementController
     {
+        public static OnlinePlayer localPlayer;
+
         public GameObject cameraPrefab;
         public PlayerCore player;
-        public Transform cameraOrientation;
+        public Transform cameraHolder;
 
         [Space(9)]
         public int speedRecordSize;
@@ -146,7 +148,7 @@ namespace Game.Player.Online
             _shakeGenerator = new();
 
             Cursor.lockState = CursorLockMode.Locked;
-            _camera = Instantiate(cameraPrefab, cameraOrientation).GetComponent<PlayerCamera>();
+            _camera = Instantiate(cameraPrefab, cameraHolder).GetComponent<PlayerCamera>();
             player.modelContainer.SetActive(false);
 
             // TODO: ts
@@ -273,6 +275,8 @@ namespace Game.Player.Online
             });
 
             _cameraSpeedFOV = idleFOV;
+            localPlayer = this;
+            EventBus<OnLocalPlayerStarted>.Invoke(new() { player = player });
         }
 
         private void OnItemUsedAnimation()
@@ -369,7 +373,7 @@ namespace Game.Player.Online
             }
 
             var shake = _shakeGenerator.GetShake();
-            cameraOrientation.localPosition = shake + Vector3.up * _cameraBopHeight;
+            cameraHolder.localPosition = shake + Vector3.up * _cameraBopHeight;
 
             // FOOTSTEPS
             if (_footstepTimer >= Mathf.PI / cameraBopFrequency)
@@ -383,15 +387,12 @@ namespace Game.Player.Online
             var delta = _actions.Camera.Look.ReadValue<Vector2>() * _mouseSens;
             if (player.itemModule.item) player.itemModule.item.Sway(delta, player.movementModule.LocalTransientVelocity, player.verticalOrientation);
 
-            player.horizontalOrientation.localEulerAngles += new Vector3(0f, delta.x, 0f);
             _cameraRotX -= delta.y;
             _cameraRotX = Mathf.Clamp(_cameraRotX, -90f, 90f);
-            cameraOrientation.localRotation = Quaternion.Euler
-            (
-                _cameraRotX,
-                0f,
-                _sideRunTilt + _cameraBopTilt
-            );
+
+            player.horizontalOrientation.localEulerAngles += new Vector3(0f, delta.x, 0f);
+            player.verticalOrientation.localEulerAngles = Vector3.right * _cameraRotX;
+            _camera.transform.localEulerAngles = Vector3.forward * (_sideRunTilt + _cameraBopTilt);
 
             // FIND SPEED
             var velocity = transform.position - _prevPosition; ;
@@ -413,7 +414,7 @@ namespace Game.Player.Online
             // FOV
             if (enableSpeedAffectsFOV)
             {
-                var dot = Vector3.Dot(cameraOrientation.transform.forward, dir);
+                var dot = Vector3.Dot(_camera.transform.transform.forward, dir);
                 var targetFov = Mathf.Lerp(idleFOV, maxFOV, FOVCurve.Evaluate(speed / maxFOVSpeed * Mathf.Abs(dot)));
                 _cameraSpeedFOV = Mathf.Lerp(_cameraSpeedFOV, targetFov, Time.deltaTime * FOVSmoothingSpeed);
             }
@@ -429,7 +430,7 @@ namespace Game.Player.Online
                     var targetAlpha = speedlinesAlphaCurve.Evaluate((speed - minSpeedlinesSpeed) / maxSpeedlinesSpeed);
                     _currentSpeedlinesAlpha = Mathf.Lerp(_currentSpeedlinesAlpha, targetAlpha, Time.deltaTime * speedlinesAlphaSmoothingSpeed);
 
-                    _camera.speedlines.transform.SetPositionAndRotation(cameraOrientation.position + dir * 2.3f, Quaternion.LookRotation(-dir));
+                    _camera.speedlines.transform.SetPositionAndRotation(_camera.transform.position + dir * 2.3f, Quaternion.LookRotation(-dir));
                 }
                 else _currentSpeedlinesAlpha = Mathf.Lerp(_currentSpeedlinesAlpha, 0f, Time.deltaTime * speedlinesAlphaSmoothingSpeed);
 
@@ -457,7 +458,6 @@ namespace Game.Player.Online
                 wishJumping = _actions.Movement.Jump.inProgress,
                 wishDashing = _actions.Movement.Dash.inProgress,
                 wishGroundSlam = _actions.Movement.GroundSlam.inProgress,
-                orientationX = _cameraRotX,
             };
         }
     }

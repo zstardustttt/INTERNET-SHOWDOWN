@@ -13,7 +13,6 @@ namespace Game.Core.Player.Movement
         public bool wishJumping;
         public bool wishDashing;
         public bool wishGroundSlam;
-        public float orientationX;
     }
 
     public interface IPlayerMovementController
@@ -218,7 +217,7 @@ namespace Game.Core.Player.Movement
                 _dashTimer = 0f;
                 _dashStartPos = transform.position;
 
-                var playerViewRot = Quaternion.Euler(new(Inputs.orientationX, player.horizontalOrientation.eulerAngles.y, 0f));
+                var playerViewRot = Quaternion.Euler(new(player.verticalOrientation.eulerAngles.x, player.horizontalOrientation.eulerAngles.y, 0f));
                 if (_walled)
                 {
                     var playerViewDir = playerViewRot * Vector3.forward;
@@ -509,10 +508,18 @@ namespace Game.Core.Player.Movement
             else if (_prevWalled && !_walled) onUnwalled.Invoke();
         }
 
-        [TargetRpc]
-        public void TargetSetAdditionalForce(Vector3 force)
+        [Server]
+        public void ServerSetAdditionalForce(Vector3 force)
         {
             if (player.locks.Locked(PlayerLock.Force)) return;
+
+            if (player.HandlingThisPlayer) _additionalVelocity = force;
+            else if (connectionToClient != null) TargetSetAdditionalForce(force);
+        }
+
+        [TargetRpc]
+        private void TargetSetAdditionalForce(Vector3 force)
+        {
             _additionalVelocity = force;
         }
 

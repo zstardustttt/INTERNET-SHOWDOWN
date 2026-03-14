@@ -1,4 +1,7 @@
 using Game.Core.Damages;
+using Game.Core.Events;
+using Game.Player.Online;
+using Game.Player.Online.Events;
 using Mirror;
 using UnityEngine;
 
@@ -24,7 +27,6 @@ namespace Game.Damages
         public bool transparent;
 
         private RenderingLayerMask[] _baseMasks;
-        private TeamReference _localTeamReference;
 
         private void OnValidate()
         {
@@ -32,10 +34,9 @@ namespace Game.Damages
             teamReference = GetComponent<TeamReference>();
         }
 
-        private void Awake()
+        private void Start()
         {
-            if (!NetworkClient.localPlayer) return;
-            _localTeamReference = NetworkClient.localPlayer.GetComponent<TeamReference>();
+            if (!NetworkClient.active) return;
 
             _baseMasks = new RenderingLayerMask[renderers.Length];
             for (int i = 0; i < renderers.Length; i++)
@@ -43,7 +44,16 @@ namespace Game.Damages
                 _baseMasks[i] = renderers[i].renderingLayerMask;
             }
 
-            teamReference.onTeamChanged.AddListener((_, _new) => SetOutlines(_localTeamReference.team.CompareTeam(_new)));
+            EventBus<OnLocalPlayerStarted>.Listen((_) => UpdateOutlines());
+            teamReference.onTeamChanged.AddListener((_, _new) => UpdateOutlines());
+
+            UpdateOutlines();
+        }
+
+        private void UpdateOutlines()
+        {
+            if (!OnlinePlayer.localPlayer) return;
+            SetOutlines(OnlinePlayer.localPlayer.player.teamReference.team.CompareTeam(teamReference.team));
         }
 
         private void SetOutlines(bool friendly)

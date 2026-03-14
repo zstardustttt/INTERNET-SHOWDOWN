@@ -50,7 +50,7 @@ namespace Game.Core.Player.Death
             player = GetComponent<PlayerCore>();
         }
 
-        private void Awake()
+        private void Start()
         {
             _enviromentMask = LayerMask.GetMask("Enviroment");
             if (!NetworkClient.active) return;

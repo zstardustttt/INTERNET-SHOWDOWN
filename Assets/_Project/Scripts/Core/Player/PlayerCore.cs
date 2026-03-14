@@ -23,12 +23,18 @@ namespace Game.Core.Player
         public Guid guid;
     }
 
+    public enum PlayerState
+    {
+        Uninitialized,
+        InLobby,
+        InMatch
+    }
+
     [RequireComponent(typeof(PlayerMovementModule), typeof(PlayerItemModule))]
     [RequireComponent(typeof(PlayerHealthModule), typeof(PlayerDeathModule))]
     [RequireComponent(typeof(PlayerLocks), typeof(TeamReference))]
     public sealed class PlayerCore : NetworkBehaviour
     {
-        public bool Initialized { get; private set; }
         public bool HandlingThisPlayer { get; private set; }
 
         public PlayerConfig config;
@@ -48,6 +54,9 @@ namespace Game.Core.Player
         public GameObject modelContainer;
         public GameObject mainModel;
 
+        public PlayerState State => _state;
+        [SyncVar] private PlayerState _state;
+
         [SyncVar] public PlayerStats stats;
         private PlayerStats _previousStats;
 
@@ -62,6 +71,18 @@ namespace Game.Core.Player
         private Collider[] _triggerBuffer;
         private Collider[] _previousTriggerBuffer;
         private int _previousTriggerOverlapsCount;
+
+        [Server]
+        public void OnAddPlayerToMap()
+        {
+            _state = PlayerState.InMatch;
+        }
+
+        [Server]
+        public void OnRemovePlayerFromMap()
+        {
+            _state = PlayerState.InLobby;
+        }
 
         protected override void OnValidate()
         {
@@ -87,8 +108,13 @@ namespace Game.Core.Player
 
         public void HandleThisPlayer(PlayerIdentification identification)
         {
+            if (_state != PlayerState.Uninitialized) return;
+
             onHandlingThisPlayer.Invoke();
             HandlingThisPlayer = true;
+
+            _triggerBuffer = new Collider[config.triggerBufferCapacity];
+            _previousTriggerBuffer = new Collider[config.triggerBufferCapacity];
 
             if (NetworkServer.active) Initialize(identification);
             else CmdInitialize(identification);
@@ -100,28 +126,26 @@ namespace Game.Core.Player
         [Server]
         private void Initialize(PlayerIdentification identification)
         {
-            _triggerBuffer = new Collider[config.triggerBufferCapacity];
-            _previousTriggerBuffer = new Collider[config.triggerBufferCapacity];
-
-            if (Initialized)
+            if (_state != PlayerState.Uninitialized)
             {
                 Debug.LogError($"Player {_identification.name} is already initialized!");
                 return;
             }
 
+            locks.onLockStateChange.AddListener((plock, locked) =>
+            {
+                if (plock == PlayerLock.Hit) hitEntity.active = !locked;
+            });
+            teamReference.team = Guid.NewGuid();
+
             _identification = identification;
-            Initialized = true;
+            _state = PlayerState.InLobby;
             EventBus<OnPlayerInitialized>.Invoke(new() { player = this });
         }
 
         public override void OnStartServer()
         {
-            locks.onLockStateChange.AddListener((plock, locked) =>
-            {
-                if (plock == PlayerLock.Hit) hitEntity.active = !locked;
-            });
-
-            teamReference.team = Guid.NewGuid();
+            _state = PlayerState.Uninitialized;
         }
 
         private void Update()

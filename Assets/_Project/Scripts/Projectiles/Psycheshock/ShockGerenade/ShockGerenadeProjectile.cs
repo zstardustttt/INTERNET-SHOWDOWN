@@ -7,6 +7,7 @@ using Game.Core.Maps;
 using Game.Core.Player;
 using Game.Core.Projectiles;
 using Game.Other;
+using Game.Player.Online;
 using Mirror;
 using UnityEngine;
 
@@ -167,7 +168,7 @@ namespace Game.Projectiles.Psycheshock.ShockGerenade
         [TargetRpc]
         private void TargetSpawnVisual(NetworkConnectionToClient _)
         {
-            var player = NetworkClient.localPlayer.GetComponent<PlayerCore>();
+            var player = OnlinePlayer.localPlayer.player;
             _localGerenadeVisual = Instantiate(localGerenadeVisualPrefab, player.horizontalOrientation).GetComponent<ShockGerenadeLocalVisual>();
             var capsule = player.movementModule.motor.Capsule;
             var yOffset = capsule.center.y * 1.1f * Vector3.up;

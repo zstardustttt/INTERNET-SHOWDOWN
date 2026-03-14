@@ -55,7 +55,7 @@ namespace Game.Core.Hits
             }
         }
 
-        private void Awake()
+        private void Start()
         {
             index = -1;
             MoveEntityObservation(transform.position);

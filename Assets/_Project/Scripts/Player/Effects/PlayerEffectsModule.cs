@@ -62,7 +62,7 @@ namespace Game.Player.Effects
                 player.movementModule.onUnwalled.AddListener(OnUnwalled);
                 player.deathModule.onRespawn.AddListener(OnRespawn);
 
-                _respawnAudioSource.spatialBlend = 0f;
+                if (isLocalPlayer) _respawnAudioSource.spatialBlend = 0f;
             });
         }
 

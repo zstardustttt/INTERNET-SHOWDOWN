@@ -72,10 +72,11 @@ namespace Game.Core.Maps
                 return false;
 
             SceneManager.MoveGameObjectToScene(go, loadedMap.scene);
-            if (go.TryGetComponent(out PlayerCore player) && player.Initialized)
+            if (go.TryGetComponent(out PlayerCore player) && player.State == PlayerState.InLobby)
             {
                 loadedMap.players.Add(player.Identification.guid, player);
                 EventBus<OnAddPlayerToMap>.Invoke(new() { player = player });
+                player.OnAddPlayerToMap();
             }
             return true;
         }
@@ -123,6 +124,7 @@ namespace Game.Core.Maps
                     sceneName = loadedMap.config.sceneName,
                     sceneOperation = SceneOperation.UnloadAdditive
                 });
+                player.OnRemovePlayerFromMap();
             }
 
             EventBus<OnUnloadMap>.Invoke(new());

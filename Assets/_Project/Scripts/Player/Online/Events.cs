@@ -35,4 +35,9 @@ namespace Game.Player.Online.Events
     {
         public CameraShaker shaker;
     }
+
+    public struct OnLocalPlayerStarted : IEvent
+    {
+        public PlayerCore player;
+    }
 }
