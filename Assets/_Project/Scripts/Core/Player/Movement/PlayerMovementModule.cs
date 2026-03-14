@@ -17,7 +17,7 @@ namespace Game.Core.Player.Movement
 
     public interface IPlayerMovementController
     {
-        public abstract PlayerMovementInputs GetInputs();
+        public abstract PlayerMovementInputs GetInputs(float deltaTime);
     }
 
     [RequireComponent(typeof(PlayerCore), typeof(KinematicCharacterMotor))]
@@ -38,7 +38,7 @@ namespace Game.Core.Player.Movement
         private float _idleTime;
 
         // jumping
-        private bool _jumping;
+        public bool Jumping { get; private set; }
         private float _jumpTimer;
         private float _currentJumpHeight;
         private bool _endingJump;
@@ -46,13 +46,13 @@ namespace Game.Core.Player.Movement
         private float _releaseY;
         private float _endJumpHeight;
         private float _jumpEndFalloffValue;
-        private float _coyoteTimer;
+        public float CoyoteTimer { get; private set; }
         private float _bufferTimer;
         private bool _prevWishJumping;
 
         // dash
-        private bool _dashing;
-        private bool _canDash;
+        public bool Dashing;
+        public bool CanDash { get; private set; }
         private float _dashTimer;
         private Vector3 _dashStartPos;
         private Vector3 _dashDirection;
@@ -63,7 +63,7 @@ namespace Game.Core.Player.Movement
         // ground slam
         private bool _groundSlamming;
         private float _groundSlamForce;
-        private bool _canGroundSlam;
+        public bool CanGroundSlam { get; private set; }
         private float _groundSlamDistance;
 
         // wall running
@@ -77,7 +77,7 @@ namespace Game.Core.Player.Movement
         public PlayerMovementInputs Inputs { get; private set; }
 
         private Vector3 _additionalVelocity;
-        private float _gravityVelocity;
+        public float GravityVelocity { get; private set; }
 
         public Vector3 LocalTransientVelocity { get; private set; }
         private Vector3 _prevTransientPosition;
@@ -122,7 +122,7 @@ namespace Game.Core.Player.Movement
                 {
                     if (!collider.CompareTag("DashOrb")) return;
 
-                    _canDash = true;
+                    CanDash = true;
                     _dashCooldownTimer = 0f;
                 });
             });
@@ -146,15 +146,15 @@ namespace Game.Core.Player.Movement
         public void Move(Vector3 position)
         {
             _additionalVelocity = Vector3.zero;
-            if (_dashing)
+            if (Dashing)
             {
-                _dashing = false;
+                Dashing = false;
                 onEndDash.Invoke(true);
             }
 
             _dashCooldownTimer = 0f;
 
-            _jumping = false;
+            Jumping = false;
             _endingJump = false;
             motor.SetPosition(position);
         }
@@ -178,21 +178,21 @@ namespace Game.Core.Player.Movement
 
             _prevWishJumping = Inputs.wishJumping;
             _prevWishDashing = Inputs.wishDashing;
-            Inputs = player.locks.Locked(PlayerLock.Input) ? default : controller.GetInputs();
+            Inputs = player.locks.Locked(PlayerLock.Input) ? default : controller.GetInputs(deltaTime);
 
-            if (!Inputs.wishGroundSlam) _canGroundSlam = true;
+            if (!Inputs.wishGroundSlam) CanGroundSlam = true;
             if (!motor.GroundingStatus.IsStableOnGround
                 && Inputs.wishGroundSlam
                 && !_groundSlamming
-                && _canGroundSlam
+                && CanGroundSlam
                 && Physics.Raycast(transform.position, Vector3.down, out var hitInfo, 1000f, motor.StableGroundLayers))
             {
-                _jumping = false;
+                Jumping = false;
                 _endingJump = false;
 
-                if (_dashing)
+                if (Dashing)
                 {
-                    _dashing = false;
+                    Dashing = false;
                     onEndDash.Invoke(false);
                 }
 
@@ -200,7 +200,7 @@ namespace Game.Core.Player.Movement
 
                 _groundSlamming = true;
                 _groundSlamDistance = hitInfo.distance;
-                _canGroundSlam = false;
+                CanGroundSlam = false;
                 _bufferTimer = config.bufferTime;
             }
 
@@ -210,10 +210,10 @@ namespace Game.Core.Player.Movement
             }
             _dashBufferTimer += deltaTime;
 
-            if (_dashBufferTimer < config.dashBuffer && !_dashing && _canDash && _dashCooldownTimer <= 0f)
+            if (_dashBufferTimer < config.dashBuffer && !Dashing && CanDash && _dashCooldownTimer <= 0f)
             {
-                _dashing = true;
-                _canDash = false;
+                Dashing = true;
+                CanDash = false;
                 _dashTimer = 0f;
                 _dashStartPos = transform.position;
 
@@ -240,7 +240,7 @@ namespace Game.Core.Player.Movement
                     }
                 }
 
-                _jumping = false;
+                Jumping = false;
                 _endingJump = false;
                 _groundSlamming = false;
                 motor.ForceUnground(config.dashDuration);
@@ -255,9 +255,9 @@ namespace Game.Core.Player.Movement
             }
             _bufferTimer += deltaTime;
 
-            if (_dashing)
+            if (Dashing)
             {
-                _coyoteTimer = 0f;
+                CoyoteTimer = 0f;
                 _dashTimer += deltaTime;
                 motor.MoveCharacter(Vector3.Lerp(_dashStartPos, _dashStartPos + _dashDirection * config.dashDistance, _dashTimer / config.dashDuration));
 
@@ -267,15 +267,15 @@ namespace Game.Core.Player.Movement
 
             _dashCooldownTimer -= deltaTime;
 
-            if (motor.GroundingStatus.IsStableOnGround || _dashing || _walled)
+            if (motor.GroundingStatus.IsStableOnGround || Dashing || _walled)
             {
-                _coyoteTimer = 0f;
+                CoyoteTimer = 0f;
                 if (!Inputs.wishDashing)
-                    _canDash = true;
+                    CanDash = true;
             }
-            else _coyoteTimer += deltaTime;
+            else CoyoteTimer += deltaTime;
 
-            if (_coyoteTimer < config.coyoteTime)
+            if (CoyoteTimer < config.coyoteTime)
             {
                 _jumpTimer = 0f;
                 _currentJumpHeight = 0f;
@@ -287,9 +287,9 @@ namespace Game.Core.Player.Movement
             var currentY = transform.position.y - _currentJumpHeight;
             if (!Inputs.wishJumping)
             {
-                if (_jumping)
+                if (Jumping)
                 {
-                    _jumping = false;
+                    Jumping = false;
                     _endingJump = true;
                     _jumpEndTimer = 0f;
                     _jumpEndFalloffValue = config.jumpEndFalloffCurve.Evaluate(1f - _jumpTimer / config.jumpDuration);
@@ -298,13 +298,13 @@ namespace Game.Core.Player.Movement
                 }
             }
 
-            if (_jumping)
+            if (Jumping)
             {
                 _jumpTimer += deltaTime;
                 _currentJumpHeight = config.jumpCurve.Evaluate(Mathf.Min(_jumpTimer, config.jumpDuration) / config.jumpDuration) * config.jumpHeight;
                 motor.MoveCharacter(new(transform.position.x, currentY + _currentJumpHeight, transform.position.z));
 
-                if (_jumpTimer >= config.jumpDuration) _jumping = false;
+                if (_jumpTimer >= config.jumpDuration) Jumping = false;
             }
             else
             {
@@ -330,26 +330,26 @@ namespace Game.Core.Player.Movement
 
         public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
         {
-            if (Vector3.Dot(hitNormal, _dashDirection) < -0.9f && _dashing)
+            if (Vector3.Dot(hitNormal, _dashDirection) < -0.9f && Dashing)
             {
-                _dashing = false;
+                Dashing = false;
                 onEndDash.Invoke(false);
             }
 
             if (hitNormal.y < 0f)
             {
-                _jumping = false;
+                Jumping = false;
                 _endingJump = false;
                 _additionalVelocity.y = Mathf.Min(0f, _additionalVelocity.y);
-                _gravityVelocity = Mathf.Min(0f, _gravityVelocity);
+                GravityVelocity = Mathf.Min(0f, GravityVelocity);
             }
 
             if (hitCollider.TryGetComponent(out JumpPad jumpPad))
             {
                 _additionalVelocity.y = jumpPad.force;
-                _gravityVelocity = 0f;
+                GravityVelocity = 0f;
                 _jumpingFromJumpPad = true;
-                _coyoteTimer = 0f;
+                CoyoteTimer = 0f;
             }
         }
 
@@ -359,11 +359,11 @@ namespace Game.Core.Player.Movement
 
         public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
         {
-            if (_dashing)
+            if (Dashing)
             {
                 if ((_dashTimer >= config.dashDuration) || (Inputs.wishJumping && !_prevWishJumping))
                 {
-                    _dashing = false;
+                    Dashing = false;
                     onEndDash.Invoke(false);
                     _additionalVelocity = _dashDirection * (config.dashDistance / config.dashDuration);
                 }
@@ -371,7 +371,7 @@ namespace Game.Core.Player.Movement
 
             if (_walled)
             {
-                if (_jumping) _additionalVelocity = _wallHitInfo.normal * config.wallJumpSpeed;
+                if (Jumping) _additionalVelocity = _wallHitInfo.normal * config.wallJumpSpeed;
                 else _additionalVelocity = Vector3.zero;
             }
 
@@ -423,11 +423,11 @@ namespace Game.Core.Player.Movement
 
             currentVelocity = movementVelocity + _additionalVelocity;
 
-            var addvel = _jumping ? new Vector3(_additionalVelocity.x, 0f, _additionalVelocity.z) : _additionalVelocity;
+            var addvel = Jumping ? new Vector3(_additionalVelocity.x, 0f, _additionalVelocity.z) : _additionalVelocity;
 
             if (_groundSlamming) currentVelocity = new(currentVelocity.x, _groundSlamForce, currentVelocity.z);
             else if (_walled) currentVelocity = new Vector3(movementVelocity.x, -config.slidingDownSpeed, movementVelocity.z) + addvel;
-            else currentVelocity = movementVelocity + addvel + Vector3.up * _gravityVelocity;
+            else currentVelocity = movementVelocity + addvel + Vector3.up * GravityVelocity;
 
             if (motor.GroundingStatus.IsStableOnGround) UpdateVelocityOnGround(ref currentVelocity, deltaTime);
             else UpdateVelocityInAir(ref currentVelocity, deltaTime);
@@ -435,12 +435,12 @@ namespace Game.Core.Player.Movement
 
         private void UpdateVelocityOnGround(ref Vector3 currentVelocity, float deltaTime)
         {
-            _gravityVelocity = 0f;
+            GravityVelocity = 0f;
             if (_groundSlamming)
             {
                 _groundSlamming = false;
 
-                _canDash = true;
+                CanDash = true;
                 _dashCooldownTimer = 0f;
                 onEndDash.Invoke(true);
 
@@ -450,18 +450,18 @@ namespace Game.Core.Player.Movement
 
         private void UpdateVelocityInAir(ref Vector3 currentVelocity, float deltaTime)
         {
-            if (_jumping || _endingJump || _dashing || _walled) _gravityVelocity = 0f;
+            if (Jumping || _endingJump || Dashing || _walled) GravityVelocity = 0f;
             else if (currentVelocity.y > config.gravityClamp)
             {
-                _gravityVelocity += config.gravity * deltaTime;
+                GravityVelocity += config.gravity * deltaTime;
             }
         }
 
         private void BeginJump()
         {
-            _coyoteTimer = config.coyoteTime;
+            CoyoteTimer = config.coyoteTime;
             motor.ForceUnground();
-            _jumping = true;
+            Jumping = true;
             if (!_walled) _jumpingFromGround = true;
 
             onJump.Invoke();
@@ -493,12 +493,12 @@ namespace Game.Core.Player.Movement
 
             if (!_prevWalled && _walled)
             {
-                _jumping = false;
+                Jumping = false;
                 _endingJump = false;
 
-                if (_dashing)
+                if (Dashing)
                 {
-                    _dashing = false;
+                    Dashing = false;
                     onEndDash.Invoke(true);
                 }
                 _dashCooldownTimer = 0f;

@@ -84,6 +84,12 @@ namespace Game.Core.Hits
             var ordered = _outdatedEntities.OrderByDescending((x) => x);
             foreach (var index in ordered)
             {
+                if (index < 0 || index >= _entities.Count)
+                {
+                    Debug.LogError($"Failed to remove outdated entity with index {index}! entities count: {_entities.Count}");
+                    return;
+                }
+
                 _entities.RemoveAt(index);
             }
             _outdatedEntities.Clear();

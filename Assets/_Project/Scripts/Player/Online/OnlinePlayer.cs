@@ -448,7 +448,7 @@ namespace Game.Player.Online
             _prevPosition = transform.position;
         }
 
-        public PlayerMovementInputs GetInputs()
+        public PlayerMovementInputs GetInputs(float deltaTime)
         {
             if (!isLocalPlayer) return new();
 

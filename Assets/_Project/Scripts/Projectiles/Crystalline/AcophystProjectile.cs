@@ -135,7 +135,7 @@ namespace Game.Projectiles.Crystalline
             var closestDistance = 2000f;
             foreach (var (_, player) in MapLoader.loadedMap.players)
             {
-                if (player.deathModule.Dead || player == authorReference.author) continue;
+                if (player.deathModule.Dead || player.teamReference.Unwrap().CompareTeam(teamReference.Unwrap())) continue;
                 var distance = Vector3.Distance(player.transform.position, transform.position);
                 if (distance < closestDistance)
                 {

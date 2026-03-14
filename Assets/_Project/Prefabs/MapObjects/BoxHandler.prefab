@@ -51,7 +51,7 @@ MonoBehaviour:
   ambientSpawnRate: 0.2
   maxBoxesPerPlayer: 4
   maxNeedSpawnFails: 32
-  offsetTowardsPlayerFactor: 0.2
+  offsetTowardsPlayerFactor: 0.8
   maxGroundAngle: 70
   spawnMargin: 1.1
   spawnYOffset: 2

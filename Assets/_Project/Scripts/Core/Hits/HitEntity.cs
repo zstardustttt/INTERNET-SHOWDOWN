@@ -55,10 +55,14 @@ namespace Game.Core.Hits
             }
         }
 
-        private void Start()
+        private void Awake()
         {
             index = -1;
             MoveEntityObservation(transform.position);
+        }
+
+        private void Start()
+        {
             EventBus<OnHitEntityCreate>.Invoke(new() { entity = this });
         }
 
