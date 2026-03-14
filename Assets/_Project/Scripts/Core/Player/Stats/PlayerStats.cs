@@ -10,11 +10,11 @@ namespace Game.Core.Player.Stats
         public int pureKills;
         public int supportingKills;
         public int finishingKills;
-        public float damageDealt;
+        public float damageDealtOnPlayers;
 
         public readonly int EvaluateScore()
         {
-            return Mathf.RoundToInt(damageDealt);
+            return Mathf.RoundToInt(damageDealtOnPlayers);
         }
     }
 }

@@ -3,7 +3,7 @@ using Game.Player.Online.Events;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Game.UI.Game
+namespace Game.UI.Game.Crosshair
 {
     public class DashCooldown : MonoBehaviour
     {
@@ -29,17 +29,24 @@ namespace Game.UI.Game
             {
                 if (data.reset)
                 {
-                    foreach (var slider in dashCooldownSliders)
-                    {
-                        slider.value = 0f;
-                    }
-
-                    _cooldown = 0f;
+                    ResetSliders();
                     return;
                 }
 
                 _cooldownActive = true;
             });
+
+            ResetSliders();
+        }
+
+        private void ResetSliders()
+        {
+            foreach (var slider in dashCooldownSliders)
+            {
+                slider.value = 0f;
+            }
+
+            _cooldown = 0f;
         }
 
         private void Update()

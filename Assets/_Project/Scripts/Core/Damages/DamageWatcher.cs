@@ -25,7 +25,8 @@ namespace Game.Core.Damages
                 var evaluation = source.EvaluateDamage(target);
                 if (!evaluation.valid) return;
 
-                var damage = new Damage(evaluation.type, evaluation.amount, source.authorReference.Unwrap(), source.teamReference.Unwrap(), source.Identification);
+                var author = source.authorReference.Unwrap();
+                var damage = new Damage(evaluation.type, evaluation.amount, author, source.teamReference.Unwrap(), source.Identification);
                 var damageEvent = new DamageEvent(source, target, damage);
 
                 source.onWishDamage.Invoke(damageEvent);
@@ -35,6 +36,8 @@ namespace Game.Core.Damages
                 source.onDamage.Invoke(damageEvent);
                 target.onDamage.Invoke(damageEvent);
                 EventBus<DamageEvent>.Invoke(damageEvent);
+
+                if (author) author.ReportDealtDamage(target, damage);
             }
         }
 
@@ -42,7 +45,7 @@ namespace Game.Core.Damages
         {
             if (data.damage.author && !data.player.teamReference.Unwrap().CompareTeam(data.damage.team))
             {
-                data.damage.author.ReportDealtDamage
+                data.damage.author.ReportDealtDamageOnPlayer
                 (
                     data.player,
                     data.damage,

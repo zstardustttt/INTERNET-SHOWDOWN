@@ -54,9 +54,10 @@ namespace Game.Core.Player
         public PlayerIdentification Identification => _identification;
         [SyncVar] private PlayerIdentification _identification;
 
-        [HideInInspector] public UnityEvent onHandlingThisPlayer;
-        [HideInInspector] public UnityEvent<PlayerIdentification, DamageIdentification, DamageType, float> onDealtDamage;
-        [HideInInspector] public UnityEvent<Collider> onLocalTriggerEnter;
+        [HideInInspector] public UnityEvent onHandlingThisPlayer = new();
+        [HideInInspector] public UnityEvent<DamageIdentification, DamageType, float> onDealtDamage = new();
+        [HideInInspector] public UnityEvent<PlayerIdentification, DamageIdentification, DamageType, float> onDealtDamageOnPlayer = new();
+        [HideInInspector] public UnityEvent<Collider> onLocalTriggerEnter = new();
 
         private Collider[] _triggerBuffer;
         private Collider[] _previousTriggerBuffer;
@@ -168,21 +169,34 @@ namespace Game.Core.Player
         }
 
         [Server]
-        public void ReportDealtDamage(PlayerCore target, Damage damage, float finalAmount)
+        public void ReportDealtDamageOnPlayer(PlayerCore target, Damage damage, float finalAmount)
         {
-            stats.damageDealt += finalAmount;
+            stats.damageDealtOnPlayers += finalAmount;
             if (damage.type == DamageType.Direct) stats.directHits++;
             else if (damage.type == DamageType.Indirect) stats.indirectHits++;
             else throw new($"Damage type {damage.type} isn't supported");
 
-            if (HandlingThisPlayer) onDealtDamage.Invoke(target._identification, damage.identification, damage.type, finalAmount);
-            else TargetReportDealtDamage(target._identification, damage.identification, damage.type, finalAmount);
+            if (HandlingThisPlayer) onDealtDamageOnPlayer.Invoke(target._identification, damage.identification, damage.type, finalAmount);
+            else TargetReportDealtDamageOnPlayer(target._identification, damage.identification, damage.type, finalAmount);
         }
 
         [TargetRpc]
-        private void TargetReportDealtDamage(PlayerIdentification target, DamageIdentification source, DamageType type, float amount)
+        private void TargetReportDealtDamageOnPlayer(PlayerIdentification target, DamageIdentification source, DamageType type, float amount)
         {
-            onDealtDamage.Invoke(target, source, type, amount);
+            onDealtDamageOnPlayer.Invoke(target, source, type, amount);
+        }
+
+        [Server]
+        public void ReportDealtDamage(DamageTarget target, Damage damage)
+        {
+            if (HandlingThisPlayer) onDealtDamage.Invoke(damage.identification, damage.type, damage.amount);
+            else TargetReportDealtDamage(damage.identification, damage.type, damage.amount);
+        }
+
+        [TargetRpc]
+        private void TargetReportDealtDamage(DamageIdentification source, DamageType type, float amount)
+        {
+            onDealtDamage.Invoke(source, type, amount);
         }
 
         [Server]

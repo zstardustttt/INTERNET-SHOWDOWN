@@ -6,9 +6,16 @@ namespace Game.Player.Online.Events
 {
     public struct OnLocalPlayerAddedToMap : IEvent { }
     public struct OnLocalPlayerRemovedFromMap : IEvent { }
-    public struct OnLocalPlayerDealtDamage : IEvent
+    public struct OnLocalPlayerDealtDamageOnPlayer : IEvent
     {
         public PlayerIdentification target;
+        public DamageIdentification source;
+        public DamageType type;
+        public float amount;
+    }
+
+    public struct OnLocalPlayerDealtDamage : IEvent
+    {
         public DamageIdentification source;
         public DamageType type;
         public float amount;

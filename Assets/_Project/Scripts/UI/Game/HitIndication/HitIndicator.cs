@@ -37,7 +37,7 @@ namespace Game.UI.Game.HitIndiction
         {
             audioSource.pitch = idlePitch;
 
-            EventBus<OnLocalPlayerDealtDamage>.Listen((data) =>
+            EventBus<OnLocalPlayerDealtDamageOnPlayer>.Listen((data) =>
             {
                 Indicate(data.type, data.target.name, data.source.name, data.amount);
             });

@@ -231,9 +231,19 @@ namespace Game.Player.Online
             player.movementModule.controller = this;
             _actions.Enable();
 
-            player.onDealtDamage.AddListener((target, source, type, amount) =>
+            player.onDealtDamage.AddListener((source, type, amount) =>
             {
                 EventBus<OnLocalPlayerDealtDamage>.Invoke(new()
+                {
+                    source = source,
+                    type = type,
+                    amount = amount
+                });
+            });
+
+            player.onDealtDamageOnPlayer.AddListener((target, source, type, amount) =>
+            {
+                EventBus<OnLocalPlayerDealtDamageOnPlayer>.Invoke(new()
                 {
                     target = target,
                     source = source,
