@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace Game.Core.Maps
@@ -10,7 +11,7 @@ namespace Game.Core.Maps
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Reset()
         {
-            maps = Resources.LoadAll<MapConfig>("");
+            maps = Resources.LoadAll<MapConfig>("").Where(x => x.include).ToArray();
         }
     }
 }

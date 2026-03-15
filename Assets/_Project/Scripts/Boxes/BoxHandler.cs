@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Game.Boxes.Events;
 using Game.Core.Events;
 using Game.Core.Hits;
@@ -17,33 +16,24 @@ namespace Game.Boxes
     // This object is only active on the server
     public class BoxHandler : MonoBehaviour
     {
+        public BoxSpawnBakeData bakeData;
         public GameObject boxPrefab;
         public HitLayer boxesLayer;
 
         [Header("Ambient Spawning")]
-        public int maxAmbientSpawnFails;
         public float ambientSpawnRate;
         public int maxBoxesPerPlayer;
 
         [Header("Need Spawning")]
-        public int maxNeedSpawnFails;
-        public float offsetTowardsPlayerFactor;
-
-        [Header("Box spawning settings")]
-        public float maxGroundAngle;
-        public float spawnMargin;
-        public float spawnYOffset;
+        public float randomOffsetFromPlayerAmplitude;
 
         private bool _active;
         private float _timer;
         private int _spawnedBoxesCounter;
-        private LayerMask _enviromentLayerMask;
 
         private void Awake()
         {
             if (!NetworkServer.active) return;
-
-            _enviromentLayerMask = LayerMask.GetMask("Enviroment");
 
             EventBus<OnGameStateChange>.Listen((data) =>
             {
@@ -77,15 +67,10 @@ namespace Game.Boxes
 
         private void OnItemUsed(PlayerCore player)
         {
-            for (int i = 0; i < maxNeedSpawnFails; i++)
-            {
-                var info = MapLoader.loadedMap.info;
-                var playerShapePosition = new Vector3(player.transform.position.x, info.boundsMax.y, player.transform.position.z);
-                var point = Vector3.Lerp(info.SelectRandomPointOnSpawnShape(), playerShapePosition, offsetTowardsPlayerFactor);
-
-                if (TrySpawnBox(point, player.transform.position.y)) break;
-                Debug.Log($"Failed to spawn need box. Fail iteration: {i}");
-            }
+            var randomInsideCircle = Random.insideUnitCircle * randomOffsetFromPlayerAmplitude;
+            var offset = new Vector3(randomInsideCircle.x, 0f, randomInsideCircle.y);
+            var position = bakeData.GetClosestSpawnPosition(player.hitEntity.Collider.bounds.center + offset);
+            MapLoader.NetworkSpawnOnMap(boxPrefab, position, Quaternion.identity);
         }
 
         private void Update()
@@ -110,47 +95,10 @@ namespace Game.Boxes
             if (_timer <= 0f)
             {
                 _timer = 1f / (ambientSpawnRate * playerCount);
-                for (int i = 0; i < maxAmbientSpawnFails; i++)
-                {
-                    var point = MapLoader.loadedMap.info.SelectRandomPointOnSpawnShape();
-                    if (TrySpawnBox(point, null)) break;
-                    Debug.Log($"Failed to spawn ambient box. Fail iteration: {i}");
-                }
+                var position = bakeData.GetRandomSpawnPosition();
+                MapLoader.NetworkSpawnOnMap(boxPrefab, position, Quaternion.identity);
             }
             else _timer -= Time.deltaTime;
-        }
-
-        private bool TrySpawnBox(Vector3 pointOnShape, float? desiredHeight)
-        {
-            var origin = pointOnShape;
-
-            var possibleSpawnPoints = new List<Vector3>();
-            var closestPointIndex = -1;
-            var closestPointDistance = 1000f;
-            while (Physics.Raycast(origin, Vector3.down, out var hit, 200f, _enviromentLayerMask))
-            {
-                origin = hit.point + Vector3.down * 0.1f;
-
-                if (Vector3.Angle(Vector3.up, hit.normal) > maxGroundAngle) continue;
-                if (Physics.CheckSphere(hit.point + Vector3.up * spawnYOffset, spawnMargin, _enviromentLayerMask)) continue;
-
-                if (desiredHeight.HasValue)
-                {
-                    var distance = Mathf.Abs(desiredHeight.Value - hit.point.y);
-                    if (distance < closestPointDistance)
-                    {
-                        closestPointIndex = possibleSpawnPoints.Count;
-                        closestPointDistance = distance;
-                    }
-                }
-                possibleSpawnPoints.Add(hit.point);
-            }
-
-            if (possibleSpawnPoints.Count == 0) return false;
-
-            var point = closestPointIndex == -1 ? possibleSpawnPoints[Random.Range(0, possibleSpawnPoints.Count)] : possibleSpawnPoints[closestPointIndex];
-            MapLoader.NetworkSpawnOnMap(boxPrefab, point + Vector3.up * spawnYOffset, Quaternion.identity);
-            return true;
         }
     }
 }

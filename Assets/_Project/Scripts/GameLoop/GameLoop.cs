@@ -132,7 +132,8 @@ namespace Game.GameLoop
             else
             {
                 var newMapPool = MapPool.maps.Where((_, idx) => idx != _mapIdx).ToArray();
-                _mapIdx = Array.IndexOf(MapPool.maps, newMapPool[Random.Range(0, newMapPool.Length)]);
+                if (newMapPool.Length == 0) _mapIdx = Random.Range(0, MapPool.maps.Length);
+                else _mapIdx = Array.IndexOf(MapPool.maps, newMapPool[Random.Range(0, newMapPool.Length)]);
             }
 
             var conf = MapPool.maps[_mapIdx];

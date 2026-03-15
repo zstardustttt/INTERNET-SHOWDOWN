@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Observatory
   m_EditorClassIdentifier: 
   sceneName: Assets/_Project/Scenes/Maps/Observatory.unity
+  include: 1
   displayName: Observatory
   soundtracks:
   - {fileID: 11400000, guid: 6440017dc5188f94cba80d102bdab465, type: 2}

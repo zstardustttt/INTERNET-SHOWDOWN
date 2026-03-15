@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SkyIslandMap
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Maps.MapConfig
   sceneName: Assets/_Project/Scenes/Maps/SkyIslandMap.unity
+  include: 0
   displayName: Sky Island
   soundtracks:
   - {fileID: 11400000, guid: c5bce79d09a78894a9d1587e19ea8805, type: 2}

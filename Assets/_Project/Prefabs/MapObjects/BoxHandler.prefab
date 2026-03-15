@@ -45,16 +45,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 436ea788c47c16843b4c92b22a636501, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Boxes.BoxHandler
+  bakeData: {fileID: 0}
   boxPrefab: {fileID: 4198238566599423486, guid: 2beec17498cc07a43b8285f504979ce2, type: 3}
   boxesLayer: {fileID: 11400000, guid: 4cd91094a9195d344a5f51aa6e49d70c, type: 2}
-  maxAmbientSpawnFails: 32
   ambientSpawnRate: 0.2
   maxBoxesPerPlayer: 4
-  maxNeedSpawnFails: 32
-  offsetTowardsPlayerFactor: 0.8
-  maxGroundAngle: 70
-  spawnMargin: 1.1
-  spawnYOffset: 2
+  randomOffsetFromPlayerAmplitude: 30
 --- !u!114 &5455258856554935399
 MonoBehaviour:
   m_ObjectHideFlags: 0

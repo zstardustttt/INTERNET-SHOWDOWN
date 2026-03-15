@@ -7,6 +7,7 @@ namespace Game.Core.Maps
     public class MapConfig : ScriptableObject
     {
         [Scene] public string sceneName;
+        public bool include;
         public string displayName;
         public Soundtrack[] soundtracks;
     }
