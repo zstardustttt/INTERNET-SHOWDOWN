@@ -300,6 +300,8 @@ namespace Game.Core.Maps
 
         private void OnDrawGizmosSelected()
         {
+            if (surfacePoints == null) return;
+
             Gizmos.color = Color.blue;
             foreach (var surfacePoint in surfacePoints)
             {
