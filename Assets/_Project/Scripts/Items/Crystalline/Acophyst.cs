@@ -9,10 +9,10 @@ namespace Game.Items.Crystalline
     {
         public AcophystProjectile projectile;
 
-        public override bool Use(PlayerCore user, ItemUseClientContext context)
+        public override ItemUseOptions Use(PlayerCore user, ItemUseClientContext context)
         {
             Projectile.Spawn(projectile, user, user.teamReference.team, context.headPosition, context.headRotation, context.useTime);
-            return true;
+            return new(true, true, true);
         }
     }
 }

@@ -101,7 +101,7 @@ namespace Game.Player.AI
 
         private PlayerMovementInputs GetMatchInputs(float deltaTime)
         {
-            if (player.itemModule.item)
+            if (player.itemModule.Item)
             {
                 PlayerCore closestPlayer = null;
                 var predictedPos = Vector3.zero;

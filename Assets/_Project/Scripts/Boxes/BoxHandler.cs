@@ -58,7 +58,7 @@ namespace Game.Boxes
 
             EventBus<OnItemUsed>.Listen((data) =>
             {
-                if (!data.fullyUsed) return;
+                if (!data.reset) return;
                 OnItemUsed(data.player);
             });
         }
@@ -68,7 +68,7 @@ namespace Game.Boxes
             if (hitEvent.source.layer != boxesLayer) return;
             if (hitEvent.target is not PlayerItemModule playerItemModule) return;
 
-            if (playerItemModule.itemData.itemIndex == -1)
+            if (playerItemModule.ItemData.itemIndex == -1)
             {
                 playerItemModule.PickRandomItem();
                 NetworkServer.Destroy(hitEvent.source.gameObject);
@@ -82,6 +82,7 @@ namespace Game.Boxes
                 var info = MapLoader.loadedMap.info;
                 var playerShapePosition = new Vector3(player.transform.position.x, info.boundsMax.y, player.transform.position.z);
                 var point = Vector3.Lerp(info.SelectRandomPointOnSpawnShape(), playerShapePosition, offsetTowardsPlayerFactor);
+
                 if (TrySpawnBox(point, player.transform.position.y)) break;
                 Debug.Log($"Failed to spawn need box. Fail iteration: {i}");
             }

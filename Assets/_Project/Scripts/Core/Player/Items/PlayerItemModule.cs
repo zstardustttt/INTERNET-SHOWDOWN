@@ -35,9 +35,25 @@ namespace Game.Core.Player.Items
         public PlayerCore player;
         public Transform itemHolder;
 
-        [Header("Runtime")]
-        [SyncVar(hook = nameof(OnItemChange))] public PlayerItemData itemData;
-        public Item item;
+        public PlayerItemData ItemData
+        {
+            get => _itemData;
+            set
+            {
+                if (!NetworkServer.active) return;
+                _itemData = value;
+
+                DestroyItem();
+                if (value.itemIndex != -1)
+                {
+                    Item = InstantiateItem(value);
+                    onItemPickup.Invoke();
+                }
+            }
+        }
+
+        [SyncVar(hook = nameof(OnItemChange))] private PlayerItemData _itemData;
+        public Item Item { get; private set; }
 
         [HideInInspector] public UnityEvent onDestroyItem = new();
         [HideInInspector] public UnityEvent onItemPickup = new();
@@ -54,7 +70,7 @@ namespace Game.Core.Player.Items
         [Server]
         public void ResetItem()
         {
-            itemData = PlayerItemData.Empty();
+            ItemData = PlayerItemData.Empty();
         }
 
         public override void OnStartServer()
@@ -66,7 +82,7 @@ namespace Game.Core.Player.Items
         public void SetItem(ItemConfig item, params ItemArgument[] args)
         {
             var rarityIdx = Array.IndexOf(ItemPool.rarities, item.rarity);
-            itemData = new()
+            ItemData = new()
             {
                 rarityIndex = rarityIdx,
                 itemIndex = ItemPool.items[rarityIdx].IndexOf(item),
@@ -100,7 +116,7 @@ namespace Game.Core.Player.Items
             var itemIdx = Random.Range(0, itemPool.Count);
             Debug.Log($"Picked item {itemPool[itemIdx].displayName} for player {player.Identification.name}");
 
-            itemData = new()
+            ItemData = new()
             {
                 rarityIndex = rarityIdx,
                 itemIndex = itemIdx,
@@ -110,26 +126,36 @@ namespace Game.Core.Player.Items
 
         private void OnItemChange(PlayerItemData old, PlayerItemData _new)
         {
-            if (item)
-            {
-                onDestroyItem.Invoke();
-                Destroy(item.gameObject);
-            }
+            if (NetworkServer.active) return;
 
-            // TODO: cant be used on server only
+            DestroyItem();
             if (_new.itemIndex != -1)
             {
-                item = Instantiate(ItemPool.items[_new.rarityIndex][_new.itemIndex].prefab, itemHolder).GetComponent<Item>();
-                item.arguments = _new.arguments;
-                item.transform.localPosition = item.offset;
-
+                Item = InstantiateItem(_new);
                 onItemPickup.Invoke();
             }
         }
 
+        private void DestroyItem()
+        {
+            if (!Item) return;
+
+            onDestroyItem.Invoke();
+            Destroy(Item.gameObject);
+        }
+
+        private Item InstantiateItem(PlayerItemData itemData)
+        {
+            var item = Instantiate(ItemPool.items[itemData.rarityIndex][itemData.itemIndex].prefab, itemHolder).GetComponent<Item>();
+            item.arguments = itemData.arguments;
+            item.transform.localPosition = item.offset;
+
+            return item;
+        }
+
         public void TryUseItem(bool secondary)
         {
-            if (itemData.itemIndex == -1 || player.locks.Locked(PlayerLock.Input)) return;
+            if (!Item || player.locks.Locked(PlayerLock.Input)) return;
 
             var ctx = new ItemUseClientContext()
             {
@@ -154,35 +180,37 @@ namespace Game.Core.Player.Items
         [Server]
         private void UseItem(ItemUseClientContext context)
         {
-            if (!item || player.locks.Locked(PlayerLock.Input)) return;
+            if (!Item || player.locks.Locked(PlayerLock.Input)) return;
 
-            var fullyUsed = item.Use(player, context);
-            if (fullyUsed)
-            {
-                ResetItem();
-                player.stats.activity++;
-            }
+            var options = Item.Use(player, context);
+            if (options.reset) ResetItem();
+            if (options.activity) player.stats.activity++;
+            if (options.events) InvokeItemUseEvents(options.reset);
+        }
 
-            onItemUsed.Invoke(fullyUsed);
+        [Server]
+        public void InvokeItemUseEvents(bool reset)
+        {
+            onItemUsed.Invoke(reset);
             EventBus<OnItemUsed>.Invoke(new()
             {
                 player = player,
-                fullyUsed = fullyUsed
+                reset = reset
             });
 
-            RpcOnItemUsed(fullyUsed);
+            RpcInvokeItemUseEvents(reset);
         }
 
         [ClientRpc]
-        private void RpcOnItemUsed(bool fullyUsed)
+        private void RpcInvokeItemUseEvents(bool reset)
         {
             if (NetworkServer.active) return;
 
-            onItemUsed.Invoke(fullyUsed);
+            onItemUsed.Invoke(reset);
             EventBus<OnItemUsed>.Invoke(new()
             {
                 player = player,
-                fullyUsed = fullyUsed
+                reset = reset
             });
         }
     }

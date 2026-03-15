@@ -3,13 +3,27 @@ using UnityEngine;
 
 namespace Game.Core.Items
 {
+    public struct ItemUseOptions
+    {
+        public bool reset;
+        public bool activity;
+        public bool events;
+
+        public ItemUseOptions(bool reset, bool activity, bool events)
+        {
+            this.reset = reset;
+            this.activity = activity;
+            this.events = events;
+        }
+    }
+
     public abstract class Item : MonoBehaviour
     {
         public ItemArgument[] arguments;
         public Vector3 offset;
 
         // Called on the server
-        public abstract bool Use(PlayerCore user, ItemUseClientContext context);
+        public abstract ItemUseOptions Use(PlayerCore user, ItemUseClientContext context);
 
         public void Sway(Vector2 cameraMoveDelta, Vector3 velocity, Transform orientation)
         {

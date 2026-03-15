@@ -32,7 +32,7 @@ namespace Game.Items.Psycheshock
             _textChangeTimer -= Time.deltaTime;
         }
 
-        public override bool Use(PlayerCore user, ItemUseClientContext context)
+        public override ItemUseOptions Use(PlayerCore user, ItemUseClientContext context)
         {
             Projectile.Spawn(projectile, user, user.teamReference.team, context.headPosition, context.headRotation, context.useTime, (proj) =>
             {
@@ -41,7 +41,7 @@ namespace Game.Items.Psycheshock
                 proj.sourceSpeedMultiplier = context.secondary ? (proj.explodeAfterPrimary / proj.explodeAfterSecondary) : 1f;
             });
 
-            return true;
+            return new(true, true, true);
         }
     }
 }

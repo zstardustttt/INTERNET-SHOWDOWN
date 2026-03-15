@@ -10,11 +10,11 @@ namespace Game.Items.Crystalline
     {
         public EmeraldGeodeSpawnerProjectile projectile;
 
-        public override bool Use(PlayerCore user, ItemUseClientContext context)
+        public override ItemUseOptions Use(PlayerCore user, ItemUseClientContext context)
         {
             var forwardOffset = context.headRotation * Vector3.forward * 0.5f;
             Projectile.Spawn(projectile, user, user.teamReference.team, context.headPosition + forwardOffset, context.headRotation, context.useTime);
-            return true;
+            return new(true, true, true);
         }
     }
 }

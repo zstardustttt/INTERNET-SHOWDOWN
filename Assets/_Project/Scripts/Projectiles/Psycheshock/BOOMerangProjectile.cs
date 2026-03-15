@@ -84,7 +84,10 @@ namespace Game.Projectiles.Psycheshock
             if (_explosionRequested)
             {
                 if (_explosionFrameCounter == 1)
+                {
+                    authorReference.author.itemModule.InvokeItemUseEvents(true);
                     Explode(_explosionPoint, _explosionNormal);
+                }
 
                 _explosionFrameCounter++;
             }

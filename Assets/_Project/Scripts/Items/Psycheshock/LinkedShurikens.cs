@@ -18,7 +18,7 @@ namespace Game.Items.Psycheshock
         public int maxUses;
         private int _uses;
 
-        public override bool Use(PlayerCore user, ItemUseClientContext context)
+        public override ItemUseOptions Use(PlayerCore user, ItemUseClientContext context)
         {
             var proj = Projectile.Spawn(projectilePrefab, user, user.teamReference.team, context.headPosition, context.headRotation, context.useTime, (proj) =>
             {
@@ -36,7 +36,7 @@ namespace Game.Items.Psycheshock
             });
 
             _uses++;
-            return _uses >= maxUses;
+            return new(_uses >= maxUses, true, true);
         }
     }
 }

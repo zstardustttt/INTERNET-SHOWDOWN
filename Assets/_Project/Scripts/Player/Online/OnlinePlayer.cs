@@ -215,7 +215,7 @@ namespace Game.Player.Online
             _itemVisualLayer = LayerMask.NameToLayer("ItemVisual");
             player.itemModule.onItemPickup.AddListener(() =>
             {
-                var children = player.itemModule.item.GetComponentsInChildren<Transform>(includeInactive: true);
+                var children = player.itemModule.Item.GetComponentsInChildren<Transform>(includeInactive: true);
                 foreach (var child in children)
                 {
                     child.gameObject.layer = _itemVisualLayer;
@@ -224,10 +224,10 @@ namespace Game.Player.Online
                 PickItemAnimation();
             });
 
-            player.itemModule.onItemUsed.AddListener((fullyUsed) =>
+            player.itemModule.onItemUsed.AddListener((reset) =>
             {
                 OnItemUsedAnimation();
-                if (!fullyUsed) PickItemAnimation();
+                if (!reset) PickItemAnimation();
             });
 
             player.movementModule.controller = this;
@@ -288,8 +288,8 @@ namespace Game.Player.Online
 
         private void PickItemAnimation()
         {
-            if (!player.itemModule.item) return;
-            var item = player.itemModule.item;
+            if (!player.itemModule.Item) return;
+            var item = player.itemModule.Item;
             item.transform.localScale = itemPickScale;
             item.transform.localPosition = item.offset + Vector3.forward * itemPickZOffset;
 
@@ -385,7 +385,7 @@ namespace Game.Player.Online
 
             // CAMERA ROTATION
             var delta = _actions.Camera.Look.ReadValue<Vector2>() * _mouseSens;
-            if (player.itemModule.item) player.itemModule.item.Sway(delta, player.movementModule.LocalTransientVelocity, player.verticalOrientation);
+            if (player.itemModule.Item) player.itemModule.Item.Sway(delta, player.movementModule.LocalTransientVelocity, player.verticalOrientation);
 
             _cameraRotX -= delta.y;
             _cameraRotX = Mathf.Clamp(_cameraRotX, -90f, 90f);

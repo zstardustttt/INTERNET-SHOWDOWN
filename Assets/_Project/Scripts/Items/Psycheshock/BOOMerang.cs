@@ -51,7 +51,7 @@ namespace Game.Items.Psycheshock
             visual.localPosition = _shakeGenerator.GetShake();
         }
 
-        public override bool Use(PlayerCore user, ItemUseClientContext context)
+        public override ItemUseOptions Use(PlayerCore user, ItemUseClientContext context)
         {
             Projectile.Spawn(projectile, user, user.teamReference.team, context.headPosition, context.headRotation, context.useTime, (proj) =>
             {
@@ -84,7 +84,7 @@ namespace Game.Items.Psycheshock
                 proj.wishPosition = context.headPosition + proj.transform.forward * wishPosDist;
             });
 
-            return true;
+            return new(true, true, context.secondary);
         }
     }
 }
