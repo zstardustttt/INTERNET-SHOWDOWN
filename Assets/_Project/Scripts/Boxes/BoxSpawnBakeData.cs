@@ -120,6 +120,8 @@ namespace Game.Boxes
 
         private void OnDrawGizmosSelected()
         {
+            if (bakedBoxSpawnPositionsChunks == null) return;
+
             Gizmos.color = Color.yellow;
             foreach (var chunk in bakedBoxSpawnPositionsChunks)
             {

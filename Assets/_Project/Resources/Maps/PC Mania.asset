@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PC Mania
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Maps.MapConfig
   sceneName: Assets/_Project/Scenes/Maps/PC Mania.unity
-  include: 0
+  include: 1
   displayName: PC Mania
   soundtracks:
   - {fileID: 11400000, guid: d38e7b9ea68ccce4c917fb3f037778d2, type: 2}
