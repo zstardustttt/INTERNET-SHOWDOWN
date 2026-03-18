@@ -6,8 +6,8 @@ using Random = UnityEngine.Random;
 using Game.Core.Player.Movement;
 using Game.Core.Maps;
 using Game.Boxes;
-using Game.Player.AI.Actions;
-using Game.Core.Damages;
+using Game.Player.AI.Navigation;
+using System.Collections.Generic;
 
 namespace Game.Player.AI
 {
@@ -16,6 +16,12 @@ namespace Game.Player.AI
     {
         public PlayerCore player;
         private GameObject _portal;
+        private AINavigationData navigationData;
+
+        private Transform _target;
+        private List<AIMovementDescriptor> _path;
+        private int _currentNode;
+        private float _nodeFollowTimer;
 
         protected override void OnValidate()
         {
@@ -27,6 +33,8 @@ namespace Game.Player.AI
 
         public override void OnStartServer()
         {
+            _path = new();
+
             player.HandleThisPlayer(new()
             {
                 name = $"Stupid Clanker {Random.Range(1, 100)}",
@@ -47,32 +55,10 @@ namespace Game.Player.AI
             });
 
             player.movementModule.controller = this;
-
-            _lookAtAction = new LookAtAction(this, Vector3.zero);
-            _matchAction = new ParallelAction(this, new FiniteAction[]
-            {
-                new FrameAction(this, 1, _lookAtAction),
-                new FrameAction(this, 2, new MoveAction(this, Vector2.up)),
-                new SequencedAction(this, 0f, new FiniteAction[]
-                {
-                    new FrameAction(this, 1, new DashAction(this, true)),
-                    new FrameAction(this, 1, new DashAction(this, false)),
-                })
-            }, (action) => action.Restart());
         }
 
         public PlayerMovementInputs GetInputs(float deltaTime)
         {
-            /*LookAt(Vector3.right * 1000f);
-
-            return new()
-            {
-                move = Vector2.right,
-                wishJumping = player.movementModule.motor.GroundingStatus.IsStableOnGround,
-                wishDashing = player.movementModule.CanDash,
-                wishGroundSlam = player.movementModule.CanGroundSlam,
-            };*/
-
             if (player.State == PlayerState.InLobby)
                 return GetLobbyInputs(deltaTime);
 
@@ -96,60 +82,168 @@ namespace Game.Player.AI
             };
         }
 
-        private AIAction _matchAction;
-        private LookAtAction _lookAtAction;
-
         private PlayerMovementInputs GetMatchInputs(float deltaTime)
         {
+            if (!navigationData)
+            {
+                navigationData = FindFirstObjectByType<AINavigationData>(FindObjectsInactive.Include);
+                if (!navigationData)
+                {
+                    Debug.LogWarning("AI Navigation data can't be found!");
+                    return default;
+                }
+            }
+
             if (player.itemModule.Item)
             {
-                PlayerCore closestPlayer = null;
-                var predictedPos = Vector3.zero;
-                var closestDistance = 2000f;
-                foreach (var (_, otherPlayer) in MapLoader.loadedMap.players)
+                //LookAt(transform.position + Vector3.up * 100f);
+                //player.itemModule.TryUseItem(false);
+                player.itemModule.ResetItem();
+                player.itemModule.InvokeItemUseEvents(true);
+            }
+
+            if (!_target || _nodeFollowTimer <= 0f)
+            {
+                GetPathToClosestBox();
+                if (!_target) return default;
+            }
+
+            return PathUpdate(deltaTime);
+        }
+
+        private bool _prevWishDashing;
+        private float _walledTimer;
+
+        // Overshoot detection: Dot product between normalized(startpos -> endpos) and (playerpos -> endpos)
+        // [1; 0] - following, (0; -1] - overshoot
+        // TODO: use dash to ascend even higher
+        private PlayerMovementInputs PathUpdate(float deltaTime)
+        {
+            if (_path == null || _currentNode >= _path.Count)
+            {
+                _target = null;
+                return default;
+            }
+
+            _nodeFollowTimer -= deltaTime;
+            var currentNode = _path[_currentNode];
+
+            if (currentNode.type == AIMovementType.Ascend && transform.position.y > currentNode.endPosition.y)
+            {
+                _currentNode++;
+                _nodeFollowTimer = 3f;
+            }
+            else if (Vector3.Dot(currentNode.Direction, (currentNode.endPosition - transform.position).normalized) < 0)
+            {
+                _currentNode++;
+                _nodeFollowTimer = 3f;
+            }
+
+            _prevWishDashing = !_prevWishDashing;
+            if (player.movementModule.Walled) _walledTimer += deltaTime;
+            else _walledTimer = 0f;
+
+            LookAt(currentNode.endPosition + Vector3.up * player.verticalOrientation.localPosition.y);
+            return new()
+            {
+                move = Vector2.up,
+                wishDashing = _prevWishDashing && !player.movementModule.Walled && (Vector3.Distance(transform.position, currentNode.endPosition) > 7f || _currentNode == _path.Count - 1),
+                wishJumping = currentNode.type == AIMovementType.Ascend && (player.movementModule.motor.GroundingStatus.IsStableOnGround || player.movementModule.Jumping),
+                wishGroundSlam = _walledTimer > 0.5f
+            };
+        }
+
+        // TODO: offset start position of ascending nodes a few units back
+        private void GetPathToClosestBox()
+        {
+            var boxes = FindObjectsByType<ItemBox>(FindObjectsSortMode.None);
+            if (boxes.Length == 0) return;
+
+            var toNodeIndices = new int[boxes.Length];
+            for (int i = 0; i < boxes.Length; i++)
+            {
+                toNodeIndices[i] = navigationData.GetClosestNodeIndex(boxes[i].transform.position - Vector3.up * 2f);
+            }
+
+            var fromIdx = navigationData.GetClosestNodeIndex(transform.position);
+            if (fromIdx == -1) return;
+
+            var path = navigationData.Pathfinder.FindClosestPathOutOf(fromIdx, toNodeIndices, out var chosenIndex);
+            if (path == null) return;
+
+            var startCount = path.mergedPath.Count;
+            _target = boxes[chosenIndex].transform;
+
+            var currentIdx = 0;
+            var castCapsuleRadius = player.movementModule.config.colliderCapsuleRadius;
+            var castLayerMask = player.movementModule.config.stableGroundLayers;
+            var castCapsulePoint1 = Vector3.up * (player.movementModule.config.maxStepHeight + castCapsuleRadius);
+            var castCapsulePoint2 = Vector3.up * (player.movementModule.config.colliderCapsuleHeight - castCapsuleRadius);
+            while (currentIdx + 1 < path.mergedPath.Count)
+            {
+                var currentNode = path.mergedPath[currentIdx];
+                var nextNode = path.mergedPath[currentIdx + 1];
+
+                AIMovementDescriptor mergedNode;
+                bool castForDescend;
+                if (currentNode.type == AIMovementType.Descend && nextNode.type == AIMovementType.Flat)
                 {
-                    if (otherPlayer.deathModule.Dead || player.teamReference.Unwrap().CompareTeam(otherPlayer.teamReference.Unwrap())) continue;
+                    mergedNode = new(currentNode.startPosition, nextNode.endPosition, AIMovementType.Descend);
+                    castForDescend = true;
+                }
+                else if (currentNode.type == AIMovementType.Flat && nextNode.type == AIMovementType.Flat)
+                {
+                    mergedNode = new(currentNode.startPosition, nextNode.endPosition, AIMovementType.Flat);
+                    castForDescend = false;
+                }
+                else
+                {
+                    currentIdx++;
+                    continue;
+                }
 
-                    var predict = otherPlayer.hitEntity.Collider.bounds.center + otherPlayer.movementModule.LocalTransientVelocity * deltaTime;
-                    if (Physics.Linecast(player.verticalOrientation.position, predict, LayerMask.GetMask("Enviroment")))
-                        continue;
-
-                    var distance = Vector3.Distance(predict, transform.position);
-                    if (distance < closestDistance)
+                var point1 = mergedNode.startPosition + castCapsulePoint1;
+                var point2 = mergedNode.startPosition + castCapsulePoint2;
+                if (castForDescend)
+                {
+                    // TODO: non alloc
+                    var hits = Physics.CapsuleCastAll(point1, point2, castCapsuleRadius, mergedNode.Direction, mergedNode.Length, castLayerMask);
+                    var canMerge = true;
+                    foreach (var hit in hits)
                     {
-                        closestPlayer = otherPlayer;
-                        predictedPos = predict;
-                        closestDistance = distance;
+                        if (Vector3.Angle(Vector3.up, hit.normal) > player.movementModule.config.maxGroundAngle)
+                        {
+                            canMerge = false;
+                            break;
+                        }
+                    }
+
+                    if (!canMerge)
+                    {
+                        currentIdx++;
+                        continue;
                     }
                 }
-
-                if (closestPlayer)
+                else if (Physics.CapsuleCast(point1, point2, castCapsuleRadius, mergedNode.Direction, mergedNode.Length, castLayerMask))
                 {
-                    LookAt(predictedPos);
-                    player.itemModule.TryUseItem(false);
+                    currentIdx++;
+                    continue;
                 }
+
+                path.mergedPath.RemoveAt(currentIdx);
+                path.mergedPath[currentIdx] = mergedNode;
             }
 
-            var boxes = FindObjectsByType<ItemBox>(FindObjectsSortMode.None);
-            (float distance, Vector3 pos)? closestBox = null;
-            foreach (var box in boxes)
+            Debug.Log($"Optimized from {startCount} to {path.mergedPath.Count}");
+
+            _path.Clear();
+            foreach (var node in path.mergedPath)
             {
-                var boxPos = box.transform.position - Vector3.up * transform.position.y;
-                boxPos.y = Mathf.Pow(Mathf.Abs(boxPos.y), 1.5f) * Mathf.Sign(boxPos.y);
-
-                var distance = Vector3.Distance(player.hitEntity.Collider.bounds.center, boxPos);
-                if (!closestBox.HasValue || distance < closestBox.Value.distance)
-                {
-                    closestBox = (distance, boxPos);
-                }
+                _path.Add(node);
             }
 
-            if (!closestBox.HasValue) return new();
-
-            _lookAtAction.position = closestBox.Value.pos;
-            var inputs = new PlayerMovementInputs();
-            _matchAction.Execute(ref inputs, deltaTime);
-            return inputs;
+            _currentNode = 0;
+            _nodeFollowTimer = 3f;
         }
 
         private void LookAt(Vector3 position)
@@ -157,6 +251,21 @@ namespace Game.Player.AI
             var dir = (position - player.verticalOrientation.position).normalized;
             player.horizontalOrientation.localEulerAngles = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg * Vector3.up;
             player.verticalOrientation.localEulerAngles = Mathf.Asin(dir.y) * Mathf.Rad2Deg * Vector3.left;
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (_path == null || _currentNode >= _path.Count) return;
+
+            Gizmos.color = Color.white;
+            Gizmos.DrawWireSphere(_path[_currentNode].startPosition + Vector3.up, 0.5f);
+
+            foreach (var movement in _path)
+            {
+                Gizmos.color = movement.GetGizmosColor();
+                Gizmos.DrawWireSphere(movement.startPosition, 0.5f);
+                Gizmos.DrawLine(movement.startPosition, movement.endPosition);
+            }
         }
     }
 }

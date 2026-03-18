@@ -65,6 +65,8 @@ namespace Game.Boxes
             }
         }
 
+        // TODO: previous implementation with linear interpolation and T factor was much, much better
+        // Consider picking a random point inside of surface information bounds and then interpolating it towards the player
         private void OnItemUsed(PlayerCore player)
         {
             var randomInsideCircle = Random.insideUnitCircle * randomOffsetFromPlayerAmplitude;

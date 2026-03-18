@@ -12,9 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbea7955998e59f47958eb7f46343bf0, type: 3}
   m_Name: PlayerMovementConfig
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Player.Movement.PlayerMovementConfig
+  stableGroundLayers:
+    serializedVersion: 2
+    m_Bits: 2048
   colliderCapsuleRadius: 0.35
   colliderCapsuleOffset: 0.9
   colliderCapsuleHeight: 1.8
+  maxStepHeight: 0.55
+  maxGroundAngle: 50
   speed: 8.5
   groundMoveSmoothingDuration: 0.17
   airMoveSmoothingDuration: 0.25

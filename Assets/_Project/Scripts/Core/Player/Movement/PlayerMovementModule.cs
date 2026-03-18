@@ -59,6 +59,7 @@ namespace Game.Core.Player.Movement
         private float _dashCooldownTimer;
         private float _dashBufferTimer;
         private bool _prevWishDashing;
+        private bool _jumpingFromJumpPad;
 
         // ground slam
         private bool _groundSlamming;
@@ -67,11 +68,10 @@ namespace Game.Core.Player.Movement
         private float _groundSlamDistance;
 
         // wall running
-        private bool _walled;
+        public bool Walled { get; private set; }
         private bool _prevWalled;
         private RaycastHit _wallHitInfo;
         private bool _jumpingFromGround;
-        private bool _jumpingFromJumpPad;
 
         // other
         public PlayerMovementInputs Inputs { get; private set; }
@@ -103,6 +103,10 @@ namespace Game.Core.Player.Movement
                 config.colliderCapsuleHeight,
                 config.colliderCapsuleOffset
             );
+
+            motor.MaxStepHeight = config.maxStepHeight;
+            motor.MaxStableSlopeAngle = config.maxGroundAngle;
+            motor.StableGroundLayers = config.stableGroundLayers;
         }
 
         private void Awake()
@@ -218,7 +222,7 @@ namespace Game.Core.Player.Movement
                 _dashStartPos = transform.position;
 
                 var playerViewRot = Quaternion.Euler(new(player.verticalOrientation.eulerAngles.x, player.horizontalOrientation.eulerAngles.y, 0f));
-                if (_walled)
+                if (Walled)
                 {
                     var playerViewDir = playerViewRot * Vector3.forward;
                     var playerViewDirMasked = new Vector3(playerViewDir.x, 0f, playerViewDir.z);
@@ -267,7 +271,7 @@ namespace Game.Core.Player.Movement
 
             _dashCooldownTimer -= deltaTime;
 
-            if (motor.GroundingStatus.IsStableOnGround || Dashing || _walled)
+            if (motor.GroundingStatus.IsStableOnGround || Dashing || Walled)
             {
                 CoyoteTimer = 0f;
                 if (!Inputs.wishDashing)
@@ -369,7 +373,7 @@ namespace Game.Core.Player.Movement
                 }
             }
 
-            if (_walled)
+            if (Walled)
             {
                 if (Jumping) _additionalVelocity = _wallHitInfo.normal * config.wallJumpSpeed;
                 else _additionalVelocity = Vector3.zero;
@@ -426,7 +430,7 @@ namespace Game.Core.Player.Movement
             var addvel = Jumping ? new Vector3(_additionalVelocity.x, 0f, _additionalVelocity.z) : _additionalVelocity;
 
             if (_groundSlamming) currentVelocity = new(currentVelocity.x, _groundSlamForce, currentVelocity.z);
-            else if (_walled) currentVelocity = new Vector3(movementVelocity.x, -config.slidingDownSpeed, movementVelocity.z) + addvel;
+            else if (Walled) currentVelocity = new Vector3(movementVelocity.x, -config.slidingDownSpeed, movementVelocity.z) + addvel;
             else currentVelocity = movementVelocity + addvel + Vector3.up * GravityVelocity;
 
             if (motor.GroundingStatus.IsStableOnGround) UpdateVelocityOnGround(ref currentVelocity, deltaTime);
@@ -450,7 +454,7 @@ namespace Game.Core.Player.Movement
 
         private void UpdateVelocityInAir(ref Vector3 currentVelocity, float deltaTime)
         {
-            if (Jumping || _endingJump || Dashing || _walled) GravityVelocity = 0f;
+            if (Jumping || _endingJump || Dashing || Walled) GravityVelocity = 0f;
             else if (currentVelocity.y > config.gravityClamp)
             {
                 GravityVelocity += config.gravity * deltaTime;
@@ -462,7 +466,7 @@ namespace Game.Core.Player.Movement
             CoyoteTimer = config.coyoteTime;
             motor.ForceUnground();
             Jumping = true;
-            if (!_walled) _jumpingFromGround = true;
+            if (!Walled) _jumpingFromGround = true;
 
             onJump.Invoke();
         }
@@ -470,9 +474,9 @@ namespace Game.Core.Player.Movement
         private void CheckWalled()
         {
             var hit = new RaycastHit();
-            _prevWalled = _walled;
+            _prevWalled = Walled;
 
-            _walled = false;
+            Walled = false;
             if (!motor.GroundingStatus.IsStableOnGround && !_groundSlamming && !_jumpingFromGround)
             {
                 var origin = transform.position + Vector3.up * motor.Capsule.height / 2f;
@@ -483,15 +487,15 @@ namespace Game.Core.Player.Movement
                     var dir = new Vector3(Mathf.Sin(x), 0f, Mathf.Cos(x));
                     if (Physics.Raycast(origin, player.horizontalOrientation.rotation * dir, out hit, maxdist, config.wallLayers, QueryTriggerInteraction.Ignore))
                     {
-                        _walled = true;
+                        Walled = true;
                         break;
                     }
                 }
             }
 
-            if (_walled) _wallHitInfo = hit;
+            if (Walled) _wallHitInfo = hit;
 
-            if (!_prevWalled && _walled)
+            if (!_prevWalled && Walled)
             {
                 Jumping = false;
                 _endingJump = false;
@@ -505,7 +509,7 @@ namespace Game.Core.Player.Movement
 
                 onWalled.Invoke(_wallHitInfo.normal);
             }
-            else if (_prevWalled && !_walled) onUnwalled.Invoke();
+            else if (_prevWalled && !Walled) onUnwalled.Invoke();
         }
 
         [Server]

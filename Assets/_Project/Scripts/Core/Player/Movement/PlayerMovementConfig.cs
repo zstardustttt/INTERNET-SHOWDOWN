@@ -6,9 +6,16 @@ namespace Game.Core.Player.Movement
     public class PlayerMovementConfig : ScriptableObject
     {
         [Header("Motor")]
+        public LayerMask stableGroundLayers;
+
+        [Space(9)]
         public float colliderCapsuleRadius;
         public float colliderCapsuleOffset;
         public float colliderCapsuleHeight;
+
+        [Space(9)]
+        public float maxStepHeight;
+        public float maxGroundAngle;
 
         [Header("Movement")]
         public float speed;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Core.Maps;
+using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -31,7 +32,7 @@ namespace Game.Boxes
         {
             if (!mapInfo)
             {
-                Debug.LogError("Map info in box handler must be assigned!");
+                Debug.LogError("Map info in box spawn bake data must be assigned!");
                 return;
             }
 
@@ -82,6 +83,10 @@ namespace Game.Boxes
                 chunkCenter = x.Key,
                 positions = x.Value.ToArray()
             }).ToArray();
+
+#if UNITY_EDITOR
+            EditorUtility.SetDirty(this);
+#endif
         }
 
         public Vector3 GetClosestSpawnPosition(Vector3 closestTo)

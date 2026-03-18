@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
@@ -39,8 +40,10 @@ namespace Game.Core.Maps
     {
         public Vector3 position;
         public Vector3 normal;
+        public int gridIndex;
     }
 
+    // TODO: Move surface point generation into a seperate SurfaceInformation class
     public class MapInfo : MonoBehaviour
     {
         [Header("Surface Point Sampling")]
@@ -94,6 +97,9 @@ namespace Game.Core.Maps
             surfacePoints = SampleSurfacePoints();
 
             onSurfacePointsBaked.Invoke();
+#if UNITY_EDITOR
+            EditorUtility.SetDirty(this);
+#endif
         }
 
         // Triangulation with Ear Clipping algorithm
@@ -210,6 +216,7 @@ namespace Game.Core.Maps
                         {
                             position = hit.point,
                             normal = hit.normal,
+                            gridIndex = i * countY + j
                         });
                     }
                 }
@@ -230,6 +237,7 @@ namespace Game.Core.Maps
             return false;
         }
 
+        // TODO: remove
         public Vector3 SelectRandomPointOnSurface()
         {
             var probabilityOffset = 0f;
